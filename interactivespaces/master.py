@@ -21,6 +21,7 @@ class Master(Communicable):
 
     def get_activities(self, pattern=None):
         """Retrieves a list of activities."""
+        raise NotImplementedError
     
     def get_live_activities(self, pattern=None):
         """Retrieves a list of live activities."""
