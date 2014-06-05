@@ -6,6 +6,9 @@ from mock import MagicMock
 import json
 import urllib
 import urllib2
+import sys
+import os
+sys.path.append(os.getcwd())
 
 import interactivespaces
 

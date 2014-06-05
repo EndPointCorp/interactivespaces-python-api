@@ -1,59 +1,46 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import urllib2
+from mixin import Communicable
+from exception import MasterException
+from abstract import Path
 
-class MasterException(Exception):
-  pass
+class Master(Communicable):
+    def __init__(self, host='lg-head', prefix='/interactivespaces', port=8080):
+        ''' 
+            Instantiate the Master class with host and port only.
+            Communication layer and route logic should be inherited from somewhere else
+        '''
+      
+        self.host = host
+        self.prefix = prefix
+        self.port = port
+        self.paths = Path()
+        '''Add communication layer to master'''
+        super(Master, self).__init__() 
 
-class Master(object):
-  def __init__(self, host, port):
-    self.host = host
-    self.port = port
+    def get_activities(self, pattern=None):
+        """Retrieves a list of activities."""
+    
+    def get_live_activities(self, pattern=None):
+        """Retrieves a list of live activities."""
+        raise NotImplementedError
 
-  def _urlopen(self, url, data=None):
-    """Helper for opening urls."""
-    return urllib2.urlopen(url, data)
+    def get_live_activity_groups(self, pattern=None):
+        """Retrieves a list of live activity groups."""
+        raise NotImplementedError
 
-  def _api_get_json(self, command):
-    """Sends a request to the master, returns the response data."""
-    raise NotImplementedError
+    def get_spaces(self, pattern=None):
+        """Retrieves a list of spaces."""
+        raise NotImplementedError
 
-  def _api_get_html(self, command, query=None):
-    """Sends a request to the master, returns the response."""
-    raise NotImplementedError
-
-  def _api_post_json(self, command, query=None, data=None):
-    """Sends data to the master."""
-    raise NotImplementedError
-
-  def _api_post_html(self, command, query=None, data=None):
-    """Sends data to the master."""
-    raise NotImplementedError
-
-  def get_activities(self, pattern=None):
-    """Retrieves a list of activities."""
-    raise NotImplementedError
-
-  def get_live_activities(self, pattern=None):
-    """Retrieves a list of live activities."""
-    raise NotImplementedError
-
-  def get_live_activity_groups(self, pattern=None):
-    """Retrieves a list of live activity groups."""
-    raise NotImplementedError
-
-  def get_spaces(self, pattern=None):
-    """Retrieves a list of spaces."""
-    raise NotImplementedError
-
-  def get_controllers(self, pattern=None):
-    """Retrieves a list of controllers."""
-    raise NotImplementedError
-
-  def get_named_scripts(self, pattern=None):
-    """Retrieves a list of named scripts."""
-    raise NotImplementedError
+    def get_controllers(self, pattern=None):
+        """Retrieves a list of controllers."""
+        raise NotImplementedError
+    
+    def get_named_scripts(self, pattern=None):
+        """Retrieves a list of named scripts."""
+        raise NotImplementedError
 
   def new_live_activity(self, name, description, activity, controller):
     """Creates a new live activity."""
