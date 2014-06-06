@@ -1,16 +1,18 @@
 import interactivespaces
 
-master = interactivespaces.Master('127.0.0.1', '1236')
+master = interactivespaces.Master('127.0.0.1', '1237')
 
 liveactivities = master.get_live_activities()
 activities = master.get_activities()
 
-print "=Activities= \n"
+print "\n =Activities= \n"
 
 for activity in activities:
-    print activity.name()
+    activity.refresh()
+    print activity.name(), activity.identifying_name(), activity.version(), activity.activity_id()
 
-print "=Live activities=\n"
+print "\n =Live activities=\n"
 
 for liveactivity in liveactivities:
-    print liveactivity.status(), liveactivity.name()
+    activity.refresh()
+    print liveactivity.name(), liveactivity.status(), liveactivity.version(), liveactivity.live_activity_id()

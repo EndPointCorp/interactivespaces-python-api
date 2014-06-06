@@ -6,60 +6,33 @@ from misc import Logger
 from mixin import Refreshable
 
 """
-data: {
-liveactivities: [
 {
-lastDeployDate: "Mon May 05 12:50:37 PDT 2014",
-outOfDate: false,
-id: "111",
-description: "",
-name: "LG UI Browser on 42-a",
-active: {
-numberLiveActivityGroupRunning: 1,
-runtimeState: "ACTIVE",
-deployState: "UNKNOWN",
-lastStateUpdate: "Fri Jun 06 09:55:47 PDT 2014",
-runtimeStateDescription: "space.activity.state.active",
-directRunning: true,
-directActivated: true,
-numberLiveActivityGroupActivated: 0,
-deployStateDescription: "space.activity.state.unknown",
-deployStateDetail: null,
-runtimeStateDetail: ""
-},
-controller: {
-id: "2",
-name: "ISCtlDispAScreen00",
-uuid: "372f0f95-6b48-487a-a1ac-383ba580fc1c"
-},
-uuid: "f3ead998-9e85-4185-bf51-c3970c61ff28",
-activity: {
-id: "53",
-bundleContentHash: "13aded35407d4bb000ddde019d1a675fce85f6bcd7909cc421b47caa11306522bbee7bf363732fd260427c3fbd457d83ee8e618f8a1fed938a31db8f3f62eb0c",
-identifyingName: "com.endpoint.lg.browser",
-lastUploadDate: 1398288057444,
-description: "Browser Activity to present "webui" activties to the user",
-name: "Browser Activity",
-lastStartDate: 1402064020012,
+result: "success",
+data: [
+[...]
+{
+id: "59",
+bundleContentHash: "4b186c487177389ad6e9b8ef7c8b854db469a482e0228730b2eb598fb0dbc1fe70f41d40cddd17a8c5b212434264d54ae7806b5b80e4b251cb6a327b3b2a057f",
+identifyingName: "com.endpoint.lg.streetview.pano",
+lastUploadDate: 1398288061464,
+description: "Runs Google Street View.",
+name: "Street View Panorama",
+lastStartDate: 1402064006465,
 metadata: { },
 version: "1.0.0.dev"
 },
-metadata: { }
-}
-],
-activity: {
-id: "53",
-bundleContentHash: "13aded35407d4bb000ddde019d1a675fce85f6bcd7909cc421b47caa11306522bbee7bf363732fd260427c3fbd457d83ee8e618f8a1fed938a31db8f3f62eb0c",
-identifyingName: "com.endpoint.lg.browser",
-dependencies: [ ],
-lastUploadDate: 1398288057444,
-description: "Browser Activity to present "webui" activties to the user",
-name: "Browser Activity",
-lastStartDate: 1402064020012,
+{
+id: "57",
+bundleContentHash: "9a4392d9457ce31c96ef2bb082eacedd914b65f1a7a7616e8bdbaae395dcef4a0c1f0045aaed13afa7f7b79048babc509d432b4a7600388850ff32c8ac83babb",
+identifyingName: "com.endpoint.lg.webctl",
+lastUploadDate: 1398288062678,
+description: "Serves a web interface for the Liquid Galaxy.",
+name: "Web Control",
+lastStartDate: 1402063997800,
 metadata: { },
 version: "1.0.0.dev"
 }
-}
+]
 }
 """
 
@@ -79,14 +52,26 @@ class Activity(Refreshable):
         return url  
     
     def refresh(self):
-        self.data_hash = self.refresh_object()
+        """ Should retrieve data from Master API"""
+        self.data_hash = self._refresh_object(self.absolute_url)
+    
+    """ Public attributes below """
     
     def name(self):
         """ Should return live activity name"""
-        return self.data_hash['name']
+        return self.data_hash['activity']['name']  
     
-        
-        
+    def identifying_name(self):
+        """ Should return identifying name """
+        return self.data_hash['activity']['identifyingName']
+    
+    def version(self):
+        """ Should return Activity version """
+        return self.data_hash['activity']['version']
+    
+    def activity_id(self):
+        """ Should return Activity id """
+        return self.data_hash['activity']['id']
     
     
     

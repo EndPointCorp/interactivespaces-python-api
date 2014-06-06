@@ -80,8 +80,11 @@ class Statusable(Communicable):
     def __init__(self):
         super(Statusable, self).__init__()
         
-    def send_status_refresh_command(self, url):
-        """ Should tell master to retrieve status info from controller"""
+    def _send_status_refresh_command(self, url):
+        """ 
+            Should tell master to retrieve status info from controller
+            so master has the most up to date info from the controller
+        """
         if self._api_get_json(url):
             return True
         else:
@@ -91,12 +94,14 @@ class Refreshable(Communicable):
     def __init__(self):
         super(Refreshable, self).__init__()
         
-    def refresh_object(self, url):
+    def _refresh_object(self, url):
         """ Should retrieve fresh data from API """
         data = self._api_get_json(url)
         if data:
+            self.log.info("Successfully refresh object for url=%s" % url)
             return data
         else:
+            self.log.info("Could not refresh object for url=%s" % url)
             return False
 
 class Deletable(Communicable):

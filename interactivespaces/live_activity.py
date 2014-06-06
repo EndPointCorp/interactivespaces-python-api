@@ -82,30 +82,48 @@ class LiveActivity(Statusable, Refreshable):
         url = "%s/liveactivity/%s/view.json" % (self.uri, activity_id)
         return url  
     
-    def refresh_status(self):
-        """ Should use Statusable.send_status_refresh to retrieve fresh info from Controller
-            that current activity runs on
+    def send_status_refresh(self):
+        """ 
+            Should use Statusable._send_status_refresh to make Master ask Controller for the
+            status of LiveActivity. After that it's good to refresh the object"
         """
         refresh_route = Path().get_route_for('LiveActivity', 'status') % self.data_hash['id']
-        if self.send_status_refresh_command(refresh_route):
+        if self._send_status_refresh_command(refresh_route):
             self.log("Successfully refreshed status for LiveActivity url=%s" % self.absolute_url) 
             return True
         else:
             return False
     
-    def refresh(self):
-        self.data_hash = self.refresh_object(self.absolute_url)
+    def refresh_object(self):
+        """ Should retrieve data from Master API"""
+        self.data_hash = self._refresh_object(self.absolute_url)
+    
+        
+    """ Public attributes below """
     
     def name(self):
         """ Should return live activity name"""
         return self.data_hash['name']
     
     def status(self):
+        """ Should return status that is currently held in the object instance"""
         try:
             status_data = self.data_hash['active']['runtimeState']
             return status_data
         except LiveActivityException("Activity not running or non existent"):
             return "UNKNOWN"
+ 
+    def identifying_name(self):
+        """ Should return LiveActivity identifying name """
+        return self.data_hash['activity']['identifyingName']
+    
+    def version(self):
+        """ Should return LiveActivity version """
+        return self.data_hash['activity']['version']
+    
+    def live_activity_id(self):
+        """ Should return LiveActivity id """
+        return self.data_hash['activity']['id']
         
         
     
