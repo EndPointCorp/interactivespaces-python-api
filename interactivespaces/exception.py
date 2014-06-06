@@ -6,3 +6,6 @@ class MasterException(Exception):
 
 class PathException(Exception):
     pass
+
+class CommunicableException(Exception):
+    pass

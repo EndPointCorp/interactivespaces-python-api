@@ -3,7 +3,7 @@ import logging
 class PathLogger(object):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.logging.basicConfig(filename='path.log',
+        logging.basicConfig(filename='path.log',
                     filemode='a',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
@@ -15,7 +15,7 @@ class PathLogger(object):
 class ExceptionLogger(object):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.logging.basicConfig(filename='exception.log',
+        logging.basicConfig(filename='exception.log',
                     filemode='a',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
@@ -27,7 +27,19 @@ class ExceptionLogger(object):
 class MasterLogger(object):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.logging.basicConfig(filename='master.log',
+        logging.basicConfig(filename='master.log',
+                    filemode='a',
+                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                    datefmt='%H:%M:%S',
+                    level='INFO')
+    
+    def get_logger(self):
+        return self.logger
+    
+class CommunicationLogger(object):
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+        logging.basicConfig(filename='communication.log',
                     filemode='a',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',

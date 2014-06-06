@@ -10,7 +10,7 @@ class Path(object):
     '''
     def __init__(self):
         self.routes = {
-                       'master': {
+                       'Master': {
                             'get_activities' : '/activity/all.json',
                             'get_live_activities' : '/liveactivity/all.json',
                             'get_live_activity_groups' : '',
@@ -23,16 +23,16 @@ class Path(object):
                             'new_controller' : '',
                             'new_named_script' : ''
                             },
-                       'live_activity' : {
+                       'LiveActivity' : {
                             'status' : 'asdf'
                             }
                         }
         self.log = PathLogger().get_logger()
         
-    def get_route_for(self, context, method_name):
+    def get_route_for(self, class_name, method_name):
         try:
-            return self.routes[context][method_name]
+            return self.routes[class_name][method_name]
         except PathException, e:
-            self.log.info("Could not return route for context %s and method %s because %s" % (context, method_name, e))
+            self.log.info("Could not return route for context %s and method %s because %s" % (class_name, method_name, e))
         
         
