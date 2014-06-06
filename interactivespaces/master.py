@@ -3,7 +3,9 @@
 
 from mixin import Communicable
 from exception import MasterException
-from misc import MasterLogger
+from misc import Logger
+from live_activity import LiveActivity
+from activity import Activity
 
 
 class Master(Communicable):
@@ -25,27 +27,33 @@ class Master(Communicable):
         else:
             self.port = port
         self.class_name = 'Master'
-        self.log = MasterLogger().get_logger()
+        self.log = Logger().get_logger()
         """Add communication layer to master"""
         super(Master, self).__init__()
         self.uri = self._compose_uri(self.host, self.port, self.prefix)
 
     def get_activities(self, pattern=None):
         """Retrieves a list of activities."""
+        activities = []
         url = self._compose_url(class_name='Master', method_name='get_activities', uri=self.uri)
         self.log.info("Trying to retrieve url=%s" % url)
         response = self._api_get_json(url)
-        self.log.info('Got response for "get_activities" %s ' % str(response))
-        return response
+        self.log.debug('Got response for "get_activities" %s ' % str(response))
+        for activity_data in response:
+            activities.append(Activity(activity_data, self.uri))
+        return activities
         
     
     def get_live_activities(self, pattern=None):
-        """Retrieves a list of live activities."""
+        """Retrieves a list of LiveActivity objects"""
+        live_activities = []
         url = self._compose_url(class_name='Master', method_name='get_live_activities', uri=self.uri)
         self.log.info("Trying to retrieve url=%s" % url)
         response = self._api_get_json(url)
-        self.log.info('Got response for "get_live_activities" %s ' % str(response))
-        return response
+        self.log.debug('Got response for "get_live_activities" %s ' % str(response))
+        for live_activity_data in response:
+            live_activities.append(LiveActivity(live_activity_data, self.uri)) 
+        return live_activities
         
 
     def get_live_activity_groups(self, pattern=None):

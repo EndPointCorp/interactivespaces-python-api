@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from exception import PathException
-from misc import PathLogger
+from misc import Logger
 
 class Path(object):
     ''' This class should be responsible for translating (or resolving)
@@ -13,21 +13,25 @@ class Path(object):
                        'Master': {
                             'get_activities' : '/activity/all.json',
                             'get_live_activities' : '/liveactivity/all.json',
-                            'get_live_activity_groups' : '',
-                            'get_spaces' : '',
-                            'get_controllers' : '',
-                            'get_named_scripts' : '',
-                            'new_live_activity' : '',
-                            'new_live_activity_group' : '',
-                            'new_space' : '',
-                            'new_controller' : '',
-                            'new_named_script' : ''
+                            'get_live_activity_groups' : '/liveactivitygroup/all.json',
+                            'get_spaces' : '/space/all.json',
+                            'get_controllers' : '/spacecontroller/all.json',
+                            'get_named_scripts' : '/admin/namedscript/all.json',
+                            'new_live_activity' : '/liveactivity/new.json',
+                            'new_live_activity_group' : '/liveactivitygroup/new.json',
+                            'new_space' : '/space/new.json',
+                            'new_controller' : '/spacecontroller/new.json',
+                            'new_named_script' : '/admin/namedscript/new.json'
                             },
                        'LiveActivity' : {
-                            'status' : 'asdf'
+                            'status' : '/liveactivity/%s/status.json',
+                            'view' : '/liveactivity/%s/view.json'
+                            },
+                       'Activity' : {
+                            'view' : '/activity/%s/view.json'
                             }
                         }
-        self.log = PathLogger().get_logger()
+        self.log = Logger().get_logger()
         
     def get_route_for(self, class_name, method_name):
         try:

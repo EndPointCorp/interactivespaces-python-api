@@ -3,9 +3,8 @@
 
 import urllib2
 import json
-import time
 from abstract import Path
-from misc import CommunicationLogger
+from misc import Logger
 from exception import CommunicableException
 
 class Communicable(object):
@@ -17,7 +16,7 @@ class Communicable(object):
             - location e.g. /interactivespaces/space/all.html
         """
         self.post_data = post_data
-        self.log = CommunicationLogger().get_logger()
+        self.log = Logger().get_logger()
         self.paths = Path()
         
     def _compose_url(self, uri, class_name=None, method_name=None, context=None, action=None):
@@ -51,13 +50,13 @@ class Communicable(object):
         return urllib2.urlopen(url, data)
 
     def _api_get_json(self, url):
-        """Sends a request to the master, returns the response data."""
+        """Sends a request to the master, returns only the 'data' from response """
         response = urllib2.urlopen(url)
         data = json.loads(response.read())
         if data['result'] != 'success':
             self.log.info("Could not retrieve data for URL=%s" % url)
             raise CommunicableException
-        return data      
+        return data['data']      
 
     def _api_get_html(self, command, query=None):
         """Sends a request to the master, returns the response."""
@@ -73,8 +72,94 @@ class Communicable(object):
 
 
 class Statusable(Communicable):
+    """ 
+        This class is responsible for _refreshing_ status of the object,
+        (not for retrieving the status)
+    """
+    
     def __init__(self):
         super(Statusable, self).__init__()
         
-    def get_status(self):
+    def send_status_refresh_command(self, url):
+        """ Should tell master to retrieve status info from controller"""
+        if self._api_get_json(url):
+            return True
+        else:
+            return False
+
+class Refreshable(Communicable):
+    def __init__(self):
+        super(Refreshable, self).__init__()
+        
+    def refresh_object(self, url):
+        """ Should retrieve fresh data from API """
+        data = self._api_get_json(url)
+        if data:
+            return data
+        else:
+            return False
+
+class Deletable(Communicable):
+    def __init__(self):
+        super(Deletable, self).__init__()
+        
+    def send_delete(self):
+        pass
+    
+class Shutdownable(Communicable):
+    def __init__(self):
+        super(Shutdownable, self).__init__()
+        
+    def send_shutdown(self):
+        pass
+
+class Startupable(Communicable):
+    def __init__(self):
+        super(Startupable, self).__init__()
+        
+    def send_startup(self):
+        pass
+
+class Activatable(Communicable):
+    def __init__(self):
+        super(Activatable, self).__init__()
+        
+    def send_activate(self):
+        pass
+
+    def send_deactivate(self):
+        pass
+
+class Deployable(Communicable):
+    def __init__(self):
+        super(Activatable, self).__init__()
+        
+    def send_deploy(self):
+        pass
+
+class Configurable(Communicable):
+    def __init__(self):
+        super(Activatable, self).__init__()
+        
+    def send_configure(self):
+        pass
+
+class Cleanable(Communicable):
+    def __init__(self):
+        super(Activatable, self).__init__()
+        
+    def send_clean_permanent(self):
+        pass
+    
+    def send_clean_temp(self):
+        pass
+
+class Editable(Communicable):
+    def __init__(self):
+        super(Activatable, self).__init__()
+        
+    def set_metadata(self):
+        pass
+    
+    def set_configuration(self):
         pass

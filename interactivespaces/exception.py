@@ -9,3 +9,12 @@ class PathException(Exception):
 
 class CommunicableException(Exception):
     pass
+
+class LiveActivityException(Exception):
+    pass
+
+class StatusableException(Exception):
+    pass
+
+class ActivityException(Exception):
+    pass
