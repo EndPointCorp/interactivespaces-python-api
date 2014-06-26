@@ -4,12 +4,12 @@
 from master import Master
 from exception import MasterException, PathException
 from mixin import Communicable, Statusable, Deletable, Shutdownable
-from mixin import Startupable, Deployable, Activatable, Configurable, Refreshable
+from mixin import Startupable, Deployable, Activatable, Configurable, Fetchable
 from activity import Activity
 from live_activity import LiveActivity
 from live_activity_group import LiveActivityGroup
 from space import Space
-from controller import Controller
+from space_controller import SpaceController
 from named_script import NamedScript
 from misc import Logger
 
@@ -27,13 +27,13 @@ __all__ = [
   'Deployable',
   'Configurable',
   'Cleanable',
-  'Refreshable'
+  'Fetchable'
   'Editable',
   'Activity',
   'LiveActivity',
   'LiveActivityGroup',
   'Space',
-  'Controller',
+  'SpaceController',
   'NamedScript',
   'Logger'
 ]

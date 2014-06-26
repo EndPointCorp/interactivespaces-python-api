@@ -3,7 +3,8 @@
 
 from exception import ActivityException
 from misc import Logger
-from mixin import Refreshable
+from mixin import Fetchable
+from serializer import ActivitySerializer
 
 """
 {
@@ -36,26 +37,48 @@ version: "1.0.0.dev"
 }
 """
 
-class Activity(Refreshable):
-    def __init__(self, data_hash, uri):
-        self.data_hash = data_hash
-        self.uri = uri
+class Activity(Fetchable):
+    """ Should be responsible for setting an getting attributes of an activity """
+    def __init__(self, data_hash, uri, activity_archive_uri=None, name=None):
         self.log = Logger().get_logger()
-        ''' Add all mixins for thingies like api communication, status retrieval etc'''
-        self.absolute_url = self.get_absolute_url()
-        self.log.info("Instantiated Activity object with url=%s" % self.absolute_url)
+        if ((not data_hash) and (not uri)) and (activity_archive_uri and name):            
+            self.log.info("Deploying new activity from %s" % activity_archive_uri)
+            self.deploy()
+        else:
+            self.data_hash = data_hash
+            self.uri = uri
+            ''' Add all mixins for thingies like api communication, status retrieval etc'''
+            self.absolute_url = self.get_absolute_url()
+            self.log.info("Instantiated Activity object with url=%s" % self.absolute_url)
+
         super(Activity, self).__init__()
-                
+    
+    def deploy(self):
+        """ 
+            Should make a deployment of the activity with followin steps:
+            - download/unpack the activity from an activity_archive_uri
+            - upload it to the API  
+            - save
+            - set instance variables for the object
+            """
+        pass
+    
+        
+    def to_json(self):
+        """ 
+            Should selected attributes in json form defined by the template
+        """
+        self.serializer = ActivitySerializer(self.data_hash)
+        return self.serializer.to_json()
+    
     def get_absolute_url(self):
         activity_id = self.data_hash['id']
         url = "%s/activity/%s/view.json" % (self.uri, activity_id)
         return url  
     
-    def refresh(self):
+    def fetch(self):
         """ Should retrieve data from Master API"""
         self.data_hash = self._refresh_object(self.absolute_url)
-    
-    """ Public attributes below """
     
     def name(self):
         """ Should return live activity name"""
@@ -69,10 +92,13 @@ class Activity(Refreshable):
         """ Should return Activity version """
         return self.data_hash['activity']['version']
     
-    def activity_id(self):
+    def id(self):
         """ Should return Activity id """
         return self.data_hash['activity']['id']
-    
+  
+    def description(self):
+        """ Should return Activity description """
+        return self.data_hash['activity']['description']
     
     
         

@@ -69,12 +69,17 @@ class Communicable(object):
     def _api_post_html(self, command, query=None, data=None):
         """Sends data to the master."""
         raise NotImplementedError
+    
+    def json_raw(self):
+        return self.data
 
 
 class Statusable(Communicable):
     """ 
         This class is responsible for _refreshing_ status of the object,
-        (not for retrieving the status)
+        which means that it will send "status" command to IS Controllers.
+        In order to fetch the fresh and most up-to-date status you should use 
+        .fetch() method on the object.
     """
     
     def __init__(self):
@@ -90,9 +95,10 @@ class Statusable(Communicable):
         else:
             return False
 
-class Refreshable(Communicable):
+class Fetchable(Communicable):
+    """ Class responsible for fetching most up to date data from API """
     def __init__(self):
-        super(Refreshable, self).__init__()
+        super(Fetchable, self).__init__()
         
     def _refresh_object(self, url):
         """ Should retrieve fresh data from API """
@@ -137,21 +143,21 @@ class Activatable(Communicable):
 
 class Deployable(Communicable):
     def __init__(self):
-        super(Activatable, self).__init__()
+        super(Deployable, self).__init__()
         
     def send_deploy(self):
         pass
 
 class Configurable(Communicable):
     def __init__(self):
-        super(Activatable, self).__init__()
+        super(Configurable, self).__init__()
         
     def send_configure(self):
         pass
 
 class Cleanable(Communicable):
     def __init__(self):
-        super(Activatable, self).__init__()
+        super(Cleanable, self).__init__()
         
     def send_clean_permanent(self):
         pass
@@ -161,7 +167,7 @@ class Cleanable(Communicable):
 
 class Editable(Communicable):
     def __init__(self):
-        super(Activatable, self).__init__()
+        super(Editable, self).__init__()
         
     def set_metadata(self):
         pass

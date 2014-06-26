@@ -18,3 +18,6 @@ class StatusableException(Exception):
 
 class ActivityException(Exception):
     pass
+
+class SerializerException(Exception):
+    pass

@@ -15,7 +15,7 @@ class Path(object):
                             'get_live_activities' : '/liveactivity/all.json',
                             'get_live_activity_groups' : '/liveactivitygroup/all.json',
                             'get_spaces' : '/space/all.json',
-                            'get_controllers' : '/spacecontroller/all.json',
+                            'get_space_controllers' : '/spacecontroller/all.json',
                             'get_named_scripts' : '/admin/namedscript/all.json',
                             'new_live_activity' : '/liveactivity/new.json',
                             'new_live_activity_group' : '/liveactivitygroup/new.json',
@@ -29,7 +29,14 @@ class Path(object):
                             },
                        'Activity' : {
                             'view' : '/activity/%s/view.json'
+                            },
+                       'LiveActivityGroup' : {
+                            'view' : '/liveactivitygroup/%s/view.json'
+                            },
+                       'Space' : {
+                            'view' : '/space/%s/view.json'
                             }
+
                         }
         self.log = Logger().get_logger()
         

@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from mixin import Statusable, Refreshable
+from mixin import Statusable, Fetchable
 from exception import LiveActivityException
+from serializer import LiveActivitySerializer
 from misc import Logger
 from abstract import Path
 
@@ -67,7 +68,7 @@ metadata: { }
  
 """
 
-class LiveActivity(Statusable, Refreshable):
+class LiveActivity(Statusable, Fetchable):
     def __init__(self, data_hash, uri):
         self.data_hash = data_hash
         self.uri = uri
@@ -94,12 +95,16 @@ class LiveActivity(Statusable, Refreshable):
         else:
             return False
     
-    def refresh_object(self):
-        """ Should retrieve data from Master API"""
+    def fetch(self):
+        """ 
+            Should retrieve private data for an object from Master API
+        """
         self.data_hash = self._refresh_object(self.absolute_url)
     
-        
-    """ Public attributes below """
+    def to_json(self):
+        """ Should selected attributes in json form defined by the template"""
+        self.serializer = LiveActivitySerializer(self.data_hash)
+        return self.serializer.to_json()
     
     def name(self):
         """ Should return live activity name"""
@@ -121,7 +126,7 @@ class LiveActivity(Statusable, Refreshable):
         """ Should return LiveActivity version """
         return self.data_hash['activity']['version']
     
-    def live_activity_id(self):
+    def id(self):
         """ Should return LiveActivity id """
         return self.data_hash['activity']['id']
         
