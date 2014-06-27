@@ -48,19 +48,25 @@ class Activity(Fetchable):
             self.data_hash = data_hash
             self.uri = uri
             ''' Add all mixins for thingies like api communication, status retrieval etc'''
-            self.absolute_url = self.get_absolute_url()
+            self.absolute_url = self._get_absolute_url()
             self.log.info("Instantiated Activity object with url=%s" % self.absolute_url)
 
         super(Activity, self).__init__()
     
+    def __repr__(self):
+        return str(self.data_hash)
+    
+    def __str__(self):
+        return "Activity class instance %s" % str(self.data_hash)
+    
     def deploy(self):
         """ 
             Should make a deployment of the activity with followin steps:
-            - download/unpack the activity from an activity_archive_uri
-            - upload it to the API  
-            - save
-            - set instance variables for the object
-            """
+                - download/unpack the activity from an activity_archive_uri
+                - upload it to the API  
+                - save
+                - set instance variables for the object
+        """
         pass
     
         
@@ -71,14 +77,10 @@ class Activity(Fetchable):
         self.serializer = ActivitySerializer(self.data_hash)
         return self.serializer.to_json()
     
-    def get_absolute_url(self):
-        activity_id = self.data_hash['id']
-        url = "%s/activity/%s/view.json" % (self.uri, activity_id)
-        return url  
-    
     def fetch(self):
         """ Should retrieve data from Master API"""
         self.data_hash = self._refresh_object(self.absolute_url)
+        return self
     
     def name(self):
         """ Should return live activity name"""
@@ -100,5 +102,8 @@ class Activity(Fetchable):
         """ Should return Activity description """
         return self.data_hash['activity']['description']
     
-    
-        
+    """ Private methods below"""
+    def _get_absolute_url(self):
+        activity_id = self.data_hash['id']
+        url = "%s/activity/%s/view.json" % (self.uri, activity_id)
+        return url  

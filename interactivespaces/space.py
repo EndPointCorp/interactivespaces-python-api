@@ -7,23 +7,27 @@ from serializer import SpaceSerializer
 
 class Space(Fetchable, Activatable, Shutdownable, Configurable, Deployable, Editable):
     """ 
-        Should be responsible for managing live activity groups
+        @summary: Space is a LiveActivityGroup aggregator
     """
     def __init__(self, data_hash, uri, name=None, ):
         self.log = Logger().get_logger()
         self.data_hash = data_hash
         self.uri = uri
-        ''' Add all mixins for thingies like api communication, status retrieval etc'''
         self.absolute_url = self.get_absolute_url()
-        self.log.info("Instantiated Activity object with url=%s" % self.absolute_url)
-
         super(Space, self).__init__()
+        self.log.info("Instantiated Activity object with url=%s" % self.absolute_url)
+        
+    def __repr__(self):
+        return str(self.data_hash)
     
+    def __str__(self):
+        return self.data_hash 
+        
     def create(self, live_activity_group_name, live_activity_names):
         """
             Should be responsible for creating
-            @param live_activity_group_name string
-            @param live_activity_names list of existing names
+            @param live_activity_group_name: string
+            @param live_activity_names: list of existing names
         """
         raise NotImplementedError
     
@@ -44,6 +48,7 @@ class Space(Fetchable, Activatable, Shutdownable, Configurable, Deployable, Edit
             Should retrieve fresh data for the object from Master API
         """
         self.data_hash = self._refresh_object(self.absolute_url)
+        return self
     
     def id(self):
         return self.data_hash['id']

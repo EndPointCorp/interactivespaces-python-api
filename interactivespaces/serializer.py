@@ -9,7 +9,14 @@ class Serializer(object):
     """
     def __init__(self):
         self.log = Logger().get_logger()
+        self.log.debug("Instantiated Serializer with data %s" % self.data_hash)
         pass
+
+    def __repr__(self):
+        return str(self.data_hash)
+    
+    def __str__(self):
+        return self.data_hash 
     
     def _assign_attributes(self):
         """
@@ -18,12 +25,12 @@ class Serializer(object):
         """
         
         for new_key, old_key in self.attributes.iteritems():
-            try:    
+            try:   
                 self.data[new_key] = self.data_hash[old_key]
             except SerializerException, e:
-                self.log.debug("Could not assign attribute %s because %s" % (old_key, e))
-        
-    
+                """ possible do something fancy here """
+            except Exception, e:
+                self.log.info("Could not assign attribute %s while operating on Object: %s because %s" % (old_key, self.data_hash, e))
     
 class StringSerializer(Serializer):
     def __init__(self):
@@ -44,11 +51,12 @@ class JsonSerializer(Serializer):
     
     def __init__(self):
         super(JsonSerializer, self).__init__()
+        self.log.info("Instantiated JsonSerializer")
     
     def to_json_raw(self):
         """ 
             Should return data_hash in original form 
-            @return raw dictionary from the master API
+            @rtype: dict
         """
         return self.data_hash
     
@@ -64,15 +72,15 @@ class ActivitySerializer(JsonSerializer, StringSerializer):
         Class responsible for representing Activity data using
         desired format, attributes and method of representation
         Should be initialized only with the Activity data_hash
-        @var attributes: is a map of attributes. 
+        @ivar attributes: is a map of attributes. 
             - key is our desired key name
             - value is the key from original API hash
-        @var data: is an effect of assigning attributes
-        @var data_hash: raw data from API
+        @ivar data: is an effect of assigning attributes
+        @ivar data_hash: raw data from API
     """
     
     def __init__(self, data_hash):
-        self.data_hash = data_hash
+        self.data_hash = data_hash['activity']
         self.data = {}
         self.attributes = {
                             "name" : "name",
@@ -172,7 +180,8 @@ class SpaceControllerSerializer(JsonSerializer, StringSerializer):
                             "name" : "name",
                             "id" : "id",
                             "description" : "description",
-                            "mode" : "mode"
+                            "mode" : "mode",
+                            "uuid" : "uuid"
                             }
         
         super(SpaceControllerSerializer, self).__init__()

@@ -7,86 +7,73 @@ from serializer import LiveActivitySerializer
 from misc import Logger
 from abstract import Path
 
-"""
-Reminder for Json data representing an activity:
-{u'data': [{u'activity': {u'identifyingName': u'com.endpoint.lg.earth.webui',
-    u'metadata': {},
-    u'version': u'1.0.0.dev'},
-   u'controller': {u'id': u'1',
-    u'name': u'lg2-1',
-    u'uuid': u'ded53fca-9e40-4e3e-a71f-3b65f071b241'},
-   u'deployStatus': u'space.activity.state.unknown',
-   u'description': u'pokpok',
-   u'id': u'101',
-   u'metadata': {},
-   u'name': u'pokpok',
-   u'status': u'space.activity.state.unknown',
-   u'uuid': u'e9215bb6-5b60-42fa-b369-d23e44650fff'}],
- u'result': u'success'}
-
-or:
-
-data: {
-lastDeployDate: "Mon May 05 12:50:36 PDT 2014",
-outOfDate: false,
-id: "110",
-description: "",
-name: "Evdev Demuxer on 42-a",
-active: {
-numberLiveActivityGroupRunning: 1,
-runtimeState: "RUNNING",
-deployState: "UNKNOWN",
-lastStateUpdate: "Fri Jun 06 07:13:25 PDT 2014",
-runtimeStateDescription: "space.activity.state.running",
-directRunning: false,
-directActivated: false,
-numberLiveActivityGroupActivated: 0,
-deployStateDescription: "space.activity.state.unknown",
-deployStateDetail: null,
-runtimeStateDetail: "<table class="status-detail"><tr class="activity-status"><td>Activity Status</td><td>RUNNING</td></tr> <tr class="component-status"><td>Message Router</td><td><table class="route-detail"><tr class="node-name"><td>Node Name</td><td>:</td><td>/ctldispascreen00/liquidgalaxy/evdev/demuxer/default</td></tr> <tr class="output-route"><td>abs</td><td>&#8594;</td><td>/liquidgalaxy/generic/evdev/default/abs</td></tr> <tr class="output-route"><td>key</td><td>&#8594;</td><td>/liquidgalaxy/generic/evdev/default/key</td></tr> <tr class="input-route"><td>raw</td><td>&#8592;</td><td>/liquidgalaxy/generic/evdev/default/raw</td></tr> <tr class="output-route"><td>rel</td><td>&#8594;</td><td>/liquidgalaxy/generic/evdev/default/rel</td></tr> </table></td></tr> <tr class="managed-resources"><td>Managed Resources</td><td></td></tr> </table>"
-},
-controller: {
-id: "2",
-name: "ISCtlDispAScreen00",
-uuid: "372f0f95-6b48-487a-a1ac-383ba580fc1c"
-},
-uuid: "88816d20-22f6-4f78-95ba-7843696c6bc5",
-activity: {
-id: "61",
-bundleContentHash: "98b5cf0d8f68642fcc1eb0d66622323e7692c78e615252a9ac414450bd0a7743655f7648c38d1bfbcb0907408376bd0e1db519cb51cb78fe39191070b6293592",
-identifyingName: "com.endpoint.lg.evdev.demuxer",
-lastUploadDate: 1398288062862,
-description: "Separates and aggregates different types of input events.",
-name: "Event Device Demuxer",
-lastStartDate: 1402064004937,
-metadata: { },
-version: "1.0.0.dev"
-},
-metadata: { }
-}
-}
- 
-"""
-
 class LiveActivity(Statusable, Fetchable):
+    """
+        @summary: when called with constructor_args and other vars set to None, new
+        LiveActivity will be constructed and available for .save(). When called
+        with data_hash and uri, it will bound itself to an existing object in API
+        @todo: .new() should return instance of fetched live activity
+    """
     def __init__(self, data_hash, uri):
-        self.data_hash = data_hash
-        self.uri = uri
+        """
+            @param data_hash: should be master API liveActivity json, may be blank
+            @param uri: should be a link to "view.json" of the given live activity
+        """
         self.log = Logger().get_logger()
-        ''' Add all mixins for thingies like api communication, status retrieval etc'''
         super(LiveActivity, self).__init__()
-        self.absolute_url = self.get_absolute_url()
-        self.log.info("Instantiated LiveActivity object with url=%s" % self.absolute_url)
+        if (data_hash==None and uri==None):
+            self.log.info("No data provided - assuming creation of new LiveActivity")
+        elif (data_hash!=None and uri!=None):
+            self.data_hash = data_hash
+            self.uri = uri
+            self.absolute_url = self._get_absolute_url()
+            self.log.info("Instantiated LiveActivity object with url=%s" % self.absolute_url)
+
+    def __repr__(self):
+        return str(self.data_hash)
+    
+    def __str__(self):
+        return self.data_hash 
+       
+    def new(self, uri, new_data_hash):
+        """
+        @summary: used to create new object in order to be saved by ".save" method
+        @note: POST data to send:
+            liveActivity.name:some_name
+            liveActivity.description:some_description
+            activityId:53
+            controllerId:2
+            _eventId_save:Save
+        @param new_data_hash: dict {"live_activity_name" : "", 
+                                        "live_activity_description" : "",
+                                        "activity_id" : "",
+                                        "controller_id" : "",
+                                        "uri" : "http://some_server/prefix (passed by master)"
+                                        } 
+        @rtype: LiveActivity
+        """
+        self.log.info("Creating new Live Activity with arguments: %s" % new_data_hash)
+        route = Path().get_route_for('LiveActivity', 'new')
+        url = "%s%s" % (uri, route)
+        post_request = self._api_post_json(url, new_data_hash)
+        if post_request:
+            return True
+        else:
+            return False
+
         
-    def get_absolute_url(self):
-        activity_id = self.data_hash['id']
-        url = "%s/liveactivity/%s/view.json" % (self.uri, activity_id)
-        return url  
+    def save(self):
+        """
+        @rtype: dict
+        @return 
+        """
+        pass
     
     def send_status_refresh(self):
         """ 
             Should use Statusable._send_status_refresh to make Master ask Controller for the
             status of LiveActivity. After that it's good to refresh the object"
+            @rtype: bool
         """
         refresh_route = Path().get_route_for('LiveActivity', 'status') % self.data_hash['id']
         if self._send_status_refresh_command(refresh_route):
@@ -100,6 +87,7 @@ class LiveActivity(Statusable, Fetchable):
             Should retrieve private data for an object from Master API
         """
         self.data_hash = self._refresh_object(self.absolute_url)
+        return self
     
     def to_json(self):
         """ Should selected attributes in json form defined by the template"""
@@ -127,9 +115,22 @@ class LiveActivity(Statusable, Fetchable):
         return self.data_hash['activity']['version']
     
     def id(self):
-        """ Should return LiveActivity id """
+        """
+        @summary: Should return LiveActivity id
+        @rtype: string
+        """
         return self.data_hash['activity']['id']
-        
+       
+    """ Private methods below this text """
+     
+    def _get_absolute_url(self):
+        """
+        @rtype: string
+        """
+        activity_id = self.data_hash['id']
+        route = Path().get_route_for('LiveActivity', 'view') % activity_id
+        url = "%s%s" % (self.uri, route)
+        return url  
         
     
     

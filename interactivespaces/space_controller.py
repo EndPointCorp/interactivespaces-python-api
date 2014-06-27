@@ -9,7 +9,7 @@ class SpaceController(Fetchable, Statusable, Shutdownable):
     """ 
         Should be responsible for managing live activity groups
     """
-    def __init__(self, data_hash, uri, name=None, ):
+    def __init__(self, data_hash=None, uri=None):
         self.log = Logger().get_logger()
         self.data_hash = data_hash
         self.uri = uri

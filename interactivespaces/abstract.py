@@ -17,15 +17,15 @@ class Path(object):
                             'get_spaces' : '/space/all.json',
                             'get_space_controllers' : '/spacecontroller/all.json',
                             'get_named_scripts' : '/admin/namedscript/all.json',
-                            'new_live_activity' : '/liveactivity/new.json',
-                            'new_live_activity_group' : '/liveactivitygroup/new.json',
+                            'new_live_activity_group' : '/liveactivitygroup/new',
                             'new_space' : '/space/new.json',
                             'new_controller' : '/spacecontroller/new.json',
                             'new_named_script' : '/admin/namedscript/new.json'
                             },
                        'LiveActivity' : {
                             'status' : '/liveactivity/%s/status.json',
-                            'view' : '/liveactivity/%s/view.json'
+                            'view' : '/liveactivity/%s/view.json',
+                            'new' : '/liveactivity/new'
                             },
                        'Activity' : {
                             'view' : '/activity/%s/view.json'

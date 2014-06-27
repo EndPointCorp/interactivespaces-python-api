@@ -6,6 +6,8 @@ import json
 from abstract import Path
 from misc import Logger
 from exception import CommunicableException
+import requests
+import urlparse
 
 class Communicable(object):
     def __init__(self, post_data=None):
@@ -16,6 +18,7 @@ class Communicable(object):
             - location e.g. /interactivespaces/space/all.html
         """
         self.post_data = post_data
+        self.session_name = 'e1s1'
         self.log = Logger().get_logger()
         self.paths = Path()
         
@@ -62,9 +65,24 @@ class Communicable(object):
         """Sends a request to the master, returns the response."""
         raise NotImplementedError
 
-    def _api_post_json(self, command, query=None, data=None):
-        """Sends data to the master."""
-        raise NotImplementedError
+    def _api_post_json(self, url, payload):
+        """
+            @summary: Sends data to the master.
+            @rtype: bool
+            @param payload: dictionary containing data to send
+            @param url: string containing url that we talk to
+        """
+        self.log.info("Doing a POST request to %s with payload %s" %(url, payload))
+        session = requests.session()
+        get_response = session.get(url)
+        query = urlparse.urlparse(get_response.url).query
+        cookies = {"JSESSIONID" : session.cookies['JSESSIONID']}
+        url = url + "?" + query
+        post_response = session.post(url=url, cookies=cookies, data=payload) 
+        if post_response.status_code == 200:
+            return True
+        else:
+            return False 
 
     def _api_post_html(self, command, query=None, data=None):
         """Sends data to the master."""
