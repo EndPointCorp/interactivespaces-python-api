@@ -66,7 +66,7 @@ class Master(Communicable):
         if len(activity) > 1:
             raise MasterException("get_activity returned more than one row (%s)" % len(activity))
         elif isinstance(activity[0], Activity):
-            activity = activity[0].fetch()
+            activity[0].fetch()
             self.log.info("get_activity returned Activity:%s" % str(activity))
             return activity
         else:
@@ -91,6 +91,33 @@ class Master(Communicable):
         live_activities = self._filter_live_activities(response, search_pattern)
         return live_activities
     
+    def get_live_activity(self, search_pattern=None):
+        """
+            Retrieves a list of LiveActivity objects
+            @rtype: LiveActivity or False
+            @param search_pattern: dictionary of regexps used for searching through LiveActivity names
+                - example regexp dict: {
+                                        "live_activity_name" : "GE ViewSync Master on Node A",
+                                        "space_controller_name" : "ISCtlDispAScreen00"
+                                        }
+                - each search_pattern dictionary key may be blank/null
+        """
+        url = self._compose_url(class_name='Master', method_name='get_live_activities', uri=self.uri)
+        self.log.info("Trying to retrieve url=%s" % url)
+        response = self._api_get_json(url)
+        self.log.debug('Got response for "get_live_activities" %s ' % str(response))
+        self.log.info('get_live_activities returned %s objects' % str(len(response)))
+        live_activity = self._filter_live_activities(response, search_pattern)
+        if len(live_activity) > 1:
+            raise MasterException("get_live_activity returned more than one row (%s)" % len(live_activity))
+        elif isinstance(live_activity[0], LiveActivity):
+            live_activity[0].fetch()
+            self.log.info("get_live_activity returned LiveActivity:%s" % live_activity)
+            return live_activity[0]
+        else:
+            raise MasterException("Could not get specific live activity for given search pattern")
+
+    
     def get_live_activity_groups(self, search_pattern=None):
         """
             Retrieves a list of live activity groups.
@@ -107,6 +134,31 @@ class Master(Communicable):
         self.log.info('get_live_activity_groups returned %s objects' % str(len(response)))
         live_activity_groups = self._filter_live_activity_groups(response, search_pattern)
         return live_activity_groups
+    
+    def get_live_activity_group(self, search_pattern=None):
+        """
+            Retrieves a list of live activity groups.
+            @rtype: list
+            @param search_pattern: dictionary of regexps used for searching through LiveActivity names
+                - example regexp dict: {
+                                        "live_activity_group_name" : "regexp"
+                                        }
+        """
+        url = self._compose_url(class_name='Master', method_name='get_live_activity_groups', uri=self.uri)
+        self.log.info("Trying to retrieve url=%s" % url)
+        response = self._api_get_json(url)
+        self.log.debug('Got response for "get_live_activity_groups" %s ' % str(response))
+        self.log.info('get_live_activity_groups returned %s objects' % str(len(response)))
+        live_activity_group = self._filter_live_activity_groups(response, search_pattern)
+        if len(live_activity_group) > 1:
+            raise MasterException("get_live_activity_group returned more than one row (%s)" % len(live_activity_group))
+        elif isinstance(live_activity_group[0], LiveActivityGroup):
+            live_activity_group[0].fetch()
+            self.log.info("get_live_activity_group returned LiveActivityGroup:%s" % str(live_activity_group))
+            return live_activity_group
+        else:
+            raise MasterException("Could not get specific live activity group for given search pattern")
+        return live_activity_group
 
     def get_spaces(self, search_pattern=None):
         """
@@ -144,7 +196,7 @@ class Master(Communicable):
     def get_space_controller(self, search_pattern=None):
         """
             Retrieves a list of live space controllers.
-            @rtype: list
+            @rtype: SpaceController
             @param search_pattern: dictionary containing regexps and strings
                 - example regexp dict: {
                                         "state" : "STRING",
@@ -189,15 +241,60 @@ class Master(Communicable):
         unpacked_arguments['liveActivity.name'] = constructor_args['live_activity_name']
         unpacked_arguments['_eventId_save'] = 'Save'
         
-        activity = LiveActivity(data_hash=None, uri=None).new(self.uri, unpacked_arguments)
+        activity = LiveActivity().new(self.uri, unpacked_arguments)
+        self.log.info("Master:new_live_activity returned activity:%s" % activity)
+        return activity
+    
+    def new_activity(self, constructor_args):
+        """
+            @summary: creates a new activity and returns it
+            @param constructor_args: - dictionary containing all of below keys:
+                {
+                "zip_file_handler": "zipfile object (mandatory)"
+                }
+            @rtype: Activity or False
+        """ 
         
+        activity = Activity().new(self.uri, constructor_args)
+        self.log.info("Master:new_activity returned activity:%s" % activity)
         return activity
         
+    def new_space_controller(self, constructor_args):
+        """
+            @summary: creates new controller
+            @param constructor_args: dictionary containing all of below keys:
+                {
+                    "space_controller_name" : "mandatory string",
+                    "space_controller_description" : "non mandatory string",
+                    "space_controller_host_id" : "mandatory string"
+                }
+            
+        """
+        space_controller = SpaceController().new(self.uri, constructor_args)
+        return space_controller
 
-    def new_live_activity_group(self, name, description, live_activities):
-        """Creates a new live activity group."""
-        raise NotImplementedError
+    def new_live_activity_group(self, constructor_args):
+        """
+            @summary: Creates a new live activity group.
+            @param constructor_args: dictionary with following structure:
+                {"live_activity_group_name" : "example.py live_activity_group_name",
+                 "live_activity_group_description" : "created by example.py",
+                 "live_activities" : [{"live_activity_name" : "SV Master on Node A",
+                                       "space_controller_name" : "ISCtlDispAScreen00"},
+                                      {"live_activity_name" : "SV Slave 01 on Node A",
+                                       "space_controller_name" : "ISCtlDispAScreen00"}
+                                    ]}
+        """
+        live_activity_ids = self._translate_live_activities_names_to_ids(constructor_args['live_activities'])
+        unpacked_arguments = {}
+        unpacked_arguments['liveActivityGroup.name'] = constructor_args['live_activity_group_name']
+        unpacked_arguments['liveActivityGroup.description'] = constructor_args['live_activity_group_description']
+        unpacked_arguments['_eventId_save'] = 'Save'
+        unpacked_arguments['liveActivityIds'] = live_activity_ids
 
+        live_activity_group = LiveActivityGroup().new(self.uri, unpacked_arguments)
+        return live_activity_group
+    
     def new_space(self, name, description, live_activity_groups, spaces):
         """Creates a new space."""
         raise NotImplementedError
@@ -421,3 +518,19 @@ class Master(Communicable):
                 space_controllers.append(SpaceController(space_controller_data, self.uri)) 
         self.log.info("Filtered space_controllers and returned %s object(s)" % str(len(space_controllers)))
         return space_controllers
+    
+    def _translate_live_activities_names_to_ids(self, live_activities):
+        """
+            @param live_activities: list of dictionaries containing following keys:
+                { 
+                    "live_activity_name" : "some_name",
+                    "space_controller_name" : "some controller name"
+                }
+            @rtype: list
+        """
+        live_activity_ids = []
+        for la_data in live_activities:
+            live_activity = self.get_live_activity(la_data)
+            live_activity_ids.append(live_activity.id())
+        self.log.info("Translated %s live_activity_names to ids with a result of %s" % (len(live_activity_ids), live_activity_ids) )
+        return live_activity_ids

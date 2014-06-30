@@ -1,2 +1,3 @@
 * Test the rest of the new_ methods in Master
 * Test get_ methods with lambda patterns in Master
+* Separate .fetch(), _get_absoslute_url() and part of .new() methods from API classes to Communicable to make everything more DRY

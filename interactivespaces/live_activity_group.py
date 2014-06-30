@@ -4,52 +4,61 @@
 from mixin import Fetchable, Statusable, Shutdownable, Startupable, Configurable, Deployable 
 from misc import Logger
 from serializer import LiveActivityGroupSerializer
+from abstract import Path
 
 class LiveActivityGroup(Fetchable, Statusable, Shutdownable, Startupable, Configurable, Deployable):
     """ 
         Should be responsible for managing live activity groups
     """
-    def __init__(self, data_hash, uri, name=None, ):
+    def __init__(self, data_hash=None, uri=None):
         self.log = Logger().get_logger()
-        self.data_hash = data_hash
-        self.uri = uri
-        self.absolute_url = self.get_absolute_url()
-        self.log.info("Instantiated Activity object with url=%s" % self.absolute_url)
-
+        self.class_name = self.__class__.__name__
         super(LiveActivityGroup, self).__init__()
- 
+        if data_hash==None and uri==None:
+            self.log.info("No data_hash and uri provided for LiveActivityGroup constructor, assuming creation")
+        else:
+            self.data_hash = data_hash
+            self.uri = uri
+            self.absolute_url = self._get_absolute_url()
+            self.log.info("Instantiated Activity object with url=%s" % self.absolute_url)
+            
     def __repr__(self):
         return str(self.data_hash)
-    
-    def __str__(self):
-        return self.data_hash   
+ 
+    def new(self, uri, constructor_args):
+        """
+            @summary: used to create new live activity group through API and set the "uri" so that we
+            can operate on this instance of LiveActivityGroup right away after .new() returns True
+            @param constructor_args: dictionary with following structure: 
+                {
+                    'liveActivityGroup.name' : 'live_activity_group_name',
+                    'liveActivityGroup.description' : 'live_activity_group_description'
+                    '_eventId_save' : 'Save' 
+                    'liveActivityIds' : [1,2,666]
+                } 
+            @param uri: "http://some_server/prefix (passed by master)" 
+            @rtype: new LiveActivityGroup object or False
+        """
         
+        self.log.info("Creating new LiveActivityGroup with arguments: %s" % constructor_args)
+        route = Path().get_route_for('LiveActivityGroup', 'new')
+        url = "%s%s" % (uri, route)
+        request_response = self._api_post_json(url, constructor_args)
+        if request_response.url:
+            self.absolute_url = request_response.url.replace("view.html", "view.json")
+            self.fetch()
+            self.log.info("Created new LiveActivityGroup with url=%s, data_hash is now %s" % (self.absolute_url, self.data_hash))
+            return self
+        else:
+            self.log.info("Created new LiveActivityGroup %s but returned False" % self)
+            return False
+            
     def to_json(self):
         """ 
             Should selected attributes in json form defined by the template
         """
         self.serializer = LiveActivityGroupSerializer(self.data_hash)
         return self.serializer.to_json()
-    
-    def create(self, live_activity_group_name, live_activity_names):
-        """
-            Should be responsible for creating
-            @param live_activity_group_name: string
-            @param live_activity_names: list of existing names
-        """
-        raise NotImplementedError
-    
-    def get_absolute_url(self):
-        live_activity_group_id = self.data_hash['id']
-        url = "%s/liveactivitygroup/%s/view.json" % (self.uri, live_activity_group_id)
-        return url  
-    
-    def fetch(self):
-        """ 
-            Should retrieve fresh data for the object from Master API
-        """
-        self.data_hash = self._refresh_object(self.absolute_url)
-        return self
     
     def id(self):
         return self.data_hash['id']
@@ -69,7 +78,14 @@ class LiveActivityGroup(Fetchable, Statusable, Shutdownable, Startupable, Config
                                                 }
             live_activities.append(live_activity_group_live_activity)
         return live_activities
-  
+        
     def description(self):
         """ Should return Activity description """
         return self.data_hash['description']    
+    
+    """ Private methods below """
+        
+    def _get_absolute_url(self):
+        live_activity_group_id = self.data_hash['id']
+        url = "%s/liveactivitygroup/%s/view.json" % (self.uri, live_activity_group_id)
+        return url  

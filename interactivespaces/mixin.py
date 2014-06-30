@@ -8,29 +8,33 @@ from misc import Logger
 from exception import CommunicableException
 import requests
 import urlparse
+import os
 
 class Communicable(object):
     def __init__(self, post_data=None):
-        """
-            - post_data in json format
-            - host e.g. 'lg-head' or '1.2.3.4'
-            - port e.g. 8080
-            - location e.g. /interactivespaces/space/all.html
+        """ 
+            @summary: mixin responsible for api communication
+            @param post_data: some post data in json format (typically not needed)
+            @param host: string e.g. 'lg-head' or '1.2.3.4'
+            @param port: string e.g. '8080'
+            @param location: string e.g. '/interactivespaces/space/all.html'
         """
         self.post_data = post_data
         self.session_name = 'e1s1'
         self.log = Logger().get_logger()
-        self.paths = Path()
         
     def _compose_url(self, uri, class_name=None, method_name=None, context=None, action=None):
-        """ Should compose URL trying to do that in two steps:
-            1. return if object that tries to retrieve the url
-            has route that is already staticaly defined
-            2. try to compose the custom route on the basis of URL data
+        """ 
+            @summary: Should compose URL trying to do that in two steps:
+                1. return if object that tries to retrieve the url
+                has route that is already staticaly defined
+                2. try to compose the custom route on the basis of URL data
+            @rtype: string
+            @return url: e.g. /interactivespaces/liveactivity/new
         """
         if class_name and method_name:
             self.log.info("Composing url for class_name '%s' and method name '%s'" % (class_name, method_name))
-            static_route = self.paths.get_route_for(class_name, method_name)
+            static_route = Path().get_route_for(class_name, method_name)
             if static_route : 
                 self.log.info("Returned auto url %s" % (static_route))
                 url = "%s%s" % (uri, static_route)
@@ -45,6 +49,10 @@ class Communicable(object):
             raise CommunicableException
     
     def _compose_uri(self, host, port, prefix):
+        """
+        @rtype: string
+        @return uri: absolute and complete uri used by post and get methods
+        """
         uri = "http://%s:%s%s" % (self.host, self.port, prefix)
         return uri
         
@@ -53,42 +61,71 @@ class Communicable(object):
         return urllib2.urlopen(url, data)
 
     def _api_get_json(self, url):
-        """Sends a request to the master, returns only the 'data' from response """
+        """
+            @summary: Sends a request to the master, returns only the 'data' from response 
+            @rtype: dict or bool
+            @return data: data portion of API response or "True" if the response was "success" only
+        """
         response = urllib2.urlopen(url)
         data = json.loads(response.read())
+        
+        try:
+            out_data = data['data']
+        except Exception:
+            out_data = None
+            
         if data['result'] != 'success':
             self.log.info("Could not retrieve data for URL=%s" % url)
-            raise CommunicableException
-        return data['data']      
+            return False
+        
+        if out_data:
+            return out_data
+        else:
+            return True   
 
     def _api_get_html(self, command, query=None):
         """Sends a request to the master, returns the response."""
         raise NotImplementedError
 
-    def _api_post_json(self, url, payload):
+    def _api_post_json(self, url, payload, file_handler=None):
         """
             @summary: Sends data to the master.
-            @rtype: bool
+            @rtype: string or False
             @param payload: dictionary containing data to send
             @param url: string containing url that we talk to
+            @param file: path to local zipfile - if provided, a multi-part
+                post will be sent to the URL
         """
+        if file_handler:
+            head, tail = os.path.split(file_handler.name)
+            file_name = tail
+            file_content_type = "application/zip"
+            files = {"activityFile" : (file_name , file_handler, file_content_type)}
+        else:
+            files = None
         self.log.info("Doing a POST request to %s with payload %s" %(url, payload))
         session = requests.session()
         get_response = session.get(url)
         query = urlparse.urlparse(get_response.url).query
         cookies = {"JSESSIONID" : session.cookies['JSESSIONID']}
         url = url + "?" + query
-        post_response = session.post(url=url, cookies=cookies, data=payload) 
+        post_response = session.post(url=url, cookies=cookies, data=payload, files=files) 
         if post_response.status_code == 200:
-            return True
+            self.log.info("_api_post_json returned 200 with post_response.url=%s" % post_response.url)
+            return post_response
         else:
+            self.log.info("_api_post_json returned post_response.status_code %s" % post_response.status_code)
             return False 
-
+         
     def _api_post_html(self, command, query=None, data=None):
         """Sends data to the master."""
         raise NotImplementedError
     
     def json_raw(self):
+        """
+        @summary: returns raw unformatted/unmapped json from Master API
+        @rtype: dict
+        """
         return self.data
 
 
@@ -101,14 +138,36 @@ class Statusable(Communicable):
     """
     
     def __init__(self):
+        self.log = Logger().get_logger()
         super(Statusable, self).__init__()
-        
-    def _send_status_refresh_command(self, url):
-        """ 
-            Should tell master to retrieve status info from controller
-            so master has the most up to date info from the controller
+      
+    def send_status_refresh_command(self):
         """
-        if self._api_get_json(url):
+            @summary: extracts self.data_hash and self.class_name from children class
+                and finds out to which route send GET request to ands sends it
+        """
+        refresh_route = Path().get_route_for(self.class_name, 'status') % self.data_hash['id']
+        if self._send_status_refresh_command(refresh_route):
+            self.log.info("Successfully refreshed status for LiveActivity url=%s" % self.absolute_url) 
+            return True
+        else:
+            return False
+          
+    def _send_status_refresh_command(self, refresh_route):
+        """ 
+            @summary: Should tell master to retrieve status info from controller
+            so master has the most up to date info from the controller
+            @param refresh_route: status.json route for specific class
+            @rtype: bool
+        """
+        url = "%s%s" % (self.uri, refresh_route)
+        self.log.info("Sending status refresh to url=%s" %url)
+        try:
+            response = self._api_get_json(url)
+        except urllib2.HTTPError, e:
+            response = None
+            self.log.error("Could not send status refresh because %s" % e)
+        if response:
             return True
         else:
             return False
@@ -120,6 +179,7 @@ class Fetchable(Communicable):
         
     def _refresh_object(self, url):
         """ Should retrieve fresh data from API """
+        self.log.info("Refreshing object for url=%s" % url)
         data = self._api_get_json(url)
         if data:
             self.log.info("Successfully refresh object for url=%s" % url)
@@ -127,6 +187,12 @@ class Fetchable(Communicable):
         else:
             self.log.info("Could not refresh object for url=%s" % url)
             return False
+        
+    def fetch(self):
+        """ 
+            @summary: Should retrieve private data for an object from Master API
+        """
+        self.data_hash = self._refresh_object(self.absolute_url)
 
 class Deletable(Communicable):
     def __init__(self):

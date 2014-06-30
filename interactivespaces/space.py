@@ -13,7 +13,7 @@ class Space(Fetchable, Activatable, Shutdownable, Configurable, Deployable, Edit
         self.log = Logger().get_logger()
         self.data_hash = data_hash
         self.uri = uri
-        self.absolute_url = self.get_absolute_url()
+        self.absolute_url = self._get_absolute_url()
         super(Space, self).__init__()
         self.log.info("Instantiated Activity object with url=%s" % self.absolute_url)
         
@@ -37,18 +37,7 @@ class Space(Fetchable, Activatable, Shutdownable, Configurable, Deployable, Edit
         """
         self.serializer = SpaceSerializer(self.data_hash)
         return self.serializer.to_json()
-    
-    def get_absolute_url(self):
-        live_activity_group_id = self.data_hash['id']
-        url = "%s/space/%s/view.json" % (self.uri, live_activity_group_id)
-        return url  
-    
-    def fetch(self):
-        """ 
-            Should retrieve fresh data for the object from Master API
-        """
-        self.data_hash = self._refresh_object(self.absolute_url)
-        return self
+
     
     def id(self):
         return self.data_hash['id']
@@ -60,3 +49,9 @@ class Space(Fetchable, Activatable, Shutdownable, Configurable, Deployable, Edit
     def description(self):
         """ Should return Space description """
         return self.data_hash['description']    
+    
+    """ Private methods below """
+    def _get_absolute_url(self):
+        live_activity_group_id = self.data_hash['id']
+        url = "%s/space/%s/view.json" % (self.uri, live_activity_group_id)
+        return url  

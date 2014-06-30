@@ -1,73 +1,64 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from exception import ActivityException
 from misc import Logger
 from mixin import Fetchable
 from serializer import ActivitySerializer
-
-"""
-{
-result: "success",
-data: [
-[...]
-{
-id: "59",
-bundleContentHash: "4b186c487177389ad6e9b8ef7c8b854db469a482e0228730b2eb598fb0dbc1fe70f41d40cddd17a8c5b212434264d54ae7806b5b80e4b251cb6a327b3b2a057f",
-identifyingName: "com.endpoint.lg.streetview.pano",
-lastUploadDate: 1398288061464,
-description: "Runs Google Street View.",
-name: "Street View Panorama",
-lastStartDate: 1402064006465,
-metadata: { },
-version: "1.0.0.dev"
-},
-{
-id: "57",
-bundleContentHash: "9a4392d9457ce31c96ef2bb082eacedd914b65f1a7a7616e8bdbaae395dcef4a0c1f0045aaed13afa7f7b79048babc509d432b4a7600388850ff32c8ac83babb",
-identifyingName: "com.endpoint.lg.webctl",
-lastUploadDate: 1398288062678,
-description: "Serves a web interface for the Liquid Galaxy.",
-name: "Web Control",
-lastStartDate: 1402063997800,
-metadata: { },
-version: "1.0.0.dev"
-}
-]
-}
-"""
+from abstract import Path
 
 class Activity(Fetchable):
     """ Should be responsible for setting an getting attributes of an activity """
-    def __init__(self, data_hash, uri, activity_archive_uri=None, name=None):
+    def __init__(self, data_hash=None, uri=None, activity_archive_uri=None, name=None):
         self.log = Logger().get_logger()
-        if ((not data_hash) and (not uri)) and (activity_archive_uri and name):            
-            self.log.info("Deploying new activity from %s" % activity_archive_uri)
-            self.deploy()
-        else:
+        super(Activity, self).__init__()
+        
+        if (data_hash==None and uri==None):
+            self.log.info("No data provided - assuming creation of new Activity")
+        elif (data_hash!=None and uri!=None):
             self.data_hash = data_hash
             self.uri = uri
-            ''' Add all mixins for thingies like api communication, status retrieval etc'''
             self.absolute_url = self._get_absolute_url()
             self.log.info("Instantiated Activity object with url=%s" % self.absolute_url)
-
-        super(Activity, self).__init__()
-    
+        
     def __repr__(self):
         return str(self.data_hash)
     
-    def __str__(self):
-        return "Activity class instance %s" % str(self.data_hash)
+    def new(self, uri, constructor_args):
+        """
+            @summary: method to keep naming convention of .new() methods
+        """
+        
+        new_activity = self.upload(uri, constructor_args['zip_file_handler'])
+        return new_activity
     
-    def deploy(self):
+    def upload(self, uri, zip_file_handler):
         """ 
-            Should make a deployment of the activity with followin steps:
-                - download/unpack the activity from an activity_archive_uri
+            @summary: Should make a deployment of the activity with followin steps:
+                - receive handler to a local zipfile
                 - upload it to the API  
                 - save
                 - set instance variables for the object
+            @return: False or URL to a new Activity
+            @summary: used to create new live activity through API and set the "uri" so that we
+                can operate on this instance of LiveActivity right away after .new() returns True
+            @param uri: stirng
+            @param zipe_file_handler: file class instance
+            @rtype: new Activity object or False
         """
-        pass
+        self.log.info("Uploading new Activity from file %s" % zip_file_handler)
+        route = Path().get_route_for('Activity', 'upload')
+        url = "%s%s" % (uri, route)
+        payload = {"_eventId_save" : "Save"}
+        request_response = self._api_post_json(url, payload, zip_file_handler)
+        
+        if request_response.url:
+            self.absolute_url = request_response.url.replace("view.html", "view.json")
+            self.fetch()
+            self.log.info("Created new Activity with url=%s, data_hash is now %s" % (self.absolute_url, self.data_hash))
+            return self
+        else:
+            self.log.info("Created new Activity %s but returned False" % self)
+            return False
     
         
     def to_json(self):
@@ -80,7 +71,6 @@ class Activity(Fetchable):
     def fetch(self):
         """ Should retrieve data from Master API"""
         self.data_hash = self._refresh_object(self.absolute_url)
-        return self
     
     def name(self):
         """ Should return live activity name"""
@@ -103,6 +93,7 @@ class Activity(Fetchable):
         return self.data_hash['activity']['description']
     
     """ Private methods below"""
+    
     def _get_absolute_url(self):
         activity_id = self.data_hash['id']
         url = "%s/activity/%s/view.json" % (self.uri, activity_id)
