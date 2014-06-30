@@ -12,11 +12,12 @@ from space_controller import SpaceController
 from helper import SearchPattern, Searcher
 
 class Master(Communicable):
+    """
+        @summary: This is the main class with all the logic needed for 
+        high level stuff. You will typically use instance of Master for all your scripts.
+    """
     def __init__(self, host='lg-head', port='8080', prefix='/interactivespaces'):
         """ 
-            @summary: This is the main class with all the logic needed for 
-                high level stuff. You will typically use instance of Master 
-                for all your scripts
             @param host: default value is lg-head 
             @param port: default value is 8080
             @param prefix: default value is /interactivespaces
@@ -24,7 +25,7 @@ class Master(Communicable):
         """
         self.host, self.port, self.prefix = host, port, prefix
         self.log = Logger().get_logger()
-        self.uri = self._compose_uri(self.host, self.port, self.prefix)
+        self.uri = "http://%s:%s%s" % (self.host, self.port, prefix)
         super(Master, self).__init__()
         
     def get_activities(self, search_pattern=None):
@@ -264,9 +265,9 @@ class Master(Communicable):
             @summary: creates new controller
             @param constructor_args: dictionary containing all of below keys:
                 {
-                    "space_controller_name" : "mandatory string",
-                    "space_controller_description" : "non mandatory string",
-                    "space_controller_host_id" : "mandatory string"
+                "space_controller_name" : "mandatory string",
+                "space_controller_description" : "non mandatory string",
+                "space_controller_host_id" : "mandatory string"
                 }
             
         """
@@ -277,13 +278,14 @@ class Master(Communicable):
         """
             @summary: Creates a new live activity group.
             @param constructor_args: dictionary with following structure:
-                {"live_activity_group_name" : "example.py live_activity_group_name",
-                 "live_activity_group_description" : "created by example.py",
-                 "live_activities" : [{"live_activity_name" : "SV Master on Node A",
-                                       "space_controller_name" : "ISCtlDispAScreen00"},
-                                      {"live_activity_name" : "SV Slave 01 on Node A",
-                                       "space_controller_name" : "ISCtlDispAScreen00"}
-                                    ]}
+                {
+                "live_activity_group_name" : "example.py live_activity_group_name",
+                "live_activity_group_description" : "created by example.py",
+                "live_activities" : [{"live_activity_name" : "SV Master on Node A",
+                "space_controller_name" : "ISCtlDispAScreen00"},
+                {"live_activity_name" : "SV Slave 01 on Node A",
+                "space_controller_name" : "ISCtlDispAScreen00"}]
+                }
         """
         live_activity_ids = self._translate_live_activities_names_to_ids(constructor_args['live_activities'])
         unpacked_arguments = {}
@@ -523,8 +525,8 @@ class Master(Communicable):
         """
             @param live_activities: list of dictionaries containing following keys:
                 { 
-                    "live_activity_name" : "some_name",
-                    "space_controller_name" : "some controller name"
+                "live_activity_name" : "some_name",
+                "space_controller_name" : "some controller name"
                 }
             @rtype: list
         """

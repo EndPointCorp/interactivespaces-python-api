@@ -11,16 +11,10 @@ import urlparse
 import os
 
 class Communicable(object):
-    def __init__(self, post_data=None):
+    def __init__(self):
         """ 
-            @summary: mixin responsible for api communication
-            @param post_data: some post data in json format (typically not needed)
-            @param host: string e.g. 'lg-head' or '1.2.3.4'
-            @param port: string e.g. '8080'
-            @param location: string e.g. '/interactivespaces/space/all.html'
+            @summary: Should be responsible for communication with the API
         """
-        self.post_data = post_data
-        self.session_name = 'e1s1'
         self.log = Logger().get_logger()
         
     def _compose_url(self, uri, class_name=None, method_name=None, context=None, action=None):
@@ -30,7 +24,6 @@ class Communicable(object):
                 has route that is already staticaly defined
                 2. try to compose the custom route on the basis of URL data
             @rtype: string
-            @return url: e.g. /interactivespaces/liveactivity/new
         """
         if class_name and method_name:
             self.log.info("Composing url for class_name '%s' and method name '%s'" % (class_name, method_name))
@@ -47,14 +40,6 @@ class Communicable(object):
         else:
             self.log.info("Could not compose an url.")
             raise CommunicableException
-    
-    def _compose_uri(self, host, port, prefix):
-        """
-        @rtype: string
-        @return uri: absolute and complete uri used by post and get methods
-        """
-        uri = "http://%s:%s%s" % (self.host, self.port, prefix)
-        return uri
         
     def _urlopen(self, url, data=None):
         """Helper for opening urls."""
@@ -64,7 +49,6 @@ class Communicable(object):
         """
             @summary: Sends a request to the master, returns only the 'data' from response 
             @rtype: dict or bool
-            @return data: data portion of API response or "True" if the response was "success" only
         """
         response = urllib2.urlopen(url)
         data = json.loads(response.read())
@@ -93,7 +77,7 @@ class Communicable(object):
             @rtype: string or False
             @param payload: dictionary containing data to send
             @param url: string containing url that we talk to
-            @param file: path to local zipfile - if provided, a multi-part
+            @param file_handler: path to local zipfile - if provided, a multi-part
                 post will be sent to the URL
         """
         if file_handler:
@@ -131,7 +115,7 @@ class Communicable(object):
 
 class Statusable(Communicable):
     """ 
-        This class is responsible for _refreshing_ status of the object,
+        @summary: Should be responsible for _refreshing_ status of the object,
         which means that it will send "status" command to IS Controllers.
         In order to fetch the fresh and most up-to-date status you should use 
         .fetch() method on the object.
@@ -173,12 +157,17 @@ class Statusable(Communicable):
             return False
 
 class Fetchable(Communicable):
-    """ Class responsible for fetching most up to date data from API """
+    """ 
+        @summary: Should be responsible for fetching most up to date data from API
+    """
     def __init__(self):
         super(Fetchable, self).__init__()
         
     def _refresh_object(self, url):
-        """ Should retrieve fresh data from API """
+        """ 
+            @summary: Should retrieve fresh data from API
+            @param url: string defining from which url to fetch the data 
+        """
         self.log.info("Refreshing object for url=%s" % url)
         data = self._api_get_json(url)
         if data:

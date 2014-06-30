@@ -5,7 +5,7 @@ import json
 
 class Serializer(object):
     """ 
-        Very generic serializer methods for mapping attributes shared by all child serializers
+        @summary: Should be responsible for representing instances of classes in desired form
     """
     def __init__(self):
         self.log = Logger().get_logger()
@@ -33,6 +33,9 @@ class Serializer(object):
                 self.log.info("Could not assign attribute %s while operating on Object: %s because %s" % (old_key, self.data_hash, e))
     
 class StringSerializer(Serializer):
+    """
+        @summary: in future should be responsible for custom string serialization
+    """
     def __init__(self):
         super(StringSerializer, self).__init__()
     
@@ -46,7 +49,7 @@ class StringSerializer(Serializer):
 
 class JsonSerializer(Serializer):
     """ 
-        Should know everything about serializing data to json format
+        @summary: Should know everything about serializing data to json format
     """
     
     def __init__(self):
@@ -69,14 +72,9 @@ class JsonSerializer(Serializer):
     
 class ActivitySerializer(JsonSerializer, StringSerializer):
     """ 
-        Class responsible for representing Activity data using
+        @summary: Should be responsible for representing Activity data using
         desired format, attributes and method of representation
         Should be initialized only with the Activity data_hash
-        @ivar attributes: is a map of attributes. 
-            - key is our desired key name
-            - value is the key from original API hash
-        @ivar data: is an effect of assigning attributes
-        @ivar data_hash: raw data from API
     """
     
     def __init__(self, data_hash):
@@ -92,14 +90,10 @@ class ActivitySerializer(JsonSerializer, StringSerializer):
         
 class LiveActivitySerializer(JsonSerializer, StringSerializer):
     """ 
-        Class responsible for representing LiveActivity data using
+        @summary: should be responsible for representing LiveActivity data using
         desired format, attributes and method of representation
         Should be initialized only with the Activity data_hash
-        @var attributes: is a map of attributes. 
-            - key is our desired key name
-            - value is the key from original API hash
-        @var data: is an effect of assigning attributes
-        @var data_hash: raw data from API
+
     """
     
     def __init__(self, data_hash):
@@ -115,14 +109,10 @@ class LiveActivitySerializer(JsonSerializer, StringSerializer):
         
 class LiveActivityGroupSerializer(JsonSerializer, StringSerializer):
     """ 
-        Class responsible for representing LiveActivity data using
+        @summary: should be responsible for representing LiveActivity data using
         desired format, attributes and method of representation
         Should be initialized only with the Activity data_hash
-        @var attributes: is a map of attributes. 
-            - key is our desired key name
-            - value is the key from original API hash
-        @var data: is an effect of assigning attributes
-        @var data_hash: raw data from API
+
     """
     
     def __init__(self, data_hash):
@@ -139,14 +129,9 @@ class LiveActivityGroupSerializer(JsonSerializer, StringSerializer):
 
 class SpaceSerializer(JsonSerializer, StringSerializer):
     """ 
-        Class responsible for representing LiveActivity data using
+        @summary: should be responsible for representing LiveActivity data using
         desired format, attributes and method of representation
         Should be initialized only with the Activity data_hash
-        @var attributes: is a map of attributes. 
-            - key is our desired key name
-            - value is the key from original API hash
-        @var data: is an effect of assigning attributes
-        @var data_hash: raw data from API
     """
     
     def __init__(self, data_hash):
@@ -163,14 +148,10 @@ class SpaceSerializer(JsonSerializer, StringSerializer):
 
 class SpaceControllerSerializer(JsonSerializer, StringSerializer):
     """ 
-        Class responsible for representing LiveActivity data using
+        @summary: should be responsible for representing LiveActivity data using
         desired format, attributes and method of representation
         Should be initialized only with the Activity data_hash
-        @var attributes: is a map of attributes. 
-            - key is our desired key name
-            - value is the key from original API hash
-        @var data: is an effect of assigning attributes
-        @var data_hash: raw data from API
+
     """
     
     def __init__(self, data_hash):

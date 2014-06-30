@@ -7,7 +7,9 @@ from serializer import ActivitySerializer
 from abstract import Path
 
 class Activity(Fetchable):
-    """ Should be responsible for setting an getting attributes of an activity """
+    """ 
+        @summary: Should be responsible for managing a single activity
+    """
     def __init__(self, data_hash=None, uri=None, activity_archive_uri=None, name=None):
         self.log = Logger().get_logger()
         super(Activity, self).__init__()
@@ -39,10 +41,8 @@ class Activity(Fetchable):
                 - save
                 - set instance variables for the object
             @return: False or URL to a new Activity
-            @summary: used to create new live activity through API and set the "uri" so that we
-                can operate on this instance of LiveActivity right away after .new() returns True
             @param uri: stirng
-            @param zipe_file_handler: file class instance
+            @param zip_file_handler: 'file' class instance
             @rtype: new Activity object or False
         """
         self.log.info("Uploading new Activity from file %s" % zip_file_handler)

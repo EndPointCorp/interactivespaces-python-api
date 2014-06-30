@@ -9,13 +9,13 @@ from abstract import Path
 
 class LiveActivity(Fetchable, Statusable, Startupable, Shutdownable, Activatable, Deployable, Configurable):
     """
-        @summary: when called with constructor_args and other vars set to None, new
-        LiveActivity will be constructed and available for .save(). When called
-        with data_hash and uri, it will bound itself to an existing object in API
+        @summary: Should be responsible for managing single LiveActivity
         @todo: .new() should return instance of fetched live activity
     """
     def __init__(self, data_hash=None, uri=None):
         """
+            @summary: when called with constructor_args and other vars set to None, new
+            LiveActivity will be created
             @param data_hash: should be master API liveActivity json, may be blank
             @param uri: should be a link to "view.json" of the given live activity
         """

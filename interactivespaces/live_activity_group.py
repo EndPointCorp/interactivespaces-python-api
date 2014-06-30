@@ -8,7 +8,7 @@ from abstract import Path
 
 class LiveActivityGroup(Fetchable, Statusable, Shutdownable, Startupable, Configurable, Deployable):
     """ 
-        Should be responsible for managing live activity groups
+        @summary: Should be responsible for managing single live activity group
     """
     def __init__(self, data_hash=None, uri=None):
         self.log = Logger().get_logger()
@@ -31,10 +31,10 @@ class LiveActivityGroup(Fetchable, Statusable, Shutdownable, Startupable, Config
             can operate on this instance of LiveActivityGroup right away after .new() returns True
             @param constructor_args: dictionary with following structure: 
                 {
-                    'liveActivityGroup.name' : 'live_activity_group_name',
-                    'liveActivityGroup.description' : 'live_activity_group_description'
-                    '_eventId_save' : 'Save' 
-                    'liveActivityIds' : [1,2,666]
+                'liveActivityGroup.name' : 'live_activity_group_name',
+                'liveActivityGroup.description' : 'live_activity_group_description',
+                '_eventId_save' : 'Save',
+                'liveActivityIds' : [1,2,666]
                 } 
             @param uri: "http://some_server/prefix (passed by master)" 
             @rtype: new LiveActivityGroup object or False

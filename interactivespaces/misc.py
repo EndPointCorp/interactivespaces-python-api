@@ -1,6 +1,9 @@
 import logging
 
 class Logger(object):
+    """
+        @summary: A common logger for this library
+    """
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         logging.basicConfig(filename='master.log',
