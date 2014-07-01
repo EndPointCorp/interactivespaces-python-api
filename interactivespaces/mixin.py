@@ -10,6 +10,10 @@ import requests
 import urlparse
 import os
 
+"""
+    @todo: aggregate mixins common for LiveActivity, LiveActivityGroup and Space into one 
+"""
+
 class Communicable(object):
     def __init__(self):
         """ 
@@ -47,7 +51,7 @@ class Communicable(object):
 
     def _api_get_json(self, url):
         """
-            @summary: Sends a request to the master, returns only the 'data' from response 
+            @summary: Sends a json request to the master. Returns only ['data'] part of the json response 
             @rtype: dict or bool
         """
         response = urllib2.urlopen(url)
@@ -67,9 +71,17 @@ class Communicable(object):
         else:
             return True   
 
-    def _api_get_html(self, command, query=None):
-        """Sends a request to the master, returns the response."""
-        raise NotImplementedError
+    def _api_get_html(self, url):
+        """
+            @summary: Sends a request to the master, returns True if 200, False if anything else.
+            @rtype: bool
+        """
+        response = urllib2.urlopen(url)
+        data = response.read()
+        if response.getcode() == 200:
+            return True
+        else:
+            return False
 
     def _api_post_json(self, url, payload, file_handler=None):
         """
@@ -112,50 +124,6 @@ class Communicable(object):
         """
         return self.data
 
-
-class Statusable(Communicable):
-    """ 
-        @summary: Should be responsible for _refreshing_ status of the object,
-        which means that it will send "status" command to IS Controllers.
-        In order to fetch the fresh and most up-to-date status you should use 
-        .fetch() method on the object.
-    """
-    
-    def __init__(self):
-        self.log = Logger().get_logger()
-        super(Statusable, self).__init__()
-      
-    def send_status_refresh_command(self):
-        """
-            @summary: extracts self.data_hash and self.class_name from children class
-                and finds out to which route send GET request to ands sends it
-        """
-        refresh_route = Path().get_route_for(self.class_name, 'status') % self.data_hash['id']
-        if self._send_status_refresh_command(refresh_route):
-            self.log.info("Successfully refreshed status for LiveActivity url=%s" % self.absolute_url) 
-            return True
-        else:
-            return False
-          
-    def _send_status_refresh_command(self, refresh_route):
-        """ 
-            @summary: Should tell master to retrieve status info from controller
-            so master has the most up to date info from the controller
-            @param refresh_route: status.json route for specific class
-            @rtype: bool
-        """
-        url = "%s%s" % (self.uri, refresh_route)
-        self.log.info("Sending status refresh to url=%s" %url)
-        try:
-            response = self._api_get_json(url)
-        except urllib2.HTTPError, e:
-            response = None
-            self.log.error("Could not send status refresh because %s" % e)
-        if response:
-            return True
-        else:
-            return False
-
 class Fetchable(Communicable):
     """ 
         @summary: Should be responsible for fetching most up to date data from API
@@ -182,68 +150,393 @@ class Fetchable(Communicable):
             @summary: Should retrieve private data for an object from Master API
         """
         self.data_hash = self._refresh_object(self.absolute_url)
+        
+class Statusable(Communicable):
+    """ 
+        @summary: Should be responsible for _refreshing_ status of the object,
+        which means that it will send "status" command to IS Controllers.
+        In order to fetch the fresh and most up-to-date status you should use 
+        .fetch() method on the object.
+    """
+    
+    def __init__(self):
+        self.log = Logger().get_logger()
+        super(Statusable, self).__init__()
+      
+    def send_status_refresh(self):
+        """
+            @summary: extracts self.data_hash and self.class_name from children class
+                and finds out to which route send GET request to ands sends it
+        """
+        refresh_route = Path().get_route_for(self.class_name, 'status') % self.data_hash['id']
+        if self._send_status_refresh(refresh_route):
+            self.log.info("Successfully refreshed status for url=%s" % self.absolute_url) 
+            return True
+        else:
+            return False
+          
+    def _send_status_refreshd(self, refresh_route):
+        """ 
+            @summary: Should tell master to retrieve status info from controller
+            so master has the most up to date info from the controller
+            @param refresh_route: status.json route for specific class
+            @rtype: bool
+        """
+        url = "%s%s" % (self.uri, refresh_route)
+        self.log.info("Sending status refresh to url=%s" %url)
+        try:
+            response = self._api_get_json(url)
+        except urllib2.HTTPError, e:
+            response = None
+            self.log.error("Could not send status refresh because %s" % e)
+        if response:
+            return True
+        else:
+            return False
 
 class Deletable(Communicable):
+    """
+        @summary: Should be responsible for the deletion of an object
+    """
     def __init__(self):
+        self.log = Logger().get_logger()
         super(Deletable, self).__init__()
         
     def send_delete(self):
-        pass
-    
+        """
+            @summary: sends the "delete" GET request to a route
+        """
+        delete_route = Path().get_route_for(self.class_name, 'delete') % self.data_hash['id']
+        if self._send_delete_request(delete_route):
+            self.log.info("Successfully sent 'delete' to url=%s" % self.absolute_url)
+            return True
+        else:
+            return False
+        
+    def _send_delete_request(self, delete_route):
+        """
+            @rtype: bool
+        """
+        url = "%s%s" % (self.uri, delete_route)
+        self.log.info("Sending status 'delete' to url=%s" %url)
+        try:
+            response = self._api_get_html(url)
+        except urllib2.HTTPError, e:
+            response = None
+            self.log.error("Could not send 'delete' because %s" % e)
+        if response:
+            return True
+        else:
+            return False
+        
 class Shutdownable(Communicable):
+    """ 
+        @summary: Should be responsible for sending "shutdown" command to live activities,
+        controllers, spaces and live groups.
+    """
+    
     def __init__(self):
+        self.log = Logger().get_logger()
         super(Shutdownable, self).__init__()
-        
+      
     def send_shutdown(self):
-        pass
-
+        shutdown_route = Path().get_route_for(self.class_name, 'shutdown') % self.data_hash['id']
+        if self._send_shutdown_request(shutdown_route):
+            self.log.info("Successfully refreshed shutdown for url=%s" % self.absolute_url) 
+            return True
+        else:
+            return False
+          
+    def _send_shutdown_request(self, shutdown_route):
+        """ 
+            @summary: makes a shutdown request
+        """
+        url = "%s%s" % (self.uri, shutdown_route)
+        self.log.info("Sending 'shutdown' GET request to url=%s" %url)
+        try:
+            response = self._api_get_json(url)
+        except urllib2.HTTPError, e:
+            response = None
+            self.log.error("Could not send 'shutdown' GET request because %s" % e)
+        if response:
+            return True
+        else:
+            return False
+        
 class Startupable(Communicable):
+    """ 
+        @summary: Should be responsible for sending "startup" command to live activities,
+        controllers, spaces and live groups.
+    """
+    
     def __init__(self):
+        self.log = Logger().get_logger()
         super(Startupable, self).__init__()
-        
+      
     def send_startup(self):
-        pass
-
-class Activatable(Communicable):
-    def __init__(self):
-        super(Activatable, self).__init__()
+        startup_route = Path().get_route_for(self.class_name, 'startup') % self.data_hash['id']
+        if self._send_shutdown_request(startup_route):
+            self.log.info("Successfully sent 'startup' for url=%s" % self.absolute_url) 
+            return True
+        else:
+            return False
+          
+    def _send_startup_request(self, startup_route):
+        """ 
+            @summary: makes a startup request
+        """
+        url = "%s%s" % (self.uri, startup_route)
+        self.log.info("Sending 'startup' GET request to url=%s" %url)
+        try:
+            response = self._api_get_json(url)
+        except urllib2.HTTPError, e:
+            response = None
+            self.log.error("Could not send 'startup' GET request because %s" % e)
+        if response:
+            return True
+        else:
+            return False
         
-    def send_activate(self):
-        pass
+class Activatable(Communicable):
+    """
+        @summary: Should be responsible for sending the "activate" action
+    """
+    def __init__(self):
+        self.log = Logger().get_logger()
+        super(Activatable, self).__init__()
 
+    def send_activate(self):
+        activate_route = Path().get_route_for(self.class_name, 'activate') % self.data_hash['id']
+        if self._send_shutdown_request(activate_route):
+            self.log.info("Successfully sent 'activate' for url=%s" % self.absolute_url) 
+            return True
+        else:
+            return False
+        
     def send_deactivate(self):
-        pass
+        deactivate_route = Path().get_route_for(self.class_name, 'deactivate') % self.data_hash['id']
+        if self._send_activatable_request(deactivate_route):
+            self.log.info("Successfully sent 'deactivate' for url=%s" % self.absolute_url) 
+            return True
+        else:
+            return False        
+
+    def _send_activatable_request(self, activatable_route):
+        """ 
+            @summary: makes a activate/deactivate request
+        """
+        url = "%s%s" % (self.uri, activatable_route)
+        self.log.info("Sending activatable GET request to url=%s" %url)
+        try:
+            response = self._api_get_json(url)
+        except urllib2.HTTPError, e:
+            response = None
+            self.log.error("Could not send activatable GET request because %s" % e)
+        if response:
+            return True
+        else:
+            return False
 
 class Deployable(Communicable):
+    """
+        @summary: Should be responsible for sending the "deploy" action
+    """
     def __init__(self):
+        self.log = Logger().get_logger()
         super(Deployable, self).__init__()
         
     def send_deploy(self):
-        pass
+        deploy_route = Path().get_route_for(self.class_name, 'deploy') % self.data_hash['id']
+        if self._send_deploy_request(deploy_route):
+            self.log.info("Successfully sent 'deploy' for url=%s" % self.absolute_url) 
+            return True
+        else:
+            return False        
+
+    def _send_deploy_request(self, deploy_route):
+        """ 
+            @summary: makes a 'deploy' request
+        """
+        url = "%s%s" % (self.uri, deploy_route)
+        self.log.info("Sending deploy GET request to url=%s" %url)
+        try:
+            response = self._api_get_json(url)
+        except urllib2.HTTPError, e:
+            response = None
+            self.log.error("Could not send deploy GET request because %s" % e)
+        if response:
+            return True
+        else:
+            return False
 
 class Configurable(Communicable):
+    """
+        @summary: Should be responsible for sending the "configure" action
+    """
     def __init__(self):
+        self.log = Logger().get_logger()
         super(Configurable, self).__init__()
         
     def send_configure(self):
-        pass
+        configure_route = Path().get_route_for(self.class_name, 'configure') % self.data_hash['id']
+        if self._send_configure_request(configure_route):
+            self.log.info("Successfully sent 'configure' for url=%s" % self.absolute_url) 
+            return True
+        else:
+            return False        
+
+    def _send_configure_request(self, configure_route):
+        """ 
+            @summary: makes a 'configure' request
+        """
+        url = "%s%s" % (self.uri, configure_route)
+        self.log.info("Sending configure GET request to url=%s" %url)
+        try:
+            response = self._api_get_json(url)
+        except urllib2.HTTPError, e:
+            response = None
+            self.log.error("Could not send configure GET request because %s" % e)
+        if response:
+            return True
+        else:
+            return False
 
 class Cleanable(Communicable):
+    """
+        @summary: Should be responsible for permanent clean and cleaning the tmp
+    """
     def __init__(self):
+        self.log = Logger().get_logger()
         super(Cleanable, self).__init__()
         
     def send_clean_permanent(self):
-        pass
+        configure_route = Path().get_route_for(self.class_name, 'clean_permanent') % self.data_hash['id']
+        if self._send_cleanable_request(configure_route):
+            self.log.info("Successfully sent 'clean_permanent' for url=%s" % self.absolute_url) 
+            return True
+        else:
+            return False  
     
-    def send_clean_temp(self):
-        pass
+    def send_clean_tmp(self):
+        configure_route = Path().get_route_for(self.class_name, 'clean_tmp') % self.data_hash['id']
+        if self._send_cleanable_request(configure_route):
+            self.log.info("Successfully sent 'clean_tmp' for url=%s" % self.absolute_url) 
+            return True
+        else:
+            return False
+    
+    def _send_cleanable_request(self, cleanable_route):
+        """ 
+            @summary: makes a cleanable request
+        """
+        url = "%s%s" % (self.uri, cleanable_route)
+        self.log.info("Sending cleanable GET request to url=%s" %url)
+        try:
+            response = self._api_get_json(url)
+        except urllib2.HTTPError, e:
+            response = None
+            self.log.error("Could not send cleanable GET request because %s" % e)
+        if response:
+            return True
+        else:
+            return False
 
-class Editable(Communicable):
+class Connectable(Communicable):
+    """
+        @summary: Should be responsible for connecting/disconnecting space controllers
+    """
     def __init__(self):
-        super(Editable, self).__init__()
+        self.log = Logger().get_logger()
+        super(Connectable, self).__init__()
         
-    def set_metadata(self):
-        pass
+    def connect(self):
+        connect_route = Path().get_route_for(self.class_name, 'connect') % self.data_hash['id']
+        if self._send_connectable_request(connect_route):
+            self.log.info("Successfully sent 'connect' for url=%s" % self.absolute_url) 
+            return True
+        else:
+            return False
     
-    def set_configuration(self):
-        pass
+    def disconnect(self):
+        disconnect_route = Path().get_route_for(self.class_name, 'disconnect') % self.data_hash['id']
+        if self._send_connectable_request(disconnect_route):
+            self.log.info("Successfully sent 'disconnect' for url=%s" % self.absolute_url) 
+            return True
+        else:
+            return False
+        
+    def _send_connectable_request(self, connectable_route):
+        """ 
+            @summary: makes a connectable request
+        """
+        url = "%s%s" % (self.uri, connectable_route)
+        self.log.info("Sending connectable GET request to url=%s" %url)
+        try:
+            response = self._api_get_json(url)
+        except urllib2.HTTPError, e:
+            response = None
+            self.log.error("Could not send connectable GET request because %s" % e)
+        if response:
+            return True
+        else:
+            return False
+    
+class Metadatable(Communicable):
+    """
+        @summary: Should be responsible for setting metadata
+    """
+    def __init__(self):
+        self.log = Logger().get_logger()
+        super(Metadatable, self).__init__()
+        
+    def set_metadata(self, metadata_dictionary):
+        """
+            @summary: Accepts dictionary of keys that will be unpacked to "key=value" strings and
+            makes a request overwriting any previous metadata
+            @rtype: bool
+            @param metadata_args: Dictionary with keys and values
+        """
+        metadata = self._unpack_metadata(metadata_dictionary)
+        metadata_route = Path().get_route_for(self.class_name, 'metadata') % self.data_hash['id']
+        if self._send_editable_request(metadata_route, metadata):
+            self.log.info("Successfully sent metadata for url=%s" % self.absolute_url) 
+            return True
+        else:
+            return False
+    
+    def _unpack_metadata(self, metadata_dictionary):
+        """
+            @summary: accepts dictionary and converts it to string
+            @rtype: string
+            @param metadata_dictionary: dict containing metadata 
+        """
+        metadata_text = ""
+        try:
+            for key, value in metadata_dictionary.iteritems():
+                metadata_text = metadata_text + ("\n") + key + "=" + value
+                return metadata_text
+        except Exception, e:
+            self.log.error("Could not unpack supplied metadata dictionary because %s" % e)
+            raise
+    
+    def _send_metadatable_request(self, metadata_route, metadata):
+        """ 
+            @summary: makes a editable request
+        """
+        url = "%s%s" % (self.uri, metadata_route)
+        self.log.info("Sending editable POST request to url=%s" %url)
+        try:
+            response = self._api_post_json(url)
+        except urllib2.HTTPError, e:
+            response = None
+            self.log.error("Could not send connectable GET request because %s" % e)
+        if response:
+            return True
+        else:
+            return False
+
+class Updatable(Communicable):
+    """
+        @todo: Create methods for updating all the fields
+    """
+    pass

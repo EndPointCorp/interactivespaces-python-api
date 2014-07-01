@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from mixin import Fetchable, Statusable, Shutdownable, Startupable, Configurable, Deployable 
+from mixin import Fetchable, Statusable, Shutdownable, Startupable
+from mixin import Deletable, Activatable, Configurable, Metadatable
 from misc import Logger
 from serializer import LiveActivityGroupSerializer
 from abstract import Path
 
-class LiveActivityGroup(Fetchable, Statusable, Shutdownable, Startupable, Configurable, Deployable):
+class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable, 
+                        Startupable, Activatable, Configurable, Metadatable):
     """ 
         @summary: Should be responsible for managing single live activity group
     """

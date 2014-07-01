@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from misc import Logger
-from mixin import Fetchable
+from mixin import Fetchable, Deletable
 from serializer import ActivitySerializer
 from abstract import Path
 
-class Activity(Fetchable):
+class Activity(Fetchable, Deletable):
     """ 
         @summary: Should be responsible for managing a single activity
     """

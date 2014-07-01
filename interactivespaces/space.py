@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from mixin import Fetchable,Shutdownable, Configurable, Deployable, Editable, Activatable 
+from mixin import Fetchable, Statusable, Shutdownable, Startupable
+from mixin import Deletable, Activatable, Configurable, Metadatable
 from misc import Logger
 from serializer import SpaceSerializer
 
-class Space(Fetchable, Activatable, Shutdownable, Configurable, Deployable, Editable):
-    """ 
+class Space(Fetchable, Statusable, Deletable, Shutdownable, 
+            Startupable, Activatable, Configurable, Metadatable):
+    """
         @summary: Space is a LiveActivityGroup aggregator
     """
     def __init__(self, data_hash, uri, name=None, ):
@@ -25,7 +27,7 @@ class Space(Fetchable, Activatable, Shutdownable, Configurable, Deployable, Edit
         
     def create(self, live_activity_group_name, live_activity_names):
         """
-            Should be responsible for creating
+            @summary: Should be responsible for creating space
             @param live_activity_group_name: string
             @param live_activity_names: list of existing names
         """
@@ -33,7 +35,7 @@ class Space(Fetchable, Activatable, Shutdownable, Configurable, Deployable, Edit
     
     def to_json(self):
         """ 
-            Should selected attributes in json form defined by the template
+            @summary: Should selected attributes in json form defined by the template
         """
         self.serializer = SpaceSerializer(self.data_hash)
         return self.serializer.to_json()
@@ -43,14 +45,19 @@ class Space(Fetchable, Activatable, Shutdownable, Configurable, Deployable, Edit
         return self.data_hash['id']
     
     def name(self):
-        """ Should return live activity name"""
+        """ 
+            @param: Should return live activity name
+        """
         return self.data_hash['name']  
   
     def description(self):
-        """ Should return Space description """
+        """ 
+            @param: Should return Space description 
+        """
         return self.data_hash['description']    
     
     """ Private methods below """
+    
     def _get_absolute_url(self):
         live_activity_group_id = self.data_hash['id']
         url = "%s/space/%s/view.json" % (self.uri, live_activity_group_id)

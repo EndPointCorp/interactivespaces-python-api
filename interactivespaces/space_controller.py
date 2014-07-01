@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from mixin import Fetchable, Statusable, Shutdownable
+from mixin import Fetchable, Statusable, Shutdownable, Connectable, Deletable
 from misc import Logger
 from serializer import SpaceControllerSerializer
 from abstract import Path
 
-class SpaceController(Fetchable, Statusable, Shutdownable):
+class SpaceController(Fetchable, Statusable, Deletable, Shutdownable, 
+                      Connectable):
     """ 
         @summary: Should be responsible for managing live activity groups
     """
