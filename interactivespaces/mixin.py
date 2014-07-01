@@ -111,7 +111,36 @@ class Communicable(object):
             return post_response
         else:
             self.log.info("_api_post_json returned post_response.status_code %s" % post_response.status_code)
-            return False 
+            return False
+
+    def _api_post_json_no_cookies(self, url, payload, file_handler=None):
+        """
+            @summary: Sends data to the master without looking for cookies
+            @rtype: string or False
+            @param payload: dictionary containing data to send
+            @param url: string containing url that we talk to
+            @param file_handler: path to local zipfile - if provided, a multi-part
+                post will be sent to the URL
+        """
+        if file_handler:
+            head, tail = os.path.split(file_handler.name)
+            file_name = tail
+            file_content_type = "application/zip"
+            files = {"activityFile" : (file_name , file_handler, file_content_type)}
+        else:
+            files = None
+        self.log.info("Doing a POST request to %s with payload %s" %(url, payload))
+        session = requests.session()
+        get_response = session.get(url)
+        query = urlparse.urlparse(get_response.url).query
+        url = url + "?" + query
+        post_response = session.post(url=url, data=payload, files=files) 
+        if post_response.status_code == 200:
+            self.log.info("_api_post_json returned 200 with post_response.url=%s" % post_response.url)
+            return post_response
+        else:
+            self.log.info("_api_post_json returned post_response.status_code %s" % post_response.status_code)
+            return False  
          
     def _api_post_html(self, command, query=None, data=None):
         """Sends data to the master."""
@@ -175,7 +204,7 @@ class Statusable(Communicable):
         else:
             return False
           
-    def _send_status_refreshd(self, refresh_route):
+    def _send_status_refresh(self, refresh_route):
         """ 
             @summary: Should tell master to retrieve status info from controller
             so master has the most up to date info from the controller
@@ -218,7 +247,7 @@ class Deletable(Communicable):
             @rtype: bool
         """
         url = "%s%s" % (self.uri, delete_route)
-        self.log.info("Sending status 'delete' to url=%s" %url)
+        self.log.info("Sending 'delete' to url=%s" %url)
         try:
             response = self._api_get_html(url)
         except urllib2.HTTPError, e:
@@ -275,7 +304,7 @@ class Startupable(Communicable):
       
     def send_startup(self):
         startup_route = Path().get_route_for(self.class_name, 'startup') % self.data_hash['id']
-        if self._send_shutdown_request(startup_route):
+        if self._send_startup_request(startup_route):
             self.log.info("Successfully sent 'startup' for url=%s" % self.absolute_url) 
             return True
         else:
@@ -307,7 +336,7 @@ class Activatable(Communicable):
 
     def send_activate(self):
         activate_route = Path().get_route_for(self.class_name, 'activate') % self.data_hash['id']
-        if self._send_shutdown_request(activate_route):
+        if self._send_activatable_request(activate_route):
             self.log.info("Successfully sent 'activate' for url=%s" % self.absolute_url) 
             return True
         else:
@@ -449,7 +478,7 @@ class Connectable(Communicable):
         self.log = Logger().get_logger()
         super(Connectable, self).__init__()
         
-    def connect(self):
+    def send_connect(self):
         connect_route = Path().get_route_for(self.class_name, 'connect') % self.data_hash['id']
         if self._send_connectable_request(connect_route):
             self.log.info("Successfully sent 'connect' for url=%s" % self.absolute_url) 
@@ -457,7 +486,7 @@ class Connectable(Communicable):
         else:
             return False
     
-    def disconnect(self):
+    def send_disconnect(self):
         disconnect_route = Path().get_route_for(self.class_name, 'disconnect') % self.data_hash['id']
         if self._send_connectable_request(disconnect_route):
             self.log.info("Successfully sent 'disconnect' for url=%s" % self.absolute_url) 
@@ -496,9 +525,10 @@ class Metadatable(Communicable):
             @rtype: bool
             @param metadata_args: Dictionary with keys and values
         """
-        metadata = self._unpack_metadata(metadata_dictionary)
+        metadata = {"values" : self._unpack_metadata(metadata_dictionary)}
+        self.log.info("Updating metadata of %s with %s" % (self.class_name, metadata))
         metadata_route = Path().get_route_for(self.class_name, 'metadata') % self.data_hash['id']
-        if self._send_editable_request(metadata_route, metadata):
+        if self._send_metadatable_request(metadata_route, metadata):
             self.log.info("Successfully sent metadata for url=%s" % self.absolute_url) 
             return True
         else:
@@ -513,8 +543,8 @@ class Metadatable(Communicable):
         metadata_text = ""
         try:
             for key, value in metadata_dictionary.iteritems():
-                metadata_text = metadata_text + ("\n") + key + "=" + value
-                return metadata_text
+                metadata_text = metadata_text + ("\r\n") + key + "=" + value
+            return metadata_text
         except Exception, e:
             self.log.error("Could not unpack supplied metadata dictionary because %s" % e)
             raise
@@ -526,7 +556,7 @@ class Metadatable(Communicable):
         url = "%s%s" % (self.uri, metadata_route)
         self.log.info("Sending editable POST request to url=%s" %url)
         try:
-            response = self._api_post_json(url)
+            response = self._api_post_json_no_cookies(url, metadata)
         except urllib2.HTTPError, e:
             response = None
             self.log.error("Could not send connectable GET request because %s" % e)

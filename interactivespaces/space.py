@@ -3,11 +3,13 @@
 
 from mixin import Fetchable, Statusable, Shutdownable, Startupable
 from mixin import Deletable, Activatable, Configurable, Metadatable
+from mixin import Deployable, Cleanable
 from misc import Logger
 from serializer import SpaceSerializer
 
 class Space(Fetchable, Statusable, Deletable, Shutdownable, 
-            Startupable, Activatable, Configurable, Metadatable):
+            Startupable, Activatable, Configurable, Metadatable,
+            Deployable, Cleanable):
     """
         @summary: Space is a LiveActivityGroup aggregator
     """
@@ -16,6 +18,7 @@ class Space(Fetchable, Statusable, Deletable, Shutdownable,
         self.data_hash = data_hash
         self.uri = uri
         self.absolute_url = self._get_absolute_url()
+        self.class_name = self.__class__.__name__
         super(Space, self).__init__()
         self.log.info("Instantiated Activity object with url=%s" % self.absolute_url)
         

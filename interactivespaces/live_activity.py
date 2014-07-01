@@ -3,7 +3,7 @@
 
 from mixin import Fetchable, Statusable, Shutdownable, Startupable
 from mixin import Deletable, Activatable, Configurable, Cleanable
-from mixin import Metadatable
+from mixin import Metadatable, Deployable
 from exception import LiveActivityException
 from serializer import LiveActivitySerializer
 from misc import Logger
@@ -11,7 +11,7 @@ from abstract import Path
 
 class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable, 
                    Startupable, Activatable, Configurable, Cleanable,
-                   Metadatable):
+                   Metadatable, Deployable):
     """
         @summary: Should be responsible for managing single LiveActivity
         @todo: .new() should return instance of fetched live activity

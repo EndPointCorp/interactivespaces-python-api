@@ -40,12 +40,12 @@ class Path(object):
                             'configure' : '/liveactivity/%s/configure.json',
                             'clean_tmp' : '/liveactivity/%s/cleantmpdata.json',
                             'clean_permanent' : '/liveactivity/%s/cleanpermanentdata.json',
-                            'metadata' : 'liveactivity/%s/metadata/edit'
+                            'metadata' : '/liveactivity/%s/metadata/edit'
                             },
                        'LiveActivityGroup' : {
                             'view' : '/liveactivitygroup/%s/view.json',
                             'new' : '/liveactivitygroup/new',
-                            'status' : '/liveactivitygroup/status.json',
+                            'status' : '/liveactivitygroup/%s/liveactivitystatus.json',
                             'delete' : '/liveactivitygroup/%s/delete.html',
                             'shutdown' : '/liveactivitygroup/%s/shutdown.json',
                             'startup' : '/liveactivitygroup/%s/startup.json',
@@ -72,7 +72,9 @@ class Path(object):
                             'status': '/spacecontroller/%s/status.json',
                             'delete': '/spacecontroller/%s/delete.html',
                             'shutdown': '/spacecontroller/%s/shutdown.json',
-                            'deploy': '/spacecontroller/%s/deploy.json'
+                            'deploy': '/spacecontroller/%s/deploy.json',
+                            'connect' : '/spacecontroller/%s/connect.json',
+                            'disconnect' : '/spacecontroller/%s/disconnect.json'
                             }
                         }
         

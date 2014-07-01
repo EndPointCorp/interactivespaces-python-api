@@ -156,14 +156,13 @@ class Master(Communicable):
         elif isinstance(live_activity_group[0], LiveActivityGroup):
             live_activity_group[0].fetch()
             self.log.info("get_live_activity_group returned LiveActivityGroup:%s" % str(live_activity_group))
-            return live_activity_group
+            return live_activity_group[0]
         else:
             raise MasterException("Could not get specific live activity group for given search pattern")
-        return live_activity_group
 
     def get_spaces(self, search_pattern=None):
         """
-            Retrieves a list of live activity groups.
+            @summary: Retrieves a list of live activity groups.
             @rtype: list
             @param search_pattern: dictionary containing space name regexp
                 - example regexp dict: {"space_name" : "regexp"}
@@ -174,6 +173,27 @@ class Master(Communicable):
         self.log.debug('Got response for "get_spaces" %s ' % str(response))
         spaces = self._filter_spaces(response, search_pattern)
         return spaces
+    
+    def get_space(self, search_pattern=None):
+        """
+            @summary: Retrieves a Space
+            @rtype: Space
+            @param search_pattern: dictionary containing space name regexp
+                - example regexp dict: {"space_name" : "regexp"}
+        """
+        url = self._compose_url(class_name='Master', method_name='get_spaces', uri=self.uri)
+        self.log.info("Trying to retrieve url=%s" % url)
+        response = self._api_get_json(url)
+        self.log.debug('Got response for "get_spaces" %s ' % str(response))
+        space = self._filter_spaces(response, search_pattern)
+        if len(space) > 1:
+            raise MasterException("get_space returned more than one row (%s)" % len(space))
+        elif isinstance(space[0], Space):
+            space[0].fetch()
+            self.log.info("get_space returned Space:%s" % str(space))
+            return space[0]
+        else:
+            raise MasterException("Could not get specific space for given search pattern")
 
     def get_space_controllers(self, search_pattern=None):
         """
@@ -200,10 +220,10 @@ class Master(Communicable):
             @rtype: SpaceController
             @param search_pattern: dictionary containing regexps and strings
                 - example regexp dict: {
-                                        "state" : "STRING",
-                                        "mode" : "STRING",
-                                        "name" : "regexp",
-                                        "uuid" : "STRING"
+                                        "space_controller_state" : "STRING",
+                                        "space_controller_mode" : "STRING",
+                                        "space_controller_name" : "regexp",
+                                        "space_controller_uuid" : "STRING"
                                         }
         """
         url = self._compose_url(class_name='Master', method_name='get_space_controllers', uri=self.uri)
@@ -214,6 +234,8 @@ class Master(Communicable):
         if len(space_controller) > 1:
             raise MasterException("get_space_controller returned more than one row")
         elif isinstance(space_controller[0], SpaceController):
+            space_controller[0].fetch()
+            self.log.info("get_space_controller returned SpaceController:%s" % str(space_controller))
             return space_controller[0]
         else:
             raise MasterException("Could not get specific space controller for given search pattern")

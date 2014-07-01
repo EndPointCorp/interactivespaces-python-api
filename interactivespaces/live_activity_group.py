@@ -3,12 +3,14 @@
 
 from mixin import Fetchable, Statusable, Shutdownable, Startupable
 from mixin import Deletable, Activatable, Configurable, Metadatable
+from mixin import Deployable
 from misc import Logger
 from serializer import LiveActivityGroupSerializer
 from abstract import Path
 
 class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable, 
-                        Startupable, Activatable, Configurable, Metadatable):
+                        Startupable, Activatable, Configurable, Metadatable,
+                        Deployable):
     """ 
         @summary: Should be responsible for managing single live activity group
     """
