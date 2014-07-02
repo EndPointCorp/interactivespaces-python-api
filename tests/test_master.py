@@ -4,24 +4,11 @@
 import sys, os
 sys.path.append(os.curdir)
 import unittest
-from mock import MagicMock
 
 import interactivespaces
 
 TEST_HOST = "lg-head"
 TEST_PORT = "8080"
-
-
-
-def test_get_collection(data, method_to_test, expected_type, path_name):
-    """Helper for testing collection getters."""
-    master = interactivespaces.Master(TEST_HOST, TEST_PORT)
-    master._api_get_json = MagicMock(return_value=[data])
-
-    result = method_to_test(master)
-    master._api_get_json.assert_called_once_with('{}/all'.format(path_name))
-
-    return result
 
 class MasterTests(unittest.TestCase):
     def test_constructor(self):
@@ -37,6 +24,15 @@ if __name__ == '__main__':
     unittest.main()
   
 """
+def test_get_collection(data, method_to_test, expected_type, path_name):
+    master = interactivespaces.Master(TEST_HOST, TEST_PORT)
+    master._api_get_json = MagicMock(return_value=[data])
+
+    result = method_to_test(master)
+    master._api_get_json.assert_called_once_with('{}/all'.format(path_name))
+
+    return result
+    
 class MockResponse(object):
     def read():
         return '{"result":"success","data":{"foo":"bar"}}'
