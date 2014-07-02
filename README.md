@@ -1,4 +1,4 @@
-![travis](https://api.travis-ci.org/EndPointCorp/interactivespaces-python-api.svg)
+[![travis](https://api.travis-ci.org/EndPointCorp/interactivespaces-python-api.svg)](https://travis-ci.org/EndPointCorp/interactivespaces-python-api)
 interactivespaces-python-api
 ============================
 
