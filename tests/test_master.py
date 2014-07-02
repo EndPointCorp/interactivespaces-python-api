@@ -4,19 +4,23 @@
 import sys, os
 sys.path.append(os.curdir)
 import unittest
-
 import interactivespaces
+import logging
 
 TEST_HOST = "lg-head"
 TEST_PORT = "8080"
+TEST_PREFIX = "/interactivespaces"
 
 class MasterTests(unittest.TestCase):
     def test_constructor(self):
         """Test construction with valid arguments."""
-        master = interactivespaces.Master(TEST_HOST, TEST_PORT)
-        self.assertEqual(master.host, TEST_HOST)
-        self.assertEqual(master.port, TEST_PORT)
-
+        master = interactivespaces.Master(TEST_HOST, TEST_PORT, TEST_PREFIX)
+        self.assertEqual(master.host, TEST_HOST, "Master host not set correctly")
+        self.assertEqual(master.port, TEST_PORT, "Master port not set correctly")
+        self.assertEqual(master.prefix, TEST_PREFIX, "Master prefix not set correctly")
+        self.assertIsInstance(master.log, logging.Logger, "Logger is not an instance of logging.Logger")
+        self.assertIsInstance(master, interactivespaces.Master, "Master is not an instance of Master")
+        
     def test_api_get_json(self):
         """Test a valid call to Master._api_get_json()."""
         

@@ -22,6 +22,22 @@ class JsonResponse(object):
     def spacecontroller_all(self):
         return self._read_file('spacecontroller_all.json')
     
+    """ Picked id = 56 for tests """
+    def activity_56_view(self):
+        return self._read_file('activity_56_view.json')
+    
+    def activity_56_uri(self):
+        return "http://lg-head:8080/interactivespaces"
+    
+    def activity_56_absolute_url(self):
+        return "http://lg-head:8080/interactivespaces/activity/56/view.json"
+    
+    def activity_56_initial_data_hash(self):
+        return self._read_file('activity_56_initial_data_hash.json')
+    
+    def activity_56_upload_uri(self):
+        return "http://lg-head:8080/interactivespaces/activity/upload"
+
     def _read_file(self, filename):
         """
             @summary: reads a file and returns it

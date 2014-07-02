@@ -11,17 +11,18 @@ class Activity(Fetchable, Deletable):
         @summary: Should be responsible for managing a single activity
     """
     def __init__(self, data_hash=None, uri=None, activity_archive_uri=None, name=None):
+        self.class_name = self.__class__.__name__
         self.log = Logger().get_logger()
         super(Activity, self).__init__()
         
-        if (data_hash==None and uri==None):
+        if (data_hash == None and uri == None):
             self.log.info("No data provided - assuming creation of new Activity")
-        elif (data_hash!=None and uri!=None):
+        elif (data_hash != None and uri != None):
             self.data_hash = data_hash
             self.uri = uri
             self.absolute_url = self._get_absolute_url()
             self.log.info("Instantiated Activity object with url=%s" % self.absolute_url)
-        
+    
     def __repr__(self):
         return str(self.data_hash)
     
@@ -50,8 +51,11 @@ class Activity(Fetchable, Deletable):
         url = "%s%s" % (uri, route)
         payload = {"_eventId_save" : "Save"}
         request_response = self._api_post_json(url, payload, zip_file_handler)
-        
+        return self.check_upload_response(request_response)
+    
+    def check_upload_response(self, request_response):
         if request_response.url:
+            """ Dirty workaround for nasty html redirect """
             self.absolute_url = request_response.url.replace("view.html", "view.json")
             self.fetch()
             self.log.info("Created new Activity with url=%s, data_hash is now %s" % (self.absolute_url, self.data_hash))
@@ -95,6 +99,10 @@ class Activity(Fetchable, Deletable):
     """ Private methods below"""
     
     def _get_absolute_url(self):
+        """ 
+            @summary: Initial data hash without subattributes that comes
+            from the all.json method
+        """
         activity_id = self.data_hash['id']
         url = "%s/activity/%s/view.json" % (self.uri, activity_id)
         return url  
