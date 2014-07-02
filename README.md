@@ -1,8 +1,9 @@
+![travis](https://api.travis-ci.org/EndPointCorp/interactivespaces-python-api.svg)
+
 interactivespaces-python-api
 ============================
 
 [Interactive Spaces](https://github.com/interactivespaces/interactivespaces) API client
-
 
 ```python
 
