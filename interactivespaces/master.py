@@ -27,7 +27,7 @@ class Master(Communicable):
         self.log = Logger().get_logger()
         self.uri = "http://%s:%s%s" % (self.host, self.port, prefix)
         super(Master, self).__init__()
-        
+    
     def get_activities(self, search_pattern=None):
         """
             Retrieves a list of Activity objects
@@ -558,3 +558,7 @@ class Master(Communicable):
             live_activity_ids.append(live_activity.id())
         self.log.info("Translated %s live_activity_names to ids with a result of %s" % (len(live_activity_ids), live_activity_ids) )
         return live_activity_ids
+
+
+
+

@@ -1,6 +1,6 @@
 import interactivespaces
 
-master = interactivespaces.Master('127.0.0.1', '1234')
+master = interactivespaces.Master('127.0.0.1', '8080')
 
 """ Listing """
 def list_space_controllers():
@@ -26,9 +26,9 @@ def list_activities():
         activity.fetch()
         #print activity.name(), activity.identifying_name(), activity.version(), activity.id(), activity.description()
         print activity.to_json()
-        
+
 def list_live_activities():
-    print "\n =Live activities=\n"        
+    print "\n =Live activities=\n"
     liveactivities = master.get_live_activities({"live_activity_name" : "^GE"})
     for liveactivity in liveactivities:
         liveactivity.fetch()
@@ -37,7 +37,7 @@ def list_live_activities():
 
 def list_spaces():
     print "\n =Spaces=\n"
-    spaces = master.get_spaces({"space_name" : "^Liquid$"})
+    spaces = master.get_spaces({"space_name" : ""})
     for space in spaces:
         space.fetch()
         #print space.name(), space.id(), space.description()
@@ -93,7 +93,7 @@ def send_status_refresh_to_a_live_activity():
 
 def send_status_refresh_to_a_live_activity_group():
     print "\n =Live Activity Group= \n"
-    live_activity_group = master.get_live_activity_group({"live_activity_group_name" : "^GE and Supporting$"})
+    live_activity_group = master.get_live_activity_group({"live_activity_group_name" : "GE and Supporting"})
     live_activity_group.to_json()
     print "Sending status refresh to live activity group"
     live_activity_group.send_status_refresh()
@@ -325,3 +325,4 @@ def update_metadata_of_space():
     print space.to_json()
     print "Setting metadata of space"
     space.set_metadata({"some_key" : "some_value", "another_key" : "another_value"})
+
