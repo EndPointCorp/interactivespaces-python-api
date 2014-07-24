@@ -1,3 +1,7 @@
 * Test the rest of the new_ methods in Master
 * Test get_ methods with lambda patterns in Master
 * Separate .fetch(), _get_absoslute_url() and part of .new() methods from API classes to Communicable to make everything more DRY
+* create relaunch script:
+** it should have a config file
+** it should iterate over live activity groups and perform a "deactivate => status => activate" loop as many times as needed
+* get_live_activity_groups() returns 2 objects instead of 3

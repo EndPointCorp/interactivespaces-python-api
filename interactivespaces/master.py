@@ -27,7 +27,7 @@ class Master(Communicable):
         self.log = Logger().get_logger()
         self.uri = "http://%s:%s%s" % (self.host, self.port, prefix)
         super(Master, self).__init__()
-        
+    
     def get_activities(self, search_pattern=None):
         """
             Retrieves a list of Activity objects
