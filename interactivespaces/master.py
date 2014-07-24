@@ -276,7 +276,7 @@ class Master(Communicable):
                 "zip_file_handler": "zipfile object (mandatory)"
                 }
             @rtype: Activity or False
-        """ 
+        """
         
         activity = Activity().new(self.uri, constructor_args)
         self.log.info("Master:new_activity returned activity:%s" % activity)

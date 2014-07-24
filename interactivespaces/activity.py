@@ -35,10 +35,10 @@ class Activity(Fetchable, Deletable):
         return new_activity
     
     def upload(self, uri, zip_file_handler):
-        """ 
+        """
             @summary: Should make a deployment of the activity with followin steps:
                 - receive handler to a local zipfile
-                - upload it to the API  
+                - upload it to the API
                 - save
                 - set instance variables for the object
             @return: False or URL to a new Activity
@@ -52,7 +52,7 @@ class Activity(Fetchable, Deletable):
         payload = {"_eventId_save" : "Save"}
         request_response = self._api_post_json(url, payload, zip_file_handler)
         return self.check_upload_response(request_response)
-    
+
     def check_upload_response(self, request_response):
         if request_response.url:
             """ Dirty workaround for nasty html redirect """
@@ -63,10 +63,9 @@ class Activity(Fetchable, Deletable):
         else:
             self.log.info("Created new Activity %s but returned False" % self)
             return False
-    
-        
+
     def to_json(self):
-        """ 
+        """
             Should selected attributes in json form defined by the template
         """
         self.serializer = ActivitySerializer(self.data_hash)
@@ -78,7 +77,7 @@ class Activity(Fetchable, Deletable):
     
     def name(self):
         """ Should return live activity name"""
-        return self.data_hash['activity']['name']  
+        return self.data_hash['activity']['name']
     
     def identifying_name(self):
         """ Should return identifying name """
@@ -91,7 +90,7 @@ class Activity(Fetchable, Deletable):
     def id(self):
         """ Should return Activity id """
         return self.data_hash['activity']['id']
-  
+
     def description(self):
         """ Should return Activity description """
         return self.data_hash['activity']['description']
@@ -99,10 +98,10 @@ class Activity(Fetchable, Deletable):
     """ Private methods below"""
     
     def _get_absolute_url(self):
-        """ 
+        """
             @summary: Initial data hash without subattributes that comes
             from the all.json method
         """
         activity_id = self.data_hash['id']
         url = "%s/activity/%s/view.json" % (self.uri, activity_id)
-        return url  
+        return url
