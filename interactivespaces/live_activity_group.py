@@ -76,9 +76,15 @@ class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable,
         live_activities = []
         data = self.data_hash['liveActivities']
         for live_activity in data:
+            try:
+                status = live_activity['active']['runtimeState']
+            except Exception:
+                status = 'UNKNOWN'
+                
             live_activity_group_live_activity = {"id" : live_activity['id'], 
                                                 "description" : live_activity['description'],
-                                                "name" : live_activity['name']
+                                                "name" : live_activity['name'],
+                                                "status" : status
                                                 }
             live_activities.append(live_activity_group_live_activity)
         return live_activities

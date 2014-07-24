@@ -1,10 +1,10 @@
 import interactivespaces
 
-master = interactivespaces.Master('127.0.0.1', '8080')
+master = interactivespaces.Master('127.0.0.1', '1279')
 
 """ Listing """
 def list_space_controllers():
-    print "\n =Space controllers=\n"    
+    print "\n =Space controllers=\n"
     space_controllers = master.get_space_controllers({"space_controller_uuid" : "1a98af7b-58a8-4747-948a-3e3706ef2158"})
     for controller in space_controllers:
         controller.fetch()
@@ -13,7 +13,7 @@ def list_space_controllers():
 
 def list_live_activity_groups():
     print "\n =Live activity groups=\n"
-    liveactivitygroups = master.get_live_activity_groups({"live_activity_group_name" : "1234"})
+    liveactivitygroups = master.get_live_activity_groups({"live_activity_group_name":"GE and Supporting"})
     for liveactivitygroup in liveactivitygroups:
         liveactivitygroup.fetch()
         #print liveactivitygroup.name(), liveactivitygroup.id(), liveactivitygroup.description(), liveactivitygroup.live_activities()
@@ -311,7 +311,7 @@ def update_metadata_of_live_activity():
     activity.set_metadata({"some_key" : "some_value", "another_key" : "another_value"})
     activity.fetch()
     print activity.to_json()
-    
+
 def update_metadata_of_live_activity_group():
     print "\n =Live Activity Group= \n"
     live_activity_group = master.get_live_activity_group({"live_activity_group_name" : "^GE and Supporting$"})
@@ -325,4 +325,5 @@ def update_metadata_of_space():
     print space.to_json()
     print "Setting metadata of space"
     space.set_metadata({"some_key" : "some_value", "another_key" : "another_value"})
+
 
