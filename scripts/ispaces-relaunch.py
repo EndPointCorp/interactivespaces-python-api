@@ -4,9 +4,10 @@
 import sys
 import os
 sys.path.append("../")
+sys.path.append("/home/galadmin/src/interactivespaces-python-api/")
 from interactivespaces import Master
 import ConfigParser
-import argparse
+from optparse import OptionParser
 import pprint
 import time
 
@@ -43,9 +44,9 @@ class InteractiveSpacesRelaunch(object):
         self.config_path = config_path
         self.init_config()
         self.master = Master(self.host, self.port, self.log_path)
-        self.relaunch_sequence = self.config.get('relaunch', 'relaunch_sequence').split(',')
         self.relaunch_container = []
-        self.pp = pprint.PrettyPrinter(indent=4)
+        self.stopped = False
+        self.activated = False
 
     @debug
     def init_config(self):
@@ -56,8 +57,9 @@ class InteractiveSpacesRelaunch(object):
         self.shutdown_attempts = self.config.getint('relaunch', 'shutdown_attempts')
         self.startup_attempts = self.config.getint('relaunch', 'startup_attempts')
         self.interval_between_attempts = self.config.getint('relaunch', 'interval_between_attempts')
-        self.stopped = False
-        self.activated = False
+        self.log_path = self.config.get('global', 'logfile_path')
+        self.pp = pprint.PrettyPrinter(indent=4)
+        self.relaunch_sequence = self.config.get('relaunch', 'relaunch_sequence').split(',')
 
     @debug
     def prepare_container(self):
@@ -163,10 +165,9 @@ class InteractiveSpacesRelaunch(object):
 
 if __name__ == '__main__':
     config_path='etc/ispaces-client.cfg'
-    parser = argparse.ArgumentParser(description='Relaunch ispaces')
-    parser.add_argument('-c', dest='config_path', action='store_const',
-                   const=config_path, default='etc/ispaces-client.cfg', help='config file')
-    args = parser.parse_args()
+    parser = OptionParser()
+    parser.add_option("--config", dest="config_path", default="etc/ispaces-client.conf", help="Provie path to config file - ./etc/ispaces-client.cfg by default", metavar="CONFIG_PATH")
+    (options, args) = parser.parse_args()
     if os.path.isfile(config_path):
         ir = InteractiveSpacesRelaunch(config_path)
         relaunched = ir.relaunch()
