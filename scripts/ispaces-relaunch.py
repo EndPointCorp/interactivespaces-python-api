@@ -151,6 +151,7 @@ class InteractiveSpacesRelaunch(object):
             live_activities = live_activity_group.live_activities()
             for live_activity in live_activities:
                 live_activity.send_shutdown()
+                live_activity.send_clean_tmp()
         print "Shutting down"
 
     @debug
