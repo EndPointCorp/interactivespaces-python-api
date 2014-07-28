@@ -106,7 +106,7 @@ class InteractiveSpacesRelaunch(object):
             live_activity_group = self.master.get_live_activity_group(
                 {'live_activity_group_name' : live_activity_group_name})
             for live_activity in live_activity_group.live_activities():
-                statuses[live_activity['name']] = live_activity['status']
+                statuses[live_activity.name()] = live_activity.status()
         print "Live activity statuses:"
         self.pp.pprint(statuses)
         return statuses
