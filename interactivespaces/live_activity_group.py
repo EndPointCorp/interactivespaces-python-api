@@ -75,17 +75,12 @@ class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable,
         """ Should return live activity name"""
         live_activities = []
         data = self.data_hash['liveActivities']
-        for live_activity in data:
+        for live_activity_data in data:
             try:
-                status = live_activity['active']['runtimeState']
+                status = live_activity_data['active']['runtimeState']
             except Exception:
                 status = 'UNKNOWN'
-                
-            live_activity_group_live_activity = {"id" : live_activity['id'], 
-                                                "description" : live_activity['description'],
-                                                "name" : live_activity['name'],
-                                                "status" : status
-                                                }
+            live_activity_group_live_activity = LiveActivity(data_hash=live_activity_data)
             live_activities.append(live_activity_group_live_activity)
         return live_activities
         
