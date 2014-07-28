@@ -43,7 +43,7 @@ class InteractiveSpacesRelaunch(object):
     def __init__(self, config_path):
         self.config_path = config_path
         self.init_config()
-        self.master = Master(self.host, self.port, self.log_path)
+        self.master = Master(host=self.host, port=self.port, logfile_path=self.log_path)
         self.relaunch_container = []
         self.stopped = False
         self.activated = False
