@@ -7,6 +7,7 @@ from mixin import Deployable
 from misc import Logger
 from serializer import LiveActivityGroupSerializer
 from abstract import Path
+from live_activity import LiveActivity
 
 class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable, 
                         Startupable, Activatable, Configurable, Metadatable,
@@ -80,7 +81,7 @@ class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable,
                 status = live_activity_data['active']['runtimeState']
             except Exception:
                 status = 'UNKNOWN'
-            live_activity_group_live_activity = LiveActivity(data_hash=live_activity_data)
+            live_activity_group_live_activity = LiveActivity(data_hash=live_activity_data, uri=self.uri)
             live_activities.append(live_activity_group_live_activity)
         return live_activities
         
