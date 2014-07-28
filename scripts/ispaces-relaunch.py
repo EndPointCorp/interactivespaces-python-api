@@ -164,9 +164,9 @@ class InteractiveSpacesRelaunch(object):
             print "Exiting: could not relaunch ispaces"
 
 if __name__ == '__main__':
-    config_path='etc/ispaces-client.cfg'
+    config_path='etc/ispaces-client.conf'
     parser = OptionParser()
-    parser.add_option("--config", dest="config_path", default="etc/ispaces-client.conf", help="Provie path to config file - ./etc/ispaces-client.cfg by default", metavar="CONFIG_PATH")
+    parser.add_option("--config", dest="config_path", default="etc/ispaces-client.conf", help="Provie path to config file - ./etc/ispaces-client.conf by default", metavar="CONFIG_PATH")
     (options, args) = parser.parse_args()
     if os.path.isfile(config_path):
         ir = InteractiveSpacesRelaunch(config_path)
