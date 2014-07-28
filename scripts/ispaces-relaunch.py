@@ -70,6 +70,12 @@ class InteractiveSpacesRelaunch(object):
             self.relaunch_container.append(live_activity_group)
 
     @debug
+    def wait(self):
+        print "Waiting for %s seconds" % self.interval_between_attempts
+        time.sleep(self.interval_between_attempts)
+        pass
+
+    @debug
     def loop_till_finished(self):
         '''
         @summary: first make sure we're stopped, then make sure we're activated
@@ -77,18 +83,20 @@ class InteractiveSpacesRelaunch(object):
 
         while self.stopped == False and self.shutdown_attempts >= 0:
             self.shutdown()
+            self.wait()
             self.status_refresh()
             self.shutdown_attempts -= 1
             self.stopped = self.check_if_stopped()
             if self.stopped:
                 break
             else:
-                time.sleep(self.interval_between_attempts)
+                self.wait()
                 print "Shutdown attempts left %s" % self.shutdown_attempts
 
 
         while self.startup_attempts >= 0:
             self.activate()
+            self.wait()
             self.status_refresh()
             self.relaunched = self.check_if_activated()
             if self.relaunched:
@@ -96,7 +104,7 @@ class InteractiveSpacesRelaunch(object):
             else:
                 print "Startup attempts left %s" % self.startup_attempts
                 self.startup_attempts -= 1
-                time.sleep(self.interval_between_attempts)
+                self.wait()
 
     @debug
     def get_statuses(self):

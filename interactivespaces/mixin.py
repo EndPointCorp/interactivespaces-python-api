@@ -271,7 +271,7 @@ class Shutdownable(Communicable):
     def send_shutdown(self):
         shutdown_route = Path().get_route_for(self.class_name, 'shutdown') % self.data_hash['id']
         if self._send_shutdown_request(shutdown_route):
-            self.log.info("Successfully refreshed shutdown for url=%s" % self.absolute_url) 
+            self.log.info("Successfully sent shutdown for url=%s" % self.absolute_url) 
             return True
         else:
             return False
