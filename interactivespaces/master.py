@@ -13,21 +13,21 @@ from helper import SearchPattern, Searcher
 
 class Master(Communicable):
     """
-        @summary: This is the main class with all the logic needed for 
+        @summary: This is the main class with all the logic needed for
         high level stuff. You will typically use instance of Master for all your scripts.
     """
-    def __init__(self, host='lg-head', port='8080', prefix='/interactivespaces'):
-        """ 
-            @param host: default value is lg-head 
+    def __init__(self, host='lg-head', port='8080', prefix='/interactivespaces', logfile_path='ispaces-client.log'):
+        """
+            @param host: default value is lg-head
             @param port: default value is 8080
             @param prefix: default value is /interactivespaces
             @todo: refactor filter_* methods because they're not DRY
         """
         self.host, self.port, self.prefix = host, port, prefix
-        self.log = Logger().get_logger()
+        self.log = Logger(logfile_path=logfile_path).get_logger()
         self.uri = "http://%s:%s%s" % (self.host, self.port, prefix)
         super(Master, self).__init__()
-    
+
     def get_activities(self, search_pattern=None):
         """
             Retrieves a list of Activity objects

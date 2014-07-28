@@ -7,7 +7,7 @@ sys.path.append("../")
 from interactivespaces import Master
 import ConfigParser
 import argparse
-import pprint 
+import pprint
 import time
 
 '''
@@ -42,7 +42,7 @@ class InteractiveSpacesRelaunch(object):
     def __init__(self, config_path):
         self.config_path = config_path
         self.init_config()
-        self.master = Master(self.host, self.port)
+        self.master = Master(self.host, self.port, self.log_path)
         self.relaunch_sequence = self.config.get('relaunch', 'relaunch_sequence').split(',')
         self.relaunch_container = []
         self.pp = pprint.PrettyPrinter(indent=4)
@@ -58,7 +58,7 @@ class InteractiveSpacesRelaunch(object):
         self.interval_between_attempts = self.config.getint('relaunch', 'interval_between_attempts')
         self.stopped = False
         self.activated = False
-        
+
     @debug
     def prepare_container(self):
         for live_activity_group_name in self.relaunch_sequence:
@@ -66,13 +66,13 @@ class InteractiveSpacesRelaunch(object):
             live_activity_group = self.master.get_live_activity_group(
 				{'live_activity_group_name' : live_activity_group_name})
             self.relaunch_container.append(live_activity_group)
-    
+
     @debug
     def loop_till_finished(self):
-        ''' 
+        '''
         @summary: first make sure we're stopped, then make sure we're activated
         '''
-        
+
         while self.stopped == False and self.shutdown_attempts >= 0:
             self.shutdown()
             self.status_refresh()
@@ -84,7 +84,7 @@ class InteractiveSpacesRelaunch(object):
                 time.sleep(self.interval_between_attempts)
                 print "Shutdown attempts left %s" % self.shutdown_attempts
 
-            
+
         while self.startup_attempts >= 0:
             self.activate()
             self.status_refresh()
@@ -95,7 +95,7 @@ class InteractiveSpacesRelaunch(object):
                 print "Startup attempts left %s" % self.startup_attempts
                 self.startup_attempts -= 1
                 time.sleep(self.interval_between_attempts)
-    
+
     @debug
     def get_statuses(self):
         statuses = {}
@@ -108,7 +108,7 @@ class InteractiveSpacesRelaunch(object):
         print "Live activity statuses:"
         self.pp.pprint(statuses)
         return statuses
-    
+
     @debug
     def check_if_stopped(self):
         statuses = self.get_statuses()
@@ -119,7 +119,7 @@ class InteractiveSpacesRelaunch(object):
         else:
             print "All activities shutdown"
             return True
-        
+
     @debug
     def check_if_activated(self):
         statuses = self.get_statuses()
@@ -127,20 +127,22 @@ class InteractiveSpacesRelaunch(object):
             statuses.pop(live_activity)
         for live_activity in [live_activity for live_activity in statuses.keys() if statuses[live_activity] == 'RUNNING']:
             statuses.pop(live_activity)
-        
+
         if statuses:
             print "Some activities could not get activated %s" % statuses
             return False
         else:
             print "All activities activated"
             return True
-        
-    @debug      
+
+    @debug
     def shutdown(self):
         for live_activity_group in self.relaunch_container:
-            live_activity_group.send_shutdown()
+            live_activities = live_activity_group.live_activities()
+            for live_activity in live_activities:
+                live_activity.shutdown()
         print "Shutting down"
-        
+
     @debug
     def status_refresh(self):
         for live_activity_group in self.relaunch_container:
@@ -150,7 +152,7 @@ class InteractiveSpacesRelaunch(object):
     def activate(self):
         for live_activity_group in self.relaunch_container:
             live_activity_group.send_activate()
-    
+
     @debug
     def relaunch(self):
         self.prepare_container()
@@ -168,4 +170,3 @@ if __name__ == '__main__':
     if os.path.isfile(config_path):
         ir = InteractiveSpacesRelaunch(config_path)
         relaunched = ir.relaunch()
-   
