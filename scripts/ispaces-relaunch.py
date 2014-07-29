@@ -150,9 +150,9 @@ class InteractiveSpacesRelaunch(object):
         for live_activity_group in self.relaunch_container:
             live_activities = live_activity_group.live_activities()
             for live_activity in live_activities:
+                print "Attempting a shut down of live_activity: %s " % live_activity.name()
                 live_activity.send_shutdown()
                 live_activity.send_clean_tmp()
-        print "Shutting down"
 
     @debug
     def status_refresh(self):
@@ -162,6 +162,7 @@ class InteractiveSpacesRelaunch(object):
     @debug
     def activate(self):
         for live_activity_group in self.relaunch_container:
+            print "Attempting startup of live activity group %s" % live_activity_group.name()
             live_activity_group.send_activate()
 
     @debug
