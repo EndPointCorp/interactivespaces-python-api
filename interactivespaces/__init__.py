@@ -5,7 +5,7 @@ from abstract import Path
 from activity import Activity
 from exception import MasterException, PathException, CommunicableException
 from exception import LiveActivityException, StatusableException, ActivityException
-from exception import SerializerException
+from exception import SerializerException, ControllerNotFoundException
 from helper import SearchPattern, Searcher
 from live_activity_group import LiveActivityGroup
 from live_activity import LiveActivity
@@ -27,6 +27,7 @@ __all__ = [
            'MasterException',
            'PathException',
            'CommunicableException',
+           'ControllerNotFoundException',
            'LiveActivityException',
            'StatusableException',
            'ActivityException',

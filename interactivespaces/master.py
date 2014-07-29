@@ -233,7 +233,7 @@ class Master(Communicable):
         space_controller = self._filter_space_controllers(response, search_pattern)
         if len(space_controller) > 1:
             raise MasterException("get_space_controller returned more than one row")
-        elif len(space_controller == 0):
+        elif len(space_controller) == 0:
             raise ControllerNotFoundException("Could not get specific space controller for given search pattern")
         elif isinstance(space_controller[0], SpaceController):
             space_controller[0].fetch()

@@ -11,6 +11,7 @@ from optparse import OptionParser
 import pprint
 import time
 from subprocess import call, PIPE, Popen
+from interactivespaces.exception import ControllerNotFoundException
 
 '''
 ** it should have a config file
@@ -29,11 +30,11 @@ def debug(fn):
             ["%s = %s" % (a, repr(b)) for a, b in kwargs.items()]
         ))
 
-        #print("%s%s called [#%s]" % (indent, fc, call))
+        print("%s%s called [#%s]" % (indent, fc, call))
         __report_indent[0] += 1
         ret = fn(*params, **kwargs)
         __report_indent[0] -= 1
-        #print("%s%s returned %s [#%s]" % (indent, fc, repr(ret), call))
+        print("%s%s returned %s [#%s]" % (indent, fc, repr(ret), call))
         return ret
     wrap.callcount = 0
     return wrap
@@ -61,7 +62,7 @@ class InteractiveSpacesRelaunch(object):
         self.log_path = self.config.get('global', 'logfile_path')
         self.pp = pprint.PrettyPrinter(indent=4)
         self.relaunch_sequence = self.config.get('relaunch', 'relaunch_sequence').split(',')
-        self.controllers_data = self.init_controllers_config(self)
+        self.controllers_data = self.init_controllers_config()
         self.ssh_command = self.config.get('global', 'ssh_command')
         
     @debug
@@ -112,7 +113,7 @@ class InteractiveSpacesRelaunch(object):
     
     @debug
     def connect_all_controllers(self):
-        for controller in self.controllers_data:
+        for controller in self.controllers_data.itervalues():
             if self.controller_connected(controller['name']):
                 print "Controller %s is connected" % controller['name']
             else:
@@ -129,7 +130,7 @@ class InteractiveSpacesRelaunch(object):
         """
         @summary: Iterates over all controllers and makes sure they're connected
         """
-        if self.connect_controllers():
+        if self.connect_all_controllers():
             print "All controllers connected"
             return True
         else:
