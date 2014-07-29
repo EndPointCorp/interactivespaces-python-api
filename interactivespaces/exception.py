@@ -21,3 +21,6 @@ class ActivityException(Exception):
 
 class SerializerException(Exception):
     pass
+
+class ControllerNotFoundException(Exception):
+    pass

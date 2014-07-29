@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from mixin import Communicable
-from exception import MasterException
+from exception import MasterException, ControllerNotFoundException
 from misc import Logger
 from live_activity import LiveActivity
 from activity import Activity
@@ -233,12 +233,14 @@ class Master(Communicable):
         space_controller = self._filter_space_controllers(response, search_pattern)
         if len(space_controller) > 1:
             raise MasterException("get_space_controller returned more than one row")
+        elif len(space_controller == 0):
+            raise ControllerNotFoundException("Could not get specific space controller for given search pattern")
         elif isinstance(space_controller[0], SpaceController):
             space_controller[0].fetch()
             self.log.info("get_space_controller returned SpaceController:%s" % str(space_controller))
             return space_controller[0]
         else:
-            raise MasterException("Could not get specific space controller for given search pattern")
+            raise MasterException("Exception")
         
     def get_named_scripts(self, pattern=None):
         """Retrieves a list of named scripts."""

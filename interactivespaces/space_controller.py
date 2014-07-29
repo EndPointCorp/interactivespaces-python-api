@@ -70,15 +70,15 @@ class SpaceController(Fetchable, Statusable, Deletable, Shutdownable,
         return self.data_hash['id']
     
     def name(self):
-        """ Should return live activity name"""
+        """ @summary: Should return space controller name"""
         return self.data_hash['name']  
   
     def description(self):
-        """ Should return Activity description """
+        """ @summary: Should return space controller description """
         return self.data_hash['description']    
     
     def mode(self):
-        """ Should return Activity description """
+        """ @summary: Should return status of the controller  """
         return self.data_hash['mode']    
 
     """ Private methods below """

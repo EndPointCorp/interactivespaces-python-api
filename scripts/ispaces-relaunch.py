@@ -10,6 +10,7 @@ import ConfigParser
 from optparse import OptionParser
 import pprint
 import time
+from subprocess import call, PIPE, Popen
 
 '''
 ** it should have a config file
@@ -60,7 +61,92 @@ class InteractiveSpacesRelaunch(object):
         self.log_path = self.config.get('global', 'logfile_path')
         self.pp = pprint.PrettyPrinter(indent=4)
         self.relaunch_sequence = self.config.get('relaunch', 'relaunch_sequence').split(',')
-
+        self.controllers_data = self.init_controllers_config(self)
+        self.ssh_command = self.config.get('global', 'ssh_command')
+        
+    @debug
+    def init_controllers_config(self):
+        config = {}
+        controllers_list = self.config.get('global', 'controllers_list').split(',')
+        for controller_name in controllers_list:
+            config[controller_name] = {}
+            config[controller_name]['name'] = self.config.get(controller_name, 'name')
+            config[controller_name]['hostname'] = self.config.get(controller_name, 'hostname')
+            config[controller_name]['stop_command'] = self.config.get(controller_name, 'stop_command')
+            config[controller_name]['launch_command'] = self.config.get(controller_name, 'launch_command')
+            config[controller_name]['pid_command'] = self.config.get(controller_name, 'pid_command')
+        return config
+    
+    @debug 
+    def controller_connected(self, controller_name):
+        try:
+            controller = self.master.get_space_controller({'space_controller_name' : controller_name,
+                                                           'space_controller_mode' : 'ENABLED',
+                                                           'space_controller_state': 'RUNNING'})
+            return True
+        except ControllerNotFoundException, e :
+            print "Controller '%s' not connected" % controller_name
+            return False
+    
+    @debug
+    def stop_controller(self, controller_name):
+        command = "%s '%s'" % (self.ssh_command, self.controllers_data[controller_name]['stop_command'])
+        cmd_process = Popen(command, shell=True, stdout=PIPE)
+        output = cmd_process.communicate()[0].replace('\n', '').split(' ')
+        return output
+    
+    @debug
+    def start_controller(self, controller_name):
+        command = "%s '%s'" % (self.ssh_command, self.controllers_data[controller_name]['start_command'])
+        cmd_process = Popen(command, shell=True, stdout=PIPE)
+        output = cmd_process.communicate()[0].replace('\n', '').split(' ')
+        return output
+    
+    @debug
+    def connect_controller(self, controller_name):
+        controller = master.get_space_controller({'space_controller_name' : controller_name})
+        controller.send_connect()
+        self.wait(3)
+        controller.send_status_refresh()
+        pass
+    
+    @debug
+    def connect_all_controllers(self):
+        for controller in self.controllers_data:
+            if self.controller_connected(controller['name']):
+                print "Controller %s is connected" % controller['name']
+            else:
+                print "Controller %s is not connected - connecting." % controller['name']
+                self.stop_controller(controller['name'])
+                self.wait()
+                self.start_controller(controller['name'])
+                self.wait(10)
+                self.connect_controller(controller['name'])
+                return self.controller_connected(controller['name'])
+    
+    @debug
+    def all_controllers_connected(self):
+        """
+        @summary: Iterates over all controllers and makes sure they're connected
+        """
+        if self.connect_controllers():
+            print "All controllers connected"
+            return True
+        else:
+            help = self.produce_controllers_tmux_help()
+            print "Could not connect all controllers - you should do it manually. Start and stop commands are here: %s" % help
+            return False
+        
+    @debug
+    def produce_controllers_tmux_help(self):
+        help = {}
+        controllers_list = self.config.get('global', 'controllers_list').split(',')
+        for controller_name in controllers_list:
+            config[controller_name] = {}
+            config[controller_name]['stop_command'] = self.config.get(controller_name, 'stop_command')
+            config[controller_name]['launch_command'] = self.config.get(controller_name, 'launch_command')
+        return help
+    
     @debug
     def prepare_container(self):
         for live_activity_group_name in self.relaunch_sequence:
@@ -70,17 +156,17 @@ class InteractiveSpacesRelaunch(object):
             self.relaunch_container.append(live_activity_group)
 
     @debug
-    def wait(self):
-        print "Waiting for %s seconds" % self.interval_between_attempts
-        time.sleep(self.interval_between_attempts)
+    def wait(self, interval=None):
+        if interval:
+            print "Waiting for %s seconds" % interval
+            time.sleep(interval)
+        else:
+            print "Waiting for %s seconds" % self.interval_between_attempts
+            time.sleep(self.interval_between_attempts)
         pass
 
     @debug
-    def loop_till_finished(self):
-        '''
-        @summary: first make sure we're stopped, then make sure we're activated
-        '''
-
+    def shutdown_all_activities(self):
         while self.stopped == False and self.shutdown_attempts >= 0:
             self.shutdown()
             self.wait()
@@ -92,8 +178,8 @@ class InteractiveSpacesRelaunch(object):
             else:
                 self.wait()
                 print "Shutdown attempts left %s" % self.shutdown_attempts
-
-
+    @debug
+    def activate_all_live_activity_groups(self):
         while self.startup_attempts >= 0:
             self.activate()
             self.wait()
@@ -105,7 +191,17 @@ class InteractiveSpacesRelaunch(object):
                 print "Startup attempts left %s" % self.startup_attempts
                 self.startup_attempts -= 1
                 self.wait()
-
+              
+    @debug
+    def loop_till_finished(self):
+        '''
+        @summary: first make sure we're stopped, then make sure we're activated
+        '''
+        if self.all_controllers_connected() and self.shutdown_all_activities() and self.activate_all_live_activity_groups():
+            return True
+        else:
+            return False
+        
     @debug
     def get_statuses(self):
         statuses = {}
@@ -129,7 +225,7 @@ class InteractiveSpacesRelaunch(object):
         else:
             print "All activities shutdown"
             return True
-
+    
     @debug
     def check_if_activated(self):
         statuses = self.get_statuses()
