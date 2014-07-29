@@ -171,7 +171,7 @@ class InteractiveSpacesRelaunch(object):
         if self.loop_till_finished() == True:
             print "Successully relaunched ispaces"
         else:
-            print "Exiting: could not relaunch ispaces"
+            print "Exiting: could not relaunch ispaces - look for errors in %s" % self.log_path
 
 if __name__ == '__main__':
     config_path='/home/galadmin/etc/ispaces-client.conf'
