@@ -14,8 +14,10 @@ from subprocess import call, PIPE, Popen
 from interactivespaces.exception import ControllerNotFoundException
 
 '''
-** it should have a config file
-** it should iterate over live activity groups and perform a "deactivate => status => activate" loop as many times as needed
+TODO: 
+- refactor connect_all_controllers()
+- manage sys.path in the appropriate way without hardcoded paths and .append()
+- make config file steer the debug level for the @debug decorator
 '''
 
 __report_indent = [0]
@@ -58,12 +60,15 @@ class InteractiveSpacesRelaunch(object):
         self.port = self.config.get('master', 'port')
         self.shutdown_attempts = self.config.getint('relaunch', 'shutdown_attempts')
         self.startup_attempts = self.config.getint('relaunch', 'startup_attempts')
-        self.interval_between_attempts = self.config.getint('relaunch', 'interval_between_attempts')
-        self.log_path = self.config.get('global', 'logfile_path')
-        self.pp = pprint.PrettyPrinter(indent=4)
         self.relaunch_sequence = self.config.get('relaunch', 'relaunch_sequence').split(',')
-        self.controllers_data = self.init_controllers_config()
+        self.interval_between_attempts = self.config.getint('relaunch', 'interval_between_attempts')
+        self.relaunch_controllers = self.config.getint('relaunch', 'relaunch_controllers')
+        self.relaunch_master = self.config.getint('relaunch', 'relaunch_master')
+        self.log_path = self.config.get('global', 'logfile_path')
         self.ssh_command = self.config.get('global', 'ssh_command')
+        self.pp = pprint.PrettyPrinter(indent=4)
+        self.controllers_data = self.init_controllers_config()
+        
         
     @debug
     def init_controllers_config(self):
@@ -88,7 +93,7 @@ class InteractiveSpacesRelaunch(object):
             controller = self.master.get_space_controller({'space_controller_name' : controller_name,
                                                            'space_controller_mode' : 'ENABLED',
                                                            'space_controller_state': 'RUNNING'})
-            return False
+            return True
         except ControllerNotFoundException, e :
             print "Controller '%s' not connected" % controller_name
             return False
@@ -130,25 +135,39 @@ class InteractiveSpacesRelaunch(object):
     
     @debug
     def connect_all_controllers(self):
-        for controller_name, controller_data in self.controllers_data.iteritems():
+        '''
+        @summary: should check configuration on whether we should blindly 
+        relaunch and reconnect the controllers and take appropriate action
+        @rtype: bool
+        '''
+        if self.relaunch_controllers:
+            ''' let's blindly relaunch and reconnect controllers'''
+            for controller_name, controller_data in self.controllers_data.iteritems():
+                    print "Stopping tmux session"
+                    self.stop_controller(controller_name)
+                    self.wait(3)
+                    self.destroy_tmux_session(controller_name)
+                    self.wait(2)
+                    print "Starting tmux session"
+                    self.start_controller(controller_name)
+                    self.wait(10)
+                    print "Connecting controller"
+                    self.connect_controller(controller_data['name'])
+                    self.controllers_data[controller_name]['connected'] = self.controller_connected(controller_data['name'])
+        
+        ''' Now let's blindly connect all the controllers '''
+        for controller_name, controller_data in self.controllers_data.iteritems():        
+            self.connect_controller(controller_data['name'])
+            
+        ''' Let's only check whether controllers are connected'''
+        for controller_name, controller_data in self.controllers_data.iteritems():        
             if self.controller_connected(controller_data['name']):
                 print "Controller %s is connected" % controller_data['name']
                 self.controllers_data[controller_name]['connected'] = True
             else:
                 print "Controller %s is not connected." % controller_name
-                print "Stopping tmux session"
-                self.stop_controller(controller_name)
-                self.wait(3)
-                self.destroy_tmux_session(controller_name)
-                self.wait(2)
-                print "Starting tmux session"
-                self.start_controller(controller_name)
-                self.wait(10)
-                print "Connecting controller"
-                self.connect_controller(controller_data['name'])
-                self.controllers_data[controller_name]['connected'] = self.controller_connected(controller_data['name'])
-                
-                
+        
+        '''If any controller failed to connect, we return False, otherwise True'''
         for controller_name, controller_data in self.controllers_data.iteritems():
             if controller_data['connected'] == False:
                 return False
