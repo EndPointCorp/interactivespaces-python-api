@@ -287,6 +287,8 @@ class Shutdownable(Communicable):
         except urllib2.HTTPError, e:
             response = None
             self.log.error("Could not send 'shutdown' GET request because %s" % e)
+            if e=='HTTP Error 500: No connection to controller in 5000 milliseconds':
+                raise CommunicableException('HTTP Error 500: No connection to controller in 5000 milliseconds')
         if response:
             return True
         else:
@@ -321,6 +323,8 @@ class Startupable(Communicable):
         except urllib2.HTTPError, e:
             response = None
             self.log.error("Could not send 'startup' GET request because %s" % e)
+            if e=='HTTP Error 500: No connection to controller in 5000 milliseconds':
+                raise CommunicableException('HTTP Error 500: No connection to controller in 5000 milliseconds')
         if response:
             return True
         else:
@@ -465,6 +469,8 @@ class Cleanable(Communicable):
         except urllib2.HTTPError, e:
             response = None
             self.log.error("Could not send cleanable GET request because %s" % e)
+            if e=='HTTP Error 500: No connection to controller in 5000 milliseconds':
+                raise CommunicableException('HTTP Error 500: No connection to controller in 5000 milliseconds')
         if response:
             return True
         else:

@@ -76,36 +76,53 @@ class InteractiveSpacesRelaunch(object):
             config[controller_name]['stop_command'] = self.config.get(controller_name, 'stop_command')
             config[controller_name]['launch_command'] = self.config.get(controller_name, 'launch_command')
             config[controller_name]['pid_command'] = self.config.get(controller_name, 'pid_command')
+            config[controller_name]['destroy_tmux_command'] = self.config.get(controller_name, 'destroy_tmux_command')
         return config
     
     @debug 
     def controller_connected(self, controller_name):
+        """
+        @summary: We always return False because ispaces controllers are tricky
+        """
         try:
             controller = self.master.get_space_controller({'space_controller_name' : controller_name,
                                                            'space_controller_mode' : 'ENABLED',
                                                            'space_controller_state': 'RUNNING'})
-            return True
+            return False
         except ControllerNotFoundException, e :
             print "Controller '%s' not connected" % controller_name
             return False
     
     @debug
     def stop_controller(self, controller_name):
-        command = "%s '%s'" % (self.ssh_command, self.controllers_data[controller_name]['stop_command'])
+        command = "%s %s '%s'" % (self.ssh_command, controller_name, self.controllers_data[controller_name]['stop_command'])
+        print command
         cmd_process = Popen(command, shell=True, stdout=PIPE)
         output = cmd_process.communicate()[0].replace('\n', '').split(' ')
+        print output
         return output
     
-    @debug
-    def start_controller(self, controller_name):
-        command = "%s '%s'" % (self.ssh_command, self.controllers_data[controller_name]['start_command'])
+    @debug 
+    def destroy_tmux_session(self, controller_name):
+        command = "%s %s '%s'" % (self.ssh_command, controller_name, self.controllers_data[controller_name]['destroy_tmux_command'])
+        print command
         cmd_process = Popen(command, shell=True, stdout=PIPE)
         output = cmd_process.communicate()[0].replace('\n', '').split(' ')
+        print output
+        return output
+        
+    @debug
+    def start_controller(self, controller_name):
+        command = "%s %s '%s'" % (self.ssh_command, controller_name, self.controllers_data[controller_name]['launch_command'])
+        print command
+        cmd_process = Popen(command, shell=True, stdout=PIPE)
+        output = cmd_process.communicate()[0].replace('\n', '').split(' ')
+        print output
         return output
     
     @debug
     def connect_controller(self, controller_name):
-        controller = master.get_space_controller({'space_controller_name' : controller_name})
+        controller = self.master.get_space_controller({'space_controller_name' : controller_name})
         controller.send_connect()
         self.wait(3)
         controller.send_status_refresh()
@@ -113,17 +130,31 @@ class InteractiveSpacesRelaunch(object):
     
     @debug
     def connect_all_controllers(self):
-        for controller in self.controllers_data.itervalues():
-            if self.controller_connected(controller['name']):
-                print "Controller %s is connected" % controller['name']
+        for controller_name, controller_data in self.controllers_data.iteritems():
+            if self.controller_connected(controller_data['name']):
+                print "Controller %s is connected" % controller_data['name']
+                self.controllers_data[controller_name]['connected'] = True
             else:
-                print "Controller %s is not connected - connecting." % controller['name']
-                self.stop_controller(controller['name'])
-                self.wait()
-                self.start_controller(controller['name'])
+                print "Controller %s is not connected." % controller_name
+                print "Stopping tmux session"
+                self.stop_controller(controller_name)
+                self.wait(3)
+                self.destroy_tmux_session(controller_name)
+                self.wait(2)
+                print "Starting tmux session"
+                self.start_controller(controller_name)
                 self.wait(10)
-                self.connect_controller(controller['name'])
-                return self.controller_connected(controller['name'])
+                print "Connecting controller"
+                self.connect_controller(controller_data['name'])
+                self.controllers_data[controller_name]['connected'] = self.controller_connected(controller_data['name'])
+                
+                
+        for controller_name, controller_data in self.controllers_data.iteritems():
+            if controller_data['connected'] == False:
+                return False
+        
+        return True
+            
     
     @debug
     def all_controllers_connected(self):
@@ -143,9 +174,9 @@ class InteractiveSpacesRelaunch(object):
         help = {}
         controllers_list = self.config.get('global', 'controllers_list').split(',')
         for controller_name in controllers_list:
-            config[controller_name] = {}
-            config[controller_name]['stop_command'] = self.config.get(controller_name, 'stop_command')
-            config[controller_name]['launch_command'] = self.config.get(controller_name, 'launch_command')
+            help[controller_name] = {}
+            help[controller_name]['stop_command'] = self.config.get(controller_name, 'stop_command')
+            help[controller_name]['launch_command'] = self.config.get(controller_name, 'launch_command')
         return help
     
     @debug
