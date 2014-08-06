@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import inspect
 import sys
 import os
 sys.path.append("../")
@@ -12,6 +11,7 @@ import argparse
 import pprint
 import time
 import subprocess
+from subprocess import CalledProcessError
 from interactivespaces.exception import ControllerNotFoundException
 
 '''
