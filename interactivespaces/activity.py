@@ -30,7 +30,6 @@ class Activity(Fetchable, Deletable):
         """
             @summary: method to keep naming convention of .new() methods
         """
-        
         new_activity = self.upload(uri, constructor_args['zip_file_handler'])
         return new_activity
     

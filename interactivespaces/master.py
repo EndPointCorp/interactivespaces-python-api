@@ -69,7 +69,7 @@ class Master(Communicable):
         elif isinstance(activity[0], Activity):
             activity[0].fetch()
             self.log.info("get_activity returned Activity:%s" % str(activity))
-            return activity
+            return activity[0]
         else:
             raise MasterException("Could not get specific activity for given search pattern")
     

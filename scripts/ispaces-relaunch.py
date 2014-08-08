@@ -48,7 +48,9 @@ class InteractiveSpacesRelaunch(object):
     def __init__(self, config_path, full_relaunch=False):
         self.config_path = config_path
         self.init_config()
-        self.master = Master(host=self.host, port=self.port, logfile_path=self.log_path)
+        self.master = Master(host=self.host,
+                             port=self.port,
+                             logfile_path=self.log_path)
         self.relaunch_container = []
         self.stopped = False
         self.activated = False
@@ -63,21 +65,31 @@ class InteractiveSpacesRelaunch(object):
         self.config.read(self.config_path)
         self.host = self.config.get('master', 'host')
         self.port = self.config.get('master', 'port')
-        self.shutdown_attempts = self.config.getint('relaunch', 'shutdown_attempts')
-        self.startup_attempts = self.config.getint('relaunch', 'startup_attempts')
-        self.relaunch_sequence = self.config.get('relaunch', 'relaunch_sequence').split(',')
-        self.interval_between_attempts = self.config.getint('relaunch', 'interval_between_attempts')
-        self.relaunch_controllers = self.config.getint('relaunch', 'relaunch_controllers')
-        self.relaunch_master = self.config.getint('relaunch', 'relaunch_master')
-        self.master_stop_command = self.config.get('master', 'stop_command')
-        self.master_launch_command = self.config.get('master', 'launch_command')
-        self.master_destroy_tmux_command = self.config.get('master', 'destroy_tmux_command')
-        self.log_path = self.config.get('global', 'logfile_path')
-        self.ssh_command = self.config.get('global', 'ssh_command')
+        self.shutdown_attempts = self.config.getint('relaunch',
+                                                    'shutdown_attempts')
+        self.startup_attempts = self.config.getint('relaunch',
+                                                   'startup_attempts')
+        self.relaunch_sequence = self.config.get('relaunch',
+                                                 'relaunch_sequence').split(',')
+        self.interval_between_attempts = self.config.getint('relaunch',
+                                                            'interval_between_attempts')
+        self.relaunch_controllers = self.config.getint('relaunch',
+                                                       'relaunch_controllers')
+        self.relaunch_master = self.config.getint('relaunch',
+                                                  'relaunch_master')
+        self.master_stop_command = self.config.get('master',
+                                                   'stop_command')
+        self.master_launch_command = self.config.get('master',
+                                                     'launch_command')
+        self.master_destroy_tmux_command = self.config.get('master',
+                                                           'destroy_tmux_command')
+        self.log_path = self.config.get('global',
+                                        'logfile_path')
+        self.ssh_command = self.config.get('global',
+                                           'ssh_command')
         self.pp = pprint.PrettyPrinter(indent=4)
         self.controllers_data = self.init_controllers_config()
-        
-        
+
     @debug
     def init_controllers_config(self):
         config = {}
@@ -91,8 +103,8 @@ class InteractiveSpacesRelaunch(object):
             config[controller_name]['pid_command'] = self.config.get(controller_name, 'pid_command')
             config[controller_name]['destroy_tmux_command'] = self.config.get(controller_name, 'destroy_tmux_command')
         return config
-    
-    @debug 
+
+    @debug
     def controller_connected(self, controller_name):
         """
         @summary: We always return False because ispaces controllers are tricky
@@ -105,7 +117,7 @@ class InteractiveSpacesRelaunch(object):
         except ControllerNotFoundException, e :
             print "Controller '%s' not connected" % controller_name
             return False
-    
+
     @debug
     def stop_controller(self, controller_name):
         command = "%s %s '%s'" % (self.ssh_command, controller_name, self.controllers_data[controller_name]['stop_command'])
