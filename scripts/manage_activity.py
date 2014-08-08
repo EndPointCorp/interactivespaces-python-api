@@ -65,7 +65,6 @@ class ManageActivity:
         else:
             raise Exception("You must provide activity's name")
         activity = self.master.get_activity(query)
-        print activity
         if type(activity) == interactivespaces.Activity:
             exit(0)
         else:
