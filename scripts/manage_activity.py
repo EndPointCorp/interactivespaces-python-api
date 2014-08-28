@@ -66,17 +66,21 @@ class ManageActivity:
             raise Exception("You must provide activity's name")
         activity = self.master.get_activity(query)
         if type(activity) == interactivespaces.Activity:
+            print 'True'
             exit(0)
         else:
-            exit(1)
+            print 'False'
+            exit(0)
 
     def upload(self):
         if not self.options.url:
             self.parser.print_help()
+            print 'IS master url not provided in options'
             exit(1)
         zipfile = self._fetch_from_url()
         if self.master.new_activity({'zip_file_handler': zipfile}):
             zipfile.close()
+            print 'True'
             exit(0)
         else:
             zipfile.close()
