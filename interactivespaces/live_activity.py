@@ -9,7 +9,7 @@ from serializer import LiveActivitySerializer
 from misc import Logger
 from abstract import Path
 
-class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable, 
+class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
                    Startupable, Activatable, Configurable, Cleanable,
                    Metadatable, Deployable):
     """
@@ -36,17 +36,17 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
 
     def __repr__(self):
         return str(self.data_hash)
-       
+
     def new(self, uri, new_data_hash):
         """
         @summary: used to create new live activity through API and set the "uri" so that we
             can operate on this instance of LiveActivity right away after .new() returns True
-        @param new_data_hash: dict {"live_activity_name" : "", 
+        @param new_data_hash: dict {"live_activity_name" : "",
                                         "live_activity_description" : "",
                                         "activity_id" : "",
                                         "controller_id" : ""
                                         }
-        @param uri: "http://some_server/prefix (passed by master)" 
+        @param uri: "http://some_server/prefix (passed by master)"
         @rtype: new LiveActivity object or False
         """
         self.log.info("Creating new Live Activity with arguments: %s" % new_data_hash)
@@ -61,22 +61,22 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
         else:
             self.log.info("Created new LiveActivity %s but returned False" % self)
             return False
-    
+
     def to_json(self):
-        """ 
+        """
             @summary: Should selected attributes in json form defined by the template
         """
         self.serializer = LiveActivitySerializer(self.data_hash)
         return self.serializer.to_json()
-    
+
     def name(self):
         """
             @summary: Should return live activity name
         """
         return self.data_hash['name']
-    
+
     def status(self):
-        """ 
+        """
             @summary: Should return status that is currently held in the object instance
         """
         try:
@@ -84,32 +84,38 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
             return status_data
         except LiveActivityException("Activity not running or non existent"):
             return "UNKNOWN"
- 
+
     def identifying_name(self):
         """
             @summary: Should return LiveActivity identifying name
         """
         return self.data_hash['activity']['identifyingName']
-    
+
     def version(self):
         """
             @summary: Should return LiveActivity version
         """
         return self.data_hash['activity']['version']
-    
+
+    def metadata(self):
+        """
+            @summary: Should return LiveActivity metadata
+        """
+        return self.data_hash['metadata']
+
     def id(self):
         """
             @summary: Should return LiveActivity id
             @rtype: string
         """
         return self.data_hash['id']
-       
+
     """ Private methods below this text """
-     
+
     def _get_absolute_url(self):
         """
         @rtype: string
         """
         route = Path().get_route_for(self.class_name, 'view') % self.data_hash['id']
         url = "%s%s" % (self.uri, route)
-        return url       
+        return url

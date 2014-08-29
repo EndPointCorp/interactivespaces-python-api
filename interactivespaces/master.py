@@ -91,7 +91,7 @@ class Master(Communicable):
         self.log.info('get_live_activities returned %s objects' % str(len(response)))
         live_activities = self._filter_live_activities(response, search_pattern)
         return live_activities
-    
+
     def get_live_activity(self, search_pattern=None):
         """
             Retrieves a list of LiveActivity objects
@@ -111,6 +111,8 @@ class Master(Communicable):
         live_activity = self._filter_live_activities(response, search_pattern)
         if len(live_activity) > 1:
             raise MasterException("get_live_activity returned more than one row (%s)" % len(live_activity))
+        elif len(live_activity) == 0:
+            raise MasterException("Search returned zero LiveActivities")
         elif isinstance(live_activity[0], LiveActivity):
             live_activity[0].fetch()
             self.log.info("get_live_activity returned LiveActivity:%s" % live_activity)
@@ -118,7 +120,7 @@ class Master(Communicable):
         else:
             raise MasterException("Could not get specific live activity for given search pattern")
 
-    
+
     def get_live_activity_groups(self, search_pattern=None):
         """
             Retrieves a list of live activity groups.
@@ -252,24 +254,24 @@ class Master(Communicable):
             @param constructor_args: - dictionary containing all of below keys:
                 {
                 "live_activity_name": "string containing name of a new live activity (mandatory)"
-                "live_activity_description" : "string containing description" 
+                "live_activity_description" : "string containing description"
                 "activity_name" : "string containing activity name"
                 "space_controller_name" : "string containing controller name"
                 }
             @rtype: LiveActivity
         """
-         
+
         unpacked_arguments={}
         unpacked_arguments['activityId'] = self.get_activity({"activity_name" : constructor_args['activity_name']}).id()
         unpacked_arguments['controllerId'] = self.get_space_controller({"space_controller_name" : constructor_args['space_controller_name']}).id()
-        unpacked_arguments['live_activity_description'] = constructor_args['live_activity_description']
+        unpacked_arguments['liveActivity.description'] = constructor_args['live_activity_description']
         unpacked_arguments['liveActivity.name'] = constructor_args['live_activity_name']
         unpacked_arguments['_eventId_save'] = 'Save'
-        
+
         activity = LiveActivity().new(self.uri, unpacked_arguments)
         self.log.info("Master:new_live_activity returned activity:%s" % activity)
         return activity
-    
+
     def new_activity(self, constructor_args):
         """
             @summary: creates a new activity and returns it
@@ -320,7 +322,7 @@ class Master(Communicable):
 
         live_activity_group = LiveActivityGroup().new(self.uri, unpacked_arguments)
         return live_activity_group
-    
+
     def new_space(self, name, description, live_activity_groups, spaces):
         """Creates a new space."""
         raise NotImplementedError
@@ -332,9 +334,9 @@ class Master(Communicable):
     def new_named_script(self, name, description, language, content, scheduled=None):
         """Creates a new named script."""
         raise NotImplementedError
-    
+
     """ Private methods below """
-    
+
     def _filter_live_activities(self, response, search_pattern):
         """
         @summary: Should iterate over response from Master API and filter
@@ -349,17 +351,17 @@ class Master(Communicable):
             search_pattern = SearchPattern(search_pattern)
         else:
             search_pattern = SearchPattern()
-        
+
         live_activity_name = search_pattern['live_activity_name']
-        
+
         """ Nested values are returning exception so do it manually here """
         try:
-            space_controller_name = search_pattern['controller']['name']
+            space_controller_name = search_pattern['space_controller_name']
         except Exception:
             space_controller_name = None
-        
+
         self.log.debug("Filtering activities with pattern=%s" % search_pattern)
-        
+
         for live_activity_data in response:
             do_filter = True
             """ Var for holding the state of filtering """
@@ -369,17 +371,17 @@ class Master(Communicable):
                 if Searcher().match(current_space_controller_name, space_controller_name):
                     pass
                 else:
-                    do_filter = False 
+                    do_filter = False
             if live_activity_name and do_filter:
                 if Searcher().match(current_live_activity_name, live_activity_name):
                     pass
                 else:
-                    do_filter = False  
+                    do_filter = False
             if do_filter==True:
-                live_activities.append(LiveActivity(live_activity_data, self.uri)) 
+                live_activities.append(LiveActivity(live_activity_data, self.uri))
         self.log.info("Filtered live_activities and returned %s object(s)" % str(len(live_activities)))
         return live_activities
-    
+
     def _filter_activities(self, response, search_pattern):
         """
         @summary: Should iterate over response from Master API and filter
@@ -506,14 +508,14 @@ class Master(Communicable):
             search_pattern = SearchPattern(search_pattern)
         else:
             search_pattern = SearchPattern()
-            
+
         space_controller_name = search_pattern['space_controller_name']
         space_controller_uuid = search_pattern['space_controller_uuid']
         space_controller_state = search_pattern['space_controller_state']
         space_controller_mode = search_pattern['space_controller_mode']
-        
+
         self.log.debug("Filtering space controllers with pattern=%s" % search_pattern)
-        
+
         for space_controller_data in response:
             do_filter = True
             current_space_controller_name = space_controller_data['name']
@@ -524,31 +526,31 @@ class Master(Communicable):
                 if Searcher().match(current_space_controller_name, space_controller_name):
                     pass
                 else:
-                    do_filter = False 
+                    do_filter = False
             if space_controller_uuid and do_filter:
                 if current_space_controller_uuid == space_controller_uuid:
                     pass
                 else:
-                    do_filter = False 
+                    do_filter = False
             if space_controller_mode and do_filter:
                 if current_space_controller_mode == space_controller_mode:
                     pass
                 else:
-                    do_filter = False 
+                    do_filter = False
             if space_controller_state and do_filter:
                 if current_space_controller_state == space_controller_state:
                     pass
                 else:
-                    do_filter = False 
+                    do_filter = False
             if do_filter==True:
-                space_controllers.append(SpaceController(space_controller_data, self.uri)) 
+                space_controllers.append(SpaceController(space_controller_data, self.uri))
         self.log.info("Filtered space_controllers and returned %s object(s)" % str(len(space_controllers)))
         return space_controllers
-    
+
     def _translate_live_activities_names_to_ids(self, live_activities):
         """
             @param live_activities: list of dictionaries containing following keys:
-                { 
+                {
                 "live_activity_name" : "some_name",
                 "space_controller_name" : "some controller name"
                 }

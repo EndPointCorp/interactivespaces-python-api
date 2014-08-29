@@ -483,25 +483,25 @@ class Connectable(Communicable):
     def __init__(self):
         self.log = Logger().get_logger()
         super(Connectable, self).__init__()
-        
+
     def send_connect(self):
         connect_route = Path().get_route_for(self.class_name, 'connect') % self.data_hash['id']
         if self._send_connectable_request(connect_route):
-            self.log.info("Successfully sent 'connect' for url=%s" % self.absolute_url) 
+            self.log.info("Successfully sent 'connect' for url=%s" % self.absolute_url)
             return True
         else:
             return False
-    
+
     def send_disconnect(self):
         disconnect_route = Path().get_route_for(self.class_name, 'disconnect') % self.data_hash['id']
         if self._send_connectable_request(disconnect_route):
-            self.log.info("Successfully sent 'disconnect' for url=%s" % self.absolute_url) 
+            self.log.info("Successfully sent 'disconnect' for url=%s" % self.absolute_url)
             return True
         else:
             return False
-        
+
     def _send_connectable_request(self, connectable_route):
-        """ 
+        """
             @summary: makes a connectable request
         """
         url = "%s%s" % (self.uri, connectable_route)
@@ -515,7 +515,7 @@ class Connectable(Communicable):
             return True
         else:
             return False
-    
+
 class Metadatable(Communicable):
     """
         @summary: Should be responsible for setting metadata
@@ -523,7 +523,7 @@ class Metadatable(Communicable):
     def __init__(self):
         self.log = Logger().get_logger()
         super(Metadatable, self).__init__()
-        
+
     def set_metadata(self, metadata_dictionary):
         """
             @summary: Accepts dictionary of keys that will be unpacked to "key=value" strings and
@@ -535,16 +535,16 @@ class Metadatable(Communicable):
         self.log.info("Updating metadata of %s with %s" % (self.class_name, metadata))
         metadata_route = Path().get_route_for(self.class_name, 'metadata') % self.data_hash['id']
         if self._send_metadatable_request(metadata_route, metadata):
-            self.log.info("Successfully sent metadata for url=%s" % self.absolute_url) 
+            self.log.info("Successfully sent metadata for url=%s" % self.absolute_url)
             return True
         else:
             return False
-    
+
     def _unpack_metadata(self, metadata_dictionary):
         """
             @summary: accepts dictionary and converts it to string
             @rtype: string
-            @param metadata_dictionary: dict containing metadata 
+            @param metadata_dictionary: dict containing metadata
         """
         metadata_text = ""
         try:
@@ -554,9 +554,9 @@ class Metadatable(Communicable):
         except Exception, e:
             self.log.error("Could not unpack supplied metadata dictionary because %s" % e)
             raise
-    
+
     def _send_metadatable_request(self, metadata_route, metadata):
-        """ 
+        """
             @summary: makes a editable request
         """
         url = "%s%s" % (self.uri, metadata_route)
