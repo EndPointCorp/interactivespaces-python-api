@@ -64,11 +64,11 @@ def create_new_activity():
 
 def create_new_controller():
     print "New Controller"
-    new_controller = master.new_space_controller({"space_controller_name" : "Testing space controller", 
-                                                  "space_controller_description" : "Created by example.py", 
+    new_controller = master.new_space_controller({"space_controller_name" : "Testing space controller",
+                                                  "space_controller_description" : "Created by example.py",
                                                   "space_controller_host_id" : "testingctl" })
     print new_controller.to_json()
-    
+
 def create_new_live_activity_group():
     print "New Live Activity Group"
     new_live_activity_group = master.new_live_activity_group({"live_activity_group_name" : "example.py live_activity_group_name",

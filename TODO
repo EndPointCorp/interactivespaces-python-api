@@ -5,3 +5,4 @@
 ** it should have a config file
 ** it should iterate over live activity groups and perform a "deactivate => status => activate" loop as many times as needed
 * get_live_activity_groups() returns 2 objects instead of 3
+* make queries more strict e.g. get_controller_name with controller_name=ISCTL will work both for ISCTX and ISCTY which is wrong

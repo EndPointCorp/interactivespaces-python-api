@@ -241,7 +241,7 @@ class Master(Communicable):
             return space_controller[0]
         else:
             raise MasterException("Exception")
-        
+
     def get_named_scripts(self, pattern=None):
         """Retrieves a list of named scripts."""
         raise NotImplementedError
