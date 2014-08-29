@@ -4,6 +4,10 @@ interactivespaces-python-api
 
 [Interactive Spaces](https://github.com/interactivespaces/interactivespaces) API client
 
+Built to manage interactivespaces environment.
+
+Some examples:
+
 ```python
 
 import interactivespaces
