@@ -111,7 +111,7 @@ def send_status_refresh_to_a_controller():
     print controller.to_json()
     print "Sending status refresh to controller"
     controller.send_status_refresh()
-  
+
 """ Deleting """
 def delete_live_activity():
     print "\n =Live Activity= \n"
@@ -122,7 +122,7 @@ def delete_live_activity():
     print live_activity.to_json()
     print "Sending delete to live activity"
     live_activity.send_delete()
-    
+
 def delete_live_activity_group():
     print "\n =Live Activity Group= \n"
     live_activity_group = master.get_live_activity_group({"live_activity_group_name": "^SV and Supporting$"})
@@ -136,7 +136,7 @@ def delete_space():
     print space.to_json()
     print "Sending delete to space"
     space.send_delete()
-    
+
 def delete_controller():
     print "\n =Controller= \n"
     controller = master.get_space_controller({"space_controller_uuid" : "af733f63-d2f9-466f-98ba-826072605ab4"})
@@ -154,7 +154,7 @@ def shutdown_live_activity():
     activity.to_json()
     print "Sending shutdown to live activity"
     activity.send_shutdown()
-    
+
 def shutdown_live_activity_group():
     print "\n =Live Activity Group= \n"
     live_activity_group = master.get_live_activity_group({"live_activity_group_name" : "^GE and Supporting$"})
@@ -173,7 +173,7 @@ def startup_live_activity():
     activity.to_json()
     print "Sending startup to live activity"
     activity.send_startup()
-    
+
 def startup_live_activity_group():
     print "\n =Live Activity Group= \n"
     live_activity_group = master.get_live_activity_group({"live_activity_group_name" : "^GE and Supporting$"})
@@ -220,7 +220,7 @@ def deactivate_live_activity_group():
     print "Sending acticate to live activity group"
     live_activity_group.send_deactivate()
 
-    
+
 """ Deploying """
 
 def deploy_live_activity():
@@ -239,7 +239,7 @@ def deploy_live_activity_group():
     print live_activity_group.to_json()
     print "Sending deploy to live activity group"
     live_activity_group.send_deploy()
-    
+
 """ Configuring """
 
 def configure_live_activity():

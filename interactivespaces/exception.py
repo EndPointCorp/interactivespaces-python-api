@@ -24,3 +24,12 @@ class SerializerException(Exception):
 
 class ControllerNotFoundException(Exception):
     pass
+
+class LiveActivityGroupNotFoundException(Exception):
+    pass
+
+class LiveActivityNotFoundException(Exception):
+    pass
+
+class ActivityNotFoundException(Exception):
+    pass

@@ -6,6 +6,8 @@ from activity import Activity
 from exception import MasterException, PathException, CommunicableException
 from exception import LiveActivityException, StatusableException, ActivityException
 from exception import SerializerException, ControllerNotFoundException
+from exception import ControllerNotFoundException, LiveActivityGroupNotFoundException
+from exception import LiveActivityNotFoundException, ActivityNotFoundException
 from helper import SearchPattern, Searcher
 from live_activity_group import LiveActivityGroup
 from live_activity import LiveActivity

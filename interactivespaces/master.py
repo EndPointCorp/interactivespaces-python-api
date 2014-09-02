@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from mixin import Communicable
-from exception import MasterException, ControllerNotFoundException
+from exception import MasterException, ControllerNotFoundException, ActivityNotFoundException
+from exception import LiveActivityNotFoundException, LiveActivityGroupNotFoundException
 from misc import Logger
 from live_activity import LiveActivity
 from activity import Activity
@@ -35,7 +36,7 @@ class Master(Communicable):
             @param search_pattern: dictionary of regexps used for searching through Activities
                 - example regexp dict: {
                                         "activity_name" : "regexp",
-                                        "activity_version" : "regexp" 
+                                        "activity_version" : "regexp"
                                         }
                 - every search_pattern dictionary key may be blank/null
         """
@@ -54,7 +55,7 @@ class Master(Communicable):
             @param search_pattern: dictionary of regexps used for searching through Activities
                 - example regexp dict: {
                                         "activity_name" : "regexp",
-                                        "activity_version" : "regexp" 
+                                        "activity_version" : "regexp"
                                         }
                 - every search_pattern dictionary key may be blank/null
         """
@@ -66,13 +67,15 @@ class Master(Communicable):
         activity = self._filter_activities(response, search_pattern)
         if len(activity) > 1:
             raise MasterException("get_activity returned more than one row (%s)" % len(activity))
+        elif len(activity) == 0:
+            raise ActivityNotFoundException("get_activity returned zero rows")
         elif isinstance(activity[0], Activity):
             activity[0].fetch()
             self.log.info("get_activity returned Activity:%s" % str(activity))
             return activity[0]
         else:
             raise MasterException("Could not get specific activity for given search pattern")
-    
+
     def get_live_activities(self, search_pattern=None):
         """
             Retrieves a list of LiveActivity objects
@@ -112,7 +115,7 @@ class Master(Communicable):
         if len(live_activity) > 1:
             raise MasterException("get_live_activity returned more than one row (%s)" % len(live_activity))
         elif len(live_activity) == 0:
-            raise MasterException("Search returned zero LiveActivities")
+            raise LiveActivityNotFoundException("Search returned zero LiveActivities")
         elif isinstance(live_activity[0], LiveActivity):
             live_activity[0].fetch()
             self.log.info("get_live_activity returned LiveActivity:%s" % live_activity)
@@ -137,7 +140,7 @@ class Master(Communicable):
         self.log.info('get_live_activity_groups returned %s objects' % str(len(response)))
         live_activity_groups = self._filter_live_activity_groups(response, search_pattern)
         return live_activity_groups
-    
+
     def get_live_activity_group(self, search_pattern=None):
         """
             Retrieves a list of live activity groups.
@@ -155,6 +158,8 @@ class Master(Communicable):
         live_activity_group = self._filter_live_activity_groups(response, search_pattern)
         if len(live_activity_group) > 1:
             raise MasterException("get_live_activity_group returned more than one row (%s)" % len(live_activity_group))
+        elif len(live_activity_group) == 0:
+            raise LiveActivityGroupNotFoundException("get_live_activity_group returned zero rows")
         elif isinstance(live_activity_group[0], LiveActivityGroup):
             live_activity_group[0].fetch()
             self.log.info("get_live_activity_group returned LiveActivityGroup:%s" % str(live_activity_group))
@@ -175,7 +180,7 @@ class Master(Communicable):
         self.log.debug('Got response for "get_spaces" %s ' % str(response))
         spaces = self._filter_spaces(response, search_pattern)
         return spaces
-    
+
     def get_space(self, search_pattern=None):
         """
             @summary: Retrieves a Space
@@ -281,11 +286,10 @@ class Master(Communicable):
                 }
             @rtype: Activity or False
         """
-        
         activity = Activity().new(self.uri, constructor_args)
         self.log.info("Master:new_activity returned activity:%s" % activity)
         return activity
-        
+
     def new_space_controller(self, constructor_args):
         """
             @summary: creates new controller
@@ -295,7 +299,6 @@ class Master(Communicable):
                 "space_controller_description" : "non mandatory string",
                 "space_controller_host_id" : "mandatory string"
                 }
-            
         """
         space_controller = SpaceController().new(self.uri, constructor_args)
         return space_controller
@@ -313,7 +316,7 @@ class Master(Communicable):
                 "space_controller_name" : "ISCtlDispAScreen00"}]
                 }
         """
-        live_activity_ids = self._translate_live_activities_names_to_ids(constructor_args['live_activities'])
+        live_activity_ids = self.translate_live_activities_names_to_ids(constructor_args['live_activities'])
         unpacked_arguments = {}
         unpacked_arguments['liveActivityGroup.name'] = constructor_args['live_activity_group_name']
         unpacked_arguments['liveActivityGroup.description'] = constructor_args['live_activity_group_description']
@@ -389,7 +392,6 @@ class Master(Communicable):
         @param response: response['data'] from master API
         @param search_pattern: dictionary where values may be regexps
         @rtype: list of Activity objects
-        
         """
         activities = []
         """ Make a search pattern with default values set to None"""
@@ -397,12 +399,12 @@ class Master(Communicable):
             search_pattern = SearchPattern(search_pattern)
         else:
             search_pattern = SearchPattern()
-            
+
         activity_name = search_pattern['activity_name']
         activity_version = search_pattern['activity_version']
-        
+
         self.log.debug("Filtering activities with pattern=%s" % search_pattern)
-        
+
         for activity_data in response:
             do_filter = True
             """ Var for holding the state of filtering """
@@ -412,17 +414,17 @@ class Master(Communicable):
                 if Searcher().match(current_activity_version, activity_version):
                     pass
                 else:
-                    do_filter = False 
+                    do_filter = False
             if activity_name and do_filter:
                 if Searcher().match(current_activity_name, activity_name):
                     pass
                 else:
-                    do_filter = False  
+                    do_filter = False
             if do_filter==True:
-                activities.append(Activity(activity_data, self.uri)) 
+                activities.append(Activity(activity_data, self.uri))
         self.log.info("Filtered activities and returned %s object(s) : %s" % (str(len(activities)), activities))
         return activities
-    
+
     def _filter_live_activity_groups(self, response, search_pattern):
         """
         @summary: Should iterate over response from Master API and filter
@@ -430,7 +432,6 @@ class Master(Communicable):
         @param response: response['data'] from master API
         @param search_pattern: dictionary where values may be regexps
         @rtype: list of LiveActivityGroup objects
-        
         """
         live_activity_groups = []
         """ Make a search pattern with default values set to None"""
@@ -438,11 +439,8 @@ class Master(Communicable):
             search_pattern = SearchPattern(search_pattern)
         else:
             search_pattern = SearchPattern()
-            
         live_activity_group_name = search_pattern['live_activity_group_name']
-        
         self.log.debug("Filtering activities with pattern=%s" % search_pattern)
-        
         for live_activity_group_data in response:
             do_filter = True
             """ Var for holding the state of filtering """
@@ -451,12 +449,12 @@ class Master(Communicable):
                 if Searcher().match(current_live_activity_group_name, live_activity_group_name):
                     pass
                 else:
-                    do_filter = False 
+                    do_filter = False
             if do_filter==True:
-                live_activity_groups.append(LiveActivityGroup(live_activity_group_data, self.uri)) 
+                live_activity_groups.append(LiveActivityGroup(live_activity_group_data, self.uri))
         self.log.info("Filtered live_activity_groups and returned %s object(s)" % str(len(live_activity_groups)))
         return live_activity_groups
-    
+
     def _filter_spaces(self, response, search_pattern):
         """
         @summary: Should iterate over response from Master API and filter
@@ -464,7 +462,6 @@ class Master(Communicable):
         @param response: response['data'] from master API
         @param search_pattern: dictionary where values may be regexps
         @rtype: list of Space objects
-        
         """
         spaces = []
         """ Make a search pattern with default values set to None"""
@@ -472,11 +469,11 @@ class Master(Communicable):
             search_pattern = SearchPattern(search_pattern)
         else:
             search_pattern = SearchPattern()
-            
+
         space_name = search_pattern['space_name']
-        
+
         self.log.debug("Filtering spaces with pattern=%s" % search_pattern)
-        
+
         for space_data in response:
             do_filter = True
             """ Var for holding the state of filtering """
@@ -485,9 +482,9 @@ class Master(Communicable):
                 if Searcher().match(current_space_name, space_name):
                     pass
                 else:
-                    do_filter = False 
+                    do_filter = False
             if do_filter==True:
-                spaces.append(Space(space_data, self.uri)) 
+                spaces.append(Space(space_data, self.uri))
         self.log.info("Filtered spaces and returned %s object(s)" % str(len(spaces)))
         return spaces
 
@@ -495,12 +492,12 @@ class Master(Communicable):
         """
         @summary: Should iterate over response from Master API and filter
             space controllers with regards to the given search dictionary
-            consisting of name, uuid, mode and state (none of them are 
+            consisting of name, uuid, mode and state (none of them are
             mandatory)"
         @param response: response['data'] from master API
         @param search_pattern: dictionary where values may be regexps
         @rtype: list of Space objects
-        
+
         """
         space_controllers = []
         """ Make a search pattern with default values set to None"""
@@ -547,7 +544,7 @@ class Master(Communicable):
         self.log.info("Filtered space_controllers and returned %s object(s)" % str(len(space_controllers)))
         return space_controllers
 
-    def _translate_live_activities_names_to_ids(self, live_activities):
+    def translate_live_activities_names_to_ids(self, live_activities):
         """
             @param live_activities: list of dictionaries containing following keys:
                 {

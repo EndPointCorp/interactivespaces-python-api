@@ -110,6 +110,13 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
         """
         return self.data_hash['id']
 
+    def controller(self):
+        """
+            @summary: Should return LiveActivity controller
+            @rtype: string
+        """
+        return self.data_hash['controller']['name']
+
     """ Private methods below this text """
 
     def _get_absolute_url(self):

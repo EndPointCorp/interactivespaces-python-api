@@ -5,7 +5,7 @@ from exception import PathException
 from misc import Logger
 
 class Path(object):
-    ''' 
+    '''
         @summary: should be responsible for static translation of routes
     '''
     def __init__(self):
@@ -53,7 +53,8 @@ class Path(object):
                             'deactivate' : '/liveactivitygroup/%s/deactivate.json',
                             'deploy' : '/liveactivitygroup/%s/deploy.json',
                             'configure' : '/liveactivitygroup/%s/configure.json',
-                            'metadata' : '/liveactivitygroup/%s/metadata/edit'
+                            'metadata' : '/liveactivitygroup/%s/metadata/edit',
+                            'edit' : '/liveactivitygroup/%s/edit.json'
                             },
                        'Space' : {
                             'view' : '/space/%s/view.json',
@@ -77,9 +78,9 @@ class Path(object):
                             'disconnect' : '/spacecontroller/%s/disconnect.json'
                             }
                         }
-        
+
         self.log = Logger().get_logger()
-        
+
     def get_route_for(self, class_name, method_name):
         """
             @summary: should receive caller class name and caller method in order

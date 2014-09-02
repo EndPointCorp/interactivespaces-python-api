@@ -80,7 +80,11 @@ class ManageLiveActivity:
         else:
             raise Exception("You must provide activity's name")
             exit(1)
-        live_activity = self.master.get_live_activity(self.query)
+        try:
+            live_activity = self.master.get_live_activity(self.query)
+        except interactivespaces.LiveActivityNotFoundException, e:
+            print 'False'
+            exit(0)
         if type(live_activity) == interactivespaces.LiveActivity:
             print 'True'
             exit(0)
@@ -105,8 +109,13 @@ class ManageLiveActivity:
             self.parser.print_help()
             exit(0)
         supplied_metadata = json.loads(self.options.metadata)
-        live_activity = self.master.get_live_activity(self.query)
-        metadata = live_activity.metadata()
+        try:
+            live_activity = self.master.get_live_activity(self.query)
+            metadata = live_activity.metadata()
+        except interactivespaces.LiveActivityNotFoundException, e:
+            print 'False'
+            exit(0)
+
         if supplied_metadata == metadata:
             print 'True'
             exit(0)

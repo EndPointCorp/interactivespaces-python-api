@@ -64,7 +64,11 @@ class ManageActivity:
                      'activity_version': self.options.version}
         else:
             raise Exception("You must provide activity's name")
-        activity = self.master.get_activity(query)
+        try:
+            activity = self.master.get_activity(query)
+        except ActivityNotFoundException, e:
+            print 'False'
+            exit(0)
         if type(activity) == interactivespaces.Activity:
             print 'True'
             exit(0)

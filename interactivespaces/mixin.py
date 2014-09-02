@@ -22,7 +22,7 @@ class Communicable(object):
         self.log = Logger().get_logger()
         
     def _compose_url(self, uri, class_name=None, method_name=None, context=None, action=None):
-        """ 
+        """
             @summary: Should compose URL trying to do that in two steps:
                 1. return if object that tries to retrieve the url
                 has route that is already staticaly defined
@@ -32,11 +32,11 @@ class Communicable(object):
         if class_name and method_name:
             self.log.info("Composing url for class_name '%s' and method name '%s'" % (class_name, method_name))
             static_route = Path().get_route_for(class_name, method_name)
-            if static_route : 
+            if static_route :
                 self.log.info("Returned auto url %s" % (static_route))
                 url = "%s%s" % (uri, static_route)
                 return url
-            
+
         elif context and action:
             url = "%s%s%s" % (uri, context, action)
             self.log.info("Composed url %s" % (url))
@@ -44,7 +44,7 @@ class Communicable(object):
         else:
             self.log.info("Could not compose an url.")
             raise CommunicableException
-        
+
     def _urlopen(self, url, data=None):
         """Helper for opening urls."""
         return urllib2.urlopen(url, data)
@@ -56,20 +56,20 @@ class Communicable(object):
         """
         response = urllib2.urlopen(url)
         data = json.loads(response.read())
-        
+
         try:
             out_data = data['data']
         except Exception:
             out_data = None
-            
+
         if data['result'] != 'success':
             self.log.info("Could not retrieve data for URL=%s" % url)
             return False
-        
+
         if out_data:
             return out_data
         else:
-            return True   
+            return True
 
     def _api_get_html(self, url):
         """
@@ -140,12 +140,12 @@ class Communicable(object):
             return post_response
         else:
             self.log.info("_api_post_json returned post_response.status_code %s" % post_response.status_code)
-            return False  
-         
+            return False
+
     def _api_post_html(self, command, query=None, data=None):
         """Sends data to the master."""
         raise NotImplementedError
-    
+
     def json_raw(self):
         """
         @summary: returns raw unformatted/unmapped json from Master API
@@ -154,16 +154,16 @@ class Communicable(object):
         return self.data
 
 class Fetchable(Communicable):
-    """ 
+    """
         @summary: Should be responsible for fetching most up to date data from API
     """
     def __init__(self):
         super(Fetchable, self).__init__()
-        
+
     def _refresh_object(self, url):
-        """ 
+        """
             @summary: Should retrieve fresh data from API
-            @param url: string defining from which url to fetch the data 
+            @param url: string defining from which url to fetch the data
         """
         self.log.info("Refreshing object for url=%s" % url)
         data = self._api_get_json(url)
@@ -173,25 +173,25 @@ class Fetchable(Communicable):
         else:
             self.log.info("Could not refresh object for url=%s" % url)
             return False
-        
+
     def fetch(self):
-        """ 
+        """
             @summary: Should retrieve private data for an object from Master API
         """
         self.data_hash = self._refresh_object(self.absolute_url)
-        
+
 class Statusable(Communicable):
-    """ 
+    """
         @summary: Should be responsible for _refreshing_ status of the object,
         which means that it will send "status" command to IS Controllers.
-        In order to fetch the fresh and most up-to-date status you should use 
+        In order to fetch the fresh and most up-to-date status you should use
         .fetch() method on the object.
     """
-    
+
     def __init__(self):
         self.log = Logger().get_logger()
         super(Statusable, self).__init__()
-      
+
     def send_status_refresh(self):
         """
             @summary: extracts self.data_hash and self.class_name from children class
@@ -199,13 +199,13 @@ class Statusable(Communicable):
         """
         refresh_route = Path().get_route_for(self.class_name, 'status') % self.data_hash['id']
         if self._send_status_refresh(refresh_route):
-            self.log.info("Successfully refreshed status for url=%s" % self.absolute_url) 
+            self.log.info("Successfully refreshed status for url=%s" % self.absolute_url)
             return True
         else:
             return False
-          
+
     def _send_status_refresh(self, refresh_route):
-        """ 
+        """
             @summary: Should tell master to retrieve status info from controller
             so master has the most up to date info from the controller
             @param refresh_route: status.json route for specific class
@@ -230,7 +230,7 @@ class Deletable(Communicable):
     def __init__(self):
         self.log = Logger().get_logger()
         super(Deletable, self).__init__()
-        
+
     def send_delete(self):
         """
             @summary: sends the "delete" GET request to a route
@@ -241,7 +241,7 @@ class Deletable(Communicable):
             return True
         else:
             return False
-        
+
     def _send_delete_request(self, delete_route):
         """
             @rtype: bool
@@ -257,17 +257,17 @@ class Deletable(Communicable):
             return True
         else:
             return False
-        
+
 class Shutdownable(Communicable):
-    """ 
+    """
         @summary: Should be responsible for sending "shutdown" command to live activities,
         controllers, spaces and live groups.
     """
-    
+
     def __init__(self):
         self.log = Logger().get_logger()
         super(Shutdownable, self).__init__()
-      
+
     def send_shutdown(self):
         shutdown_route = Path().get_route_for(self.class_name, 'shutdown') % self.data_hash['id']
         if self._send_shutdown_request(shutdown_route):
@@ -275,9 +275,9 @@ class Shutdownable(Communicable):
             return True
         else:
             return False
-          
+
     def _send_shutdown_request(self, shutdown_route):
-        """ 
+        """
             @summary: makes a shutdown request
         """
         url = "%s%s" % (self.uri, shutdown_route)
@@ -293,17 +293,17 @@ class Shutdownable(Communicable):
             return True
         else:
             return False
-        
+
 class Startupable(Communicable):
-    """ 
+    """
         @summary: Should be responsible for sending "startup" command to live activities,
         controllers, spaces and live groups.
     """
-    
+
     def __init__(self):
         self.log = Logger().get_logger()
         super(Startupable, self).__init__()
-      
+
     def send_startup(self):
         startup_route = Path().get_route_for(self.class_name, 'startup') % self.data_hash['id']
         if self._send_startup_request(startup_route):
@@ -311,9 +311,9 @@ class Startupable(Communicable):
             return True
         else:
             return False
-          
+
     def _send_startup_request(self, startup_route):
-        """ 
+        """
             @summary: makes a startup request
         """
         url = "%s%s" % (self.uri, startup_route)
