@@ -322,7 +322,6 @@ class Master(Communicable):
         unpacked_arguments['liveActivityGroup.description'] = constructor_args['live_activity_group_description']
         unpacked_arguments['_eventId_save'] = 'Save'
         unpacked_arguments['liveActivityIds'] = live_activity_ids
-
         live_activity_group = LiveActivityGroup().new(self.uri, unpacked_arguments)
         return live_activity_group
 
@@ -337,6 +336,22 @@ class Master(Communicable):
     def new_named_script(self, name, description, language, content, scheduled=None):
         """Creates a new named script."""
         raise NotImplementedError
+    
+    def translate_live_activities_names_to_ids(self, live_activities):
+        """
+            @param live_activities: list of dictionaries containing following keys:
+                {
+                "live_activity_name" : "some_name",
+                "space_controller_name" : "some controller name"
+                }
+            @rtype: list
+        """
+        live_activity_ids = []
+        for la_data in live_activities:
+            live_activity = self.get_live_activity(la_data)
+            live_activity_ids.append(live_activity.id())
+        self.log.info("Translated %s live_activity_names to ids with a result of %s" % (len(live_activity_ids), live_activity_ids) )
+        return live_activity_ids
 
     """ Private methods below """
 
@@ -543,19 +558,3 @@ class Master(Communicable):
                 space_controllers.append(SpaceController(space_controller_data, self.uri))
         self.log.info("Filtered space_controllers and returned %s object(s)" % str(len(space_controllers)))
         return space_controllers
-
-    def translate_live_activities_names_to_ids(self, live_activities):
-        """
-            @param live_activities: list of dictionaries containing following keys:
-                {
-                "live_activity_name" : "some_name",
-                "space_controller_name" : "some controller name"
-                }
-            @rtype: list
-        """
-        live_activity_ids = []
-        for la_data in live_activities:
-            live_activity = self.get_live_activity(la_data)
-            live_activity_ids.append(live_activity.id())
-        self.log.info("Translated %s live_activity_names to ids with a result of %s" % (len(live_activity_ids), live_activity_ids) )
-        return live_activity_ids
