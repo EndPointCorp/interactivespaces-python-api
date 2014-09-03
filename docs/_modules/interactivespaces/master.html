@@ -1,0 +1,744 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>interactivespaces.master &mdash; interactivespaces  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="interactivespaces  documentation" href="../../index.html" />
+    <link rel="up" title="interactivespaces" href="../interactivespaces.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">interactivespaces  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../interactivespaces.html" accesskey="U">interactivespaces</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for interactivespaces.master</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">mixin</span> <span class="kn">import</span> <span class="n">Communicable</span>
+<span class="kn">from</span> <span class="nn">exception</span> <span class="kn">import</span> <span class="n">MasterException</span><span class="p">,</span> <span class="n">ControllerNotFoundException</span><span class="p">,</span> <span class="n">ActivityNotFoundException</span>
+<span class="kn">from</span> <span class="nn">exception</span> <span class="kn">import</span> <span class="n">LiveActivityNotFoundException</span><span class="p">,</span> <span class="n">LiveActivityGroupNotFoundException</span>
+<span class="kn">from</span> <span class="nn">misc</span> <span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">live_activity</span> <span class="kn">import</span> <span class="n">LiveActivity</span>
+<span class="kn">from</span> <span class="nn">activity</span> <span class="kn">import</span> <span class="n">Activity</span>
+<span class="kn">from</span> <span class="nn">live_activity_group</span> <span class="kn">import</span> <span class="n">LiveActivityGroup</span>
+<span class="kn">from</span> <span class="nn">space</span> <span class="kn">import</span> <span class="n">Space</span>
+<span class="kn">from</span> <span class="nn">space_controller</span> <span class="kn">import</span> <span class="n">SpaceController</span>
+<span class="kn">from</span> <span class="nn">helper</span> <span class="kn">import</span> <span class="n">SearchPattern</span><span class="p">,</span> <span class="n">Searcher</span>
+
+<div class="viewcode-block" id="Master"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master">[docs]</a><span class="k">class</span> <span class="nc">Master</span><span class="p">(</span><span class="n">Communicable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the main class with all the logic needed for</span>
+<span class="sd">    high level stuff. You will typically use instance of</span>
+<span class="sd">    Master for all your scripts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s">&#39;lg-head&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="s">&#39;8080&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s">&#39;/interactivespaces&#39;</span><span class="p">,</span> <span class="n">logfile_path</span><span class="o">=</span><span class="s">&#39;ispaces-client.log&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param host: default value is lg-head</span>
+<span class="sd">        :param port: default value is 8080</span>
+<span class="sd">        :param prefix: default value is /interactivespaces</span>
+<span class="sd">        :todo: refactor filter_* methods because they&#39;re not DRY</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">prefix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">(</span><span class="n">logfile_path</span><span class="o">=</span><span class="n">logfile_path</span><span class="p">)</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="s">&quot;http://</span><span class="si">%s</span><span class="s">:</span><span class="si">%s%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Master</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Master.get_activities"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.get_activities">[docs]</a>    <span class="k">def</span> <span class="nf">get_activities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_pattern</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a list of Activity objects</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        </span>
+<span class="sd">        :param search_pattern: dictionary of regexps used for searching through Activities</span>
+<span class="sd">        </span>
+<span class="sd">        example regexp dict::</span>
+<span class="sd">        </span>
+<span class="sd">            {\</span>
+<span class="sd">            &quot;activity_name&quot; : &quot;regexp&quot;\</span>
+<span class="sd">            &quot;activity_version&quot; : &quot;regexp&quot;\</span>
+<span class="sd">            }</span>
+<span class="sd">        </span>
+<span class="sd">        every search_pattern dictionary key may be blank/null</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_url</span><span class="p">(</span><span class="n">class_name</span><span class="o">=</span><span class="s">&#39;Master&#39;</span><span class="p">,</span> <span class="n">method_name</span><span class="o">=</span><span class="s">&#39;get_activities&#39;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Trying to retrieve url=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">url</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_get_json</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Got response for &quot;get_activities&quot; </span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;get_activities returned </span><span class="si">%s</span><span class="s"> objects&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">)))</span>
+        <span class="n">activities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_activities</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">activities</span>
+</div>
+<div class="viewcode-block" id="Master.get_activity"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.get_activity">[docs]</a>    <span class="k">def</span> <span class="nf">get_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_pattern</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a list of Activity objects</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        </span>
+<span class="sd">        :param search_pattern: dictionary of regexps used for searching through Activities</span>
+<span class="sd">        </span>
+<span class="sd">        example regexp dict:: </span>
+<span class="sd">        </span>
+<span class="sd">            {\</span>
+<span class="sd">            &quot;activity_name&quot; : &quot;regexp&quot;,\</span>
+<span class="sd">            &quot;activity_version&quot; : &quot;regexp&quot;\</span>
+<span class="sd">            }</span>
+<span class="sd">            </span>
+<span class="sd">        every search_pattern dictionary key may be blank/null</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_url</span><span class="p">(</span><span class="n">class_name</span><span class="o">=</span><span class="s">&#39;Master&#39;</span><span class="p">,</span> <span class="n">method_name</span><span class="o">=</span><span class="s">&#39;get_activities&#39;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Trying to retrieve url=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">url</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_get_json</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Got response for &quot;get_activities&quot; </span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;get_activities returned </span><span class="si">%s</span><span class="s"> objects&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">)))</span>
+        <span class="n">activity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_activities</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">activity</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MasterException</span><span class="p">(</span><span class="s">&quot;get_activity returned more than one row (</span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">activity</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">activity</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ActivityNotFoundException</span><span class="p">(</span><span class="s">&quot;get_activity returned zero rows&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">activity</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Activity</span><span class="p">):</span>
+            <span class="n">activity</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;get_activity returned Activity:</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">activity</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">activity</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MasterException</span><span class="p">(</span><span class="s">&quot;Could not get specific activity for given search pattern&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Master.get_live_activities"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.get_live_activities">[docs]</a>    <span class="k">def</span> <span class="nf">get_live_activities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_pattern</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a list of LiveActivity objects</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        </span>
+<span class="sd">        :param search_pattern: dictionary of regexps used for searching through LiveActivity names</span>
+<span class="sd">        </span>
+<span class="sd">        example regexp dict::</span>
+<span class="sd">        </span>
+<span class="sd">            {\</span>
+<span class="sd">            &quot;live_activity_name&quot; : &quot;regexp&quot;,\</span>
+<span class="sd">            &quot;space_controller_name&quot; : &quot;regexp&quot;\</span>
+<span class="sd">            }</span>
+<span class="sd">        </span>
+<span class="sd">        - each search_pattern dictionary key may be blank/null</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_url</span><span class="p">(</span><span class="n">class_name</span><span class="o">=</span><span class="s">&#39;Master&#39;</span><span class="p">,</span> <span class="n">method_name</span><span class="o">=</span><span class="s">&#39;get_live_activities&#39;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Trying to retrieve url=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">url</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_get_json</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Got response for &quot;get_live_activities&quot; </span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;get_live_activities returned </span><span class="si">%s</span><span class="s"> objects&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">)))</span>
+        <span class="n">live_activities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_live_activities</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">live_activities</span>
+</div>
+<div class="viewcode-block" id="Master.get_live_activity"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.get_live_activity">[docs]</a>    <span class="k">def</span> <span class="nf">get_live_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_pattern</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a list of LiveActivity objects</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: LiveActivity or False</span>
+<span class="sd">        </span>
+<span class="sd">        :param search_pattern: dictionary of regexps used for searching through LiveActivity names</span>
+<span class="sd">        </span>
+<span class="sd">        example regexp dict:: </span>
+<span class="sd">        </span>
+<span class="sd">            {\</span>
+<span class="sd">            &quot;live_activity_name&quot; : &quot;GE ViewSync Master on Node A&quot;,\</span>
+<span class="sd">            &quot;space_controller_name&quot; : &quot;ISCtlDispAScreen00&quot;\</span>
+<span class="sd">            }</span>
+<span class="sd">        </span>
+<span class="sd">        each search_pattern dictionary key may be blank/null</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_url</span><span class="p">(</span><span class="n">class_name</span><span class="o">=</span><span class="s">&#39;Master&#39;</span><span class="p">,</span> <span class="n">method_name</span><span class="o">=</span><span class="s">&#39;get_live_activities&#39;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Trying to retrieve url=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">url</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_get_json</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Got response for &quot;get_live_activities&quot; </span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;get_live_activities returned </span><span class="si">%s</span><span class="s"> objects&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">)))</span>
+        <span class="n">live_activity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_live_activities</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">live_activity</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MasterException</span><span class="p">(</span><span class="s">&quot;get_live_activity returned more than one row (</span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">live_activity</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">live_activity</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">LiveActivityNotFoundException</span><span class="p">(</span><span class="s">&quot;Search returned zero LiveActivities&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">live_activity</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">LiveActivity</span><span class="p">):</span>
+            <span class="n">live_activity</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;get_live_activity returned LiveActivity:</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">live_activity</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">live_activity</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MasterException</span><span class="p">(</span><span class="s">&quot;Could not get specific live activity for given search pattern&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="Master.get_live_activity_groups"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.get_live_activity_groups">[docs]</a>    <span class="k">def</span> <span class="nf">get_live_activity_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_pattern</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a list of live activity groups.</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        </span>
+<span class="sd">        :param search_pattern: dictionary of regexps used for searching through LiveActivity names</span>
+<span class="sd">        </span>
+<span class="sd">        example regexp dict:: </span>
+<span class="sd">        </span>
+<span class="sd">            {\</span>
+<span class="sd">            &quot;live_activity_group_name&quot; : &quot;regexp&quot;\</span>
+<span class="sd">            }</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_url</span><span class="p">(</span><span class="n">class_name</span><span class="o">=</span><span class="s">&#39;Master&#39;</span><span class="p">,</span> <span class="n">method_name</span><span class="o">=</span><span class="s">&#39;get_live_activity_groups&#39;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Trying to retrieve url=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">url</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_get_json</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Got response for &quot;get_live_activity_groups&quot; </span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;get_live_activity_groups returned </span><span class="si">%s</span><span class="s"> objects&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">)))</span>
+        <span class="n">live_activity_groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_live_activity_groups</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">live_activity_groups</span>
+</div>
+<div class="viewcode-block" id="Master.get_live_activity_group"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.get_live_activity_group">[docs]</a>    <span class="k">def</span> <span class="nf">get_live_activity_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_pattern</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a list of live activity groups.</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        </span>
+<span class="sd">        :param search_pattern: dictionary of regexps used for searching through LiveActivity names</span>
+<span class="sd">        </span>
+<span class="sd">        example regexp dict:: </span>
+<span class="sd">        </span>
+<span class="sd">            {\</span>
+<span class="sd">            &quot;live_activity_group_name&quot; : &quot;regexp&quot;\</span>
+<span class="sd">            }</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_url</span><span class="p">(</span><span class="n">class_name</span><span class="o">=</span><span class="s">&#39;Master&#39;</span><span class="p">,</span> <span class="n">method_name</span><span class="o">=</span><span class="s">&#39;get_live_activity_groups&#39;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Trying to retrieve url=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">url</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_get_json</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Got response for &quot;get_live_activity_groups&quot; </span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;get_live_activity_groups returned </span><span class="si">%s</span><span class="s"> objects&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">)))</span>
+        <span class="n">live_activity_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_live_activity_groups</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">live_activity_group</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MasterException</span><span class="p">(</span><span class="s">&quot;get_live_activity_group returned more than one row (</span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">live_activity_group</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">live_activity_group</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">LiveActivityGroupNotFoundException</span><span class="p">(</span><span class="s">&quot;get_live_activity_group returned zero rows&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">live_activity_group</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">LiveActivityGroup</span><span class="p">):</span>
+            <span class="n">live_activity_group</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;get_live_activity_group returned LiveActivityGroup:</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">live_activity_group</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">live_activity_group</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MasterException</span><span class="p">(</span><span class="s">&quot;Could not get specific live activity group for given search pattern&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Master.get_spaces"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.get_spaces">[docs]</a>    <span class="k">def</span> <span class="nf">get_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_pattern</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a list of live activity groups.</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        </span>
+<span class="sd">        :param search_pattern: dictionary containing space name regexp</span>
+<span class="sd">        </span>
+<span class="sd">        example regexp dict:: </span>
+<span class="sd">            </span>
+<span class="sd">            {&quot;space_name&quot; : &quot;regexp&quot;}</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_url</span><span class="p">(</span><span class="n">class_name</span><span class="o">=</span><span class="s">&#39;Master&#39;</span><span class="p">,</span> <span class="n">method_name</span><span class="o">=</span><span class="s">&#39;get_spaces&#39;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Trying to retrieve url=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">url</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_get_json</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Got response for &quot;get_spaces&quot; </span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+        <span class="n">spaces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_spaces</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">spaces</span>
+</div>
+<div class="viewcode-block" id="Master.get_space"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.get_space">[docs]</a>    <span class="k">def</span> <span class="nf">get_space</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_pattern</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a Space</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: Space</span>
+<span class="sd">        </span>
+<span class="sd">        :param search_pattern: dictionary containing space name regexp</span>
+<span class="sd">        </span>
+<span class="sd">        example regexp dict:: </span>
+<span class="sd">        </span>
+<span class="sd">            {&quot;space_name&quot; : &quot;regexp&quot;}</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_url</span><span class="p">(</span><span class="n">class_name</span><span class="o">=</span><span class="s">&#39;Master&#39;</span><span class="p">,</span> <span class="n">method_name</span><span class="o">=</span><span class="s">&#39;get_spaces&#39;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Trying to retrieve url=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">url</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_get_json</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Got response for &quot;get_spaces&quot; </span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+        <span class="n">space</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_spaces</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">space</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MasterException</span><span class="p">(</span><span class="s">&quot;get_space returned more than one row (</span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">space</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">space</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Space</span><span class="p">):</span>
+            <span class="n">space</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;get_space returned Space:</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">space</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">space</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MasterException</span><span class="p">(</span><span class="s">&quot;Could not get specific space for given search pattern&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Master.get_space_controllers"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.get_space_controllers">[docs]</a>    <span class="k">def</span> <span class="nf">get_space_controllers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_pattern</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a list of live space controllers.</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        </span>
+<span class="sd">        :param search_pattern: dictionary containing regexps and strings</span>
+<span class="sd">        </span>
+<span class="sd">        example regexp dict::</span>
+<span class="sd">        </span>
+<span class="sd">            {\</span>
+<span class="sd">            &quot;state&quot; : &quot;STRING&quot;,\</span>
+<span class="sd">            &quot;mode&quot; : &quot;STRING&quot;,\</span>
+<span class="sd">            &quot;name&quot; : &quot;regexp&quot;,\</span>
+<span class="sd">            &quot;uuid&quot; : &quot;STRING&quot;\</span>
+<span class="sd">            }</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_url</span><span class="p">(</span><span class="n">class_name</span><span class="o">=</span><span class="s">&#39;Master&#39;</span><span class="p">,</span> <span class="n">method_name</span><span class="o">=</span><span class="s">&#39;get_space_controllers&#39;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Trying to retrieve url=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">url</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_get_json</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Got response for &quot;get_controllers&quot; </span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+        <span class="n">space_controllers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_space_controllers</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">space_controllers</span>
+</div>
+<div class="viewcode-block" id="Master.get_space_controller"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.get_space_controller">[docs]</a>    <span class="k">def</span> <span class="nf">get_space_controller</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_pattern</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a list of live space controllers.</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: SpaceController</span>
+<span class="sd">        </span>
+<span class="sd">        :param search_pattern: dictionary containing regexps and strings</span>
+<span class="sd">        </span>
+<span class="sd">        example regexp dict::</span>
+<span class="sd">        </span>
+<span class="sd">            {\</span>
+<span class="sd">            &quot;space_controller_state&quot; : &quot;STRING&quot;,\</span>
+<span class="sd">            &quot;space_controller_mode&quot; : &quot;STRING&quot;,\</span>
+<span class="sd">            &quot;space_controller_name&quot; : &quot;regexp&quot;,\</span>
+<span class="sd">            &quot;space_controller_uuid&quot; : &quot;STRING&quot;\</span>
+<span class="sd">            }</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_url</span><span class="p">(</span><span class="n">class_name</span><span class="o">=</span><span class="s">&#39;Master&#39;</span><span class="p">,</span> <span class="n">method_name</span><span class="o">=</span><span class="s">&#39;get_space_controllers&#39;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Trying to retrieve url=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">url</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_get_json</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Got response for &quot;get_controllers&quot; </span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+        <span class="n">space_controller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_space_controllers</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">space_controller</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MasterException</span><span class="p">(</span><span class="s">&quot;get_space_controller returned more than one row&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">space_controller</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ControllerNotFoundException</span><span class="p">(</span><span class="s">&quot;Could not get specific space controller for given search pattern&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">space_controller</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">SpaceController</span><span class="p">):</span>
+            <span class="n">space_controller</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;get_space_controller returned SpaceController:</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">space_controller</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">space_controller</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MasterException</span><span class="p">(</span><span class="s">&quot;Exception&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Master.get_named_scripts"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.get_named_scripts">[docs]</a>    <span class="k">def</span> <span class="nf">get_named_scripts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieves a list of named scripts.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</div>
+<div class="viewcode-block" id="Master.new_live_activity"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.new_live_activity">[docs]</a>    <span class="k">def</span> <span class="nf">new_live_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constructor_args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a new live activity and returns it</span>
+<span class="sd">        </span>
+<span class="sd">        :param constructor_args: dictionary containing all of below keys::</span>
+
+<span class="sd">            {&quot;live_activity_name&quot;: &quot;string containing name of a new live activity (mandatory)&quot;,\</span>
+<span class="sd">            &quot;live_activity_description&quot; : &quot;string containing description&quot;,\</span>
+<span class="sd">            &quot;activity_name&quot; : &quot;string containing activity name&quot;,\</span>
+<span class="sd">            &quot;space_controller_name&quot; : &quot;string containing controller name&quot;}</span>
+
+<span class="sd">        :rtype: LiveActivity</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">unpacked_arguments</span><span class="o">=</span><span class="p">{}</span>
+        <span class="n">unpacked_arguments</span><span class="p">[</span><span class="s">&#39;activityId&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_activity</span><span class="p">({</span><span class="s">&quot;activity_name&quot;</span> <span class="p">:</span> <span class="n">constructor_args</span><span class="p">[</span><span class="s">&#39;activity_name&#39;</span><span class="p">]})</span><span class="o">.</span><span class="n">id</span><span class="p">()</span>
+        <span class="n">unpacked_arguments</span><span class="p">[</span><span class="s">&#39;controllerId&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_space_controller</span><span class="p">({</span><span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="n">constructor_args</span><span class="p">[</span><span class="s">&#39;space_controller_name&#39;</span><span class="p">]})</span><span class="o">.</span><span class="n">id</span><span class="p">()</span>
+        <span class="n">unpacked_arguments</span><span class="p">[</span><span class="s">&#39;liveActivity.description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">constructor_args</span><span class="p">[</span><span class="s">&#39;live_activity_description&#39;</span><span class="p">]</span>
+        <span class="n">unpacked_arguments</span><span class="p">[</span><span class="s">&#39;liveActivity.name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">constructor_args</span><span class="p">[</span><span class="s">&#39;live_activity_name&#39;</span><span class="p">]</span>
+        <span class="n">unpacked_arguments</span><span class="p">[</span><span class="s">&#39;_eventId_save&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Save&#39;</span>
+
+        <span class="n">activity</span> <span class="o">=</span> <span class="n">LiveActivity</span><span class="p">()</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">unpacked_arguments</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Master:new_live_activity returned activity:</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">activity</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">activity</span>
+</div>
+<div class="viewcode-block" id="Master.new_activity"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.new_activity">[docs]</a>    <span class="k">def</span> <span class="nf">new_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constructor_args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a new activity and returns it</span>
+<span class="sd">        </span>
+<span class="sd">        :param constructor_args: dictionary containing all of below keys::</span>
+<span class="sd">            </span>
+<span class="sd">            {\</span>
+<span class="sd">            &quot;zip_file_handler&quot;: &quot;zipfile object (mandatory)&quot;\</span>
+<span class="sd">            }</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: Activity or False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">activity</span> <span class="o">=</span> <span class="n">Activity</span><span class="p">()</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">constructor_args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Master:new_activity returned activity:</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">activity</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">activity</span>
+</div>
+<div class="viewcode-block" id="Master.new_space_controller"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.new_space_controller">[docs]</a>    <span class="k">def</span> <span class="nf">new_space_controller</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constructor_args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates new controller</span>
+<span class="sd">        </span>
+<span class="sd">        :param constructor_args: dictionary containing all of below keys::</span>
+<span class="sd">        </span>
+<span class="sd">            {\</span>
+<span class="sd">            &quot;space_controller_name&quot; : &quot;mandatory string&quot;,\</span>
+<span class="sd">            &quot;space_controller_description&quot; : &quot;non mandatory string&quot;,\</span>
+<span class="sd">            &quot;space_controller_host_id&quot; : &quot;mandatory string&quot;\</span>
+<span class="sd">            }</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">space_controller</span> <span class="o">=</span> <span class="n">SpaceController</span><span class="p">()</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">constructor_args</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">space_controller</span>
+</div>
+<div class="viewcode-block" id="Master.new_live_activity_group"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.new_live_activity_group">[docs]</a>    <span class="k">def</span> <span class="nf">new_live_activity_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constructor_args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a new live activity group.</span>
+<span class="sd">        </span>
+<span class="sd">        :param constructor_args: dictionary with following structure::</span>
+<span class="sd">        </span>
+<span class="sd">            {\</span>
+<span class="sd">            &quot;live_activity_group_name&quot; : &quot;example.py live_activity_group_name&quot;,\</span>
+<span class="sd">            &quot;live_activity_group_description&quot; : &quot;created by example.py&quot;,\</span>
+<span class="sd">            &quot;live_activities&quot; : [{&quot;live_activity_name&quot; : &quot;SV Master on Node A&quot;,\</span>
+<span class="sd">            &quot;space_controller_name&quot; : &quot;ISCtlDispAScreen00&quot;},\</span>
+<span class="sd">            {&quot;live_activity_name&quot; : &quot;SV Slave 01 on Node A&quot;,\</span>
+<span class="sd">            &quot;space_controller_name&quot; : &quot;ISCtlDispAScreen00&quot;}]\</span>
+<span class="sd">            }</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">live_activity_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate_live_activities_names_to_ids</span><span class="p">(</span><span class="n">constructor_args</span><span class="p">[</span><span class="s">&#39;live_activities&#39;</span><span class="p">])</span>
+        <span class="n">unpacked_arguments</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">unpacked_arguments</span><span class="p">[</span><span class="s">&#39;liveActivityGroup.name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">constructor_args</span><span class="p">[</span><span class="s">&#39;live_activity_group_name&#39;</span><span class="p">]</span>
+        <span class="n">unpacked_arguments</span><span class="p">[</span><span class="s">&#39;liveActivityGroup.description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">constructor_args</span><span class="p">[</span><span class="s">&#39;live_activity_group_description&#39;</span><span class="p">]</span>
+        <span class="n">unpacked_arguments</span><span class="p">[</span><span class="s">&#39;_eventId_save&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Save&#39;</span>
+        <span class="n">unpacked_arguments</span><span class="p">[</span><span class="s">&#39;liveActivityIds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">live_activity_ids</span>
+        <span class="n">live_activity_group</span> <span class="o">=</span> <span class="n">LiveActivityGroup</span><span class="p">()</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">unpacked_arguments</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">live_activity_group</span>
+</div>
+<div class="viewcode-block" id="Master.new_space"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.new_space">[docs]</a>    <span class="k">def</span> <span class="nf">new_space</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">live_activity_groups</span><span class="p">,</span> <span class="n">spaces</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a new space.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</div>
+<div class="viewcode-block" id="Master.new_controller"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.new_controller">[docs]</a>    <span class="k">def</span> <span class="nf">new_controller</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">host_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a new controller.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</div>
+<div class="viewcode-block" id="Master.new_named_script"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.new_named_script">[docs]</a>    <span class="k">def</span> <span class="nf">new_named_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">language</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">scheduled</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a new named script.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</div>
+<div class="viewcode-block" id="Master.translate_live_activities_names_to_ids"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.master.Master.translate_live_activities_names_to_ids">[docs]</a>    <span class="k">def</span> <span class="nf">translate_live_activities_names_to_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">live_activities</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts live activities dicts to list of ids</span>
+<span class="sd">        </span>
+<span class="sd">        :param live_activities: list of dictionaries containing following keys::</span>
+<span class="sd">        </span>
+<span class="sd">            {\</span>
+<span class="sd">            &quot;live_activity_name&quot; : &quot;some_name&quot;,\</span>
+<span class="sd">            &quot;space_controller_name&quot; : &quot;some controller name&quot;\</span>
+<span class="sd">            }</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">live_activity_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">la_data</span> <span class="ow">in</span> <span class="n">live_activities</span><span class="p">:</span>
+            <span class="n">live_activity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_live_activity</span><span class="p">(</span><span class="n">la_data</span><span class="p">)</span>
+            <span class="n">live_activity_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">live_activity</span><span class="o">.</span><span class="n">id</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Translated </span><span class="si">%s</span><span class="s"> live_activity_names to ids with a result of </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">live_activity_ids</span><span class="p">),</span> <span class="n">live_activity_ids</span><span class="p">)</span> <span class="p">)</span>
+        <span class="k">return</span> <span class="n">live_activity_ids</span>
+</div>
+    <span class="sd">&quot;&quot;&quot; Private methods below &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_filter_live_activities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">search_pattern</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should iterate over response from Master API and filter live activites </span>
+<span class="sd">        with regard to their name</span>
+<span class="sd">            </span>
+<span class="sd">        :param response: response[&#39;data&#39;] from master API</span>
+<span class="sd">        </span>
+<span class="sd">        :param search_pattern: dictionary where values may be regexps</span>
+<span class="sd">        </span>
+<span class="sd">        :todo: refactor filtering because it looks ugly and make it global for all classes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">live_activities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="sd">&quot;&quot;&quot; Make a search pattern with default values set to None&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">SearchPattern</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">SearchPattern</span><span class="p">()</span>
+
+        <span class="n">live_activity_name</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="p">[</span><span class="s">&#39;live_activity_name&#39;</span><span class="p">]</span>
+
+        <span class="sd">&quot;&quot;&quot; Nested values are returning exception so do it manually here &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">space_controller_name</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="p">[</span><span class="s">&#39;space_controller_name&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">space_controller_name</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Filtering activities with pattern=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">search_pattern</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">live_activity_data</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">do_filter</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="sd">&quot;&quot;&quot; Var for holding the state of filtering &quot;&quot;&quot;</span>
+            <span class="n">current_live_activity_name</span> <span class="o">=</span> <span class="n">live_activity_data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+            <span class="n">current_space_controller_name</span> <span class="o">=</span> <span class="n">live_activity_data</span><span class="p">[</span><span class="s">&#39;controller&#39;</span><span class="p">][</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">space_controller_name</span> <span class="ow">and</span> <span class="n">do_filter</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Searcher</span><span class="p">()</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">current_space_controller_name</span><span class="p">,</span> <span class="n">space_controller_name</span><span class="p">):</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">do_filter</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">live_activity_name</span> <span class="ow">and</span> <span class="n">do_filter</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Searcher</span><span class="p">()</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">current_live_activity_name</span><span class="p">,</span> <span class="n">live_activity_name</span><span class="p">):</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">do_filter</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">do_filter</span><span class="o">==</span><span class="bp">True</span><span class="p">:</span>
+                <span class="n">live_activities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LiveActivity</span><span class="p">(</span><span class="n">live_activity_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Filtered live_activities and returned </span><span class="si">%s</span><span class="s"> object(s)&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">live_activities</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">live_activities</span>
+
+    <span class="k">def</span> <span class="nf">_filter_activities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">search_pattern</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should iterate over response from Master API and filter</span>
+<span class="sd">        live activites with regards to their name</span>
+<span class="sd">        </span>
+<span class="sd">        :param response: response[&#39;data&#39;] from master API</span>
+<span class="sd">        </span>
+<span class="sd">        :param search_pattern: dictionary where values may be regexps</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: list of Activity objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">activities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="sd">&quot;&quot;&quot; Make a search pattern with default values set to None&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">SearchPattern</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">SearchPattern</span><span class="p">()</span>
+
+        <span class="n">activity_name</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="p">[</span><span class="s">&#39;activity_name&#39;</span><span class="p">]</span>
+        <span class="n">activity_version</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="p">[</span><span class="s">&#39;activity_version&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Filtering activities with pattern=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">search_pattern</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">activity_data</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">do_filter</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="sd">&quot;&quot;&quot; Var for holding the state of filtering &quot;&quot;&quot;</span>
+            <span class="n">current_activity_name</span> <span class="o">=</span> <span class="n">activity_data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+            <span class="n">current_activity_version</span> <span class="o">=</span> <span class="n">activity_data</span><span class="p">[</span><span class="s">&#39;version&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">activity_version</span> <span class="ow">and</span> <span class="n">do_filter</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Searcher</span><span class="p">()</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">current_activity_version</span><span class="p">,</span> <span class="n">activity_version</span><span class="p">):</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">do_filter</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">activity_name</span> <span class="ow">and</span> <span class="n">do_filter</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Searcher</span><span class="p">()</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">current_activity_name</span><span class="p">,</span> <span class="n">activity_name</span><span class="p">):</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">do_filter</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">do_filter</span><span class="o">==</span><span class="bp">True</span><span class="p">:</span>
+                <span class="n">activities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Activity</span><span class="p">(</span><span class="n">activity_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Filtered activities and returned </span><span class="si">%s</span><span class="s"> object(s) : </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">activities</span><span class="p">)),</span> <span class="n">activities</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">activities</span>
+
+    <span class="k">def</span> <span class="nf">_filter_live_activity_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">search_pattern</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should iterate over response from Master API and filter</span>
+<span class="sd">        live activity groups with regards to their name</span>
+<span class="sd">        </span>
+<span class="sd">        :param response: response[&#39;data&#39;] from master API</span>
+<span class="sd">        </span>
+<span class="sd">        :param search_pattern: dictionary where values may be regexps</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: list of LiveActivityGroup objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">live_activity_groups</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="sd">&quot;&quot;&quot; Make a search pattern with default values set to None&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">SearchPattern</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">SearchPattern</span><span class="p">()</span>
+        <span class="n">live_activity_group_name</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="p">[</span><span class="s">&#39;live_activity_group_name&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Filtering activities with pattern=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">live_activity_group_data</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">do_filter</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="sd">&quot;&quot;&quot; Var for holding the state of filtering &quot;&quot;&quot;</span>
+            <span class="n">current_live_activity_group_name</span> <span class="o">=</span> <span class="n">live_activity_group_data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">live_activity_group_name</span> <span class="ow">and</span> <span class="n">do_filter</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Searcher</span><span class="p">()</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">current_live_activity_group_name</span><span class="p">,</span> <span class="n">live_activity_group_name</span><span class="p">):</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">do_filter</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">do_filter</span><span class="o">==</span><span class="bp">True</span><span class="p">:</span>
+                <span class="n">live_activity_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LiveActivityGroup</span><span class="p">(</span><span class="n">live_activity_group_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Filtered live_activity_groups and returned </span><span class="si">%s</span><span class="s"> object(s)&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">live_activity_groups</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">live_activity_groups</span>
+
+    <span class="k">def</span> <span class="nf">_filter_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">search_pattern</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should iterate over response from Master API and filter</span>
+<span class="sd">        live activity groups with regards to their name</span>
+<span class="sd">        </span>
+<span class="sd">        :param response: response[&#39;data&#39;] from master API</span>
+<span class="sd">        </span>
+<span class="sd">        :param search_pattern: dictionary where values may be regexps</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: list of Space objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">spaces</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="sd">&quot;&quot;&quot; Make a search pattern with default values set to None&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">SearchPattern</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">SearchPattern</span><span class="p">()</span>
+
+        <span class="n">space_name</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="p">[</span><span class="s">&#39;space_name&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Filtering spaces with pattern=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">search_pattern</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">space_data</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">do_filter</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="sd">&quot;&quot;&quot; Var for holding the state of filtering &quot;&quot;&quot;</span>
+            <span class="n">current_space_name</span> <span class="o">=</span> <span class="n">space_data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">space_name</span> <span class="ow">and</span> <span class="n">do_filter</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Searcher</span><span class="p">()</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">current_space_name</span><span class="p">,</span> <span class="n">space_name</span><span class="p">):</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">do_filter</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">do_filter</span><span class="o">==</span><span class="bp">True</span><span class="p">:</span>
+                <span class="n">spaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Space</span><span class="p">(</span><span class="n">space_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Filtered spaces and returned </span><span class="si">%s</span><span class="s"> object(s)&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spaces</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">spaces</span>
+
+    <span class="k">def</span> <span class="nf">_filter_space_controllers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">search_pattern</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should iterate over response from Master API and filter</span>
+<span class="sd">        space controllers with regards to the given search dictionary</span>
+<span class="sd">        consisting of name, uuid, mode and state (none of them are</span>
+<span class="sd">        mandatory)</span>
+<span class="sd">            </span>
+<span class="sd">        :param response: response[&#39;data&#39;] from master API</span>
+<span class="sd">        </span>
+<span class="sd">        :param search_pattern: dictionary where values may be regexps</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: list of Space objects</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">space_controllers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="sd">&quot;&quot;&quot; Make a search pattern with default values set to None&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">SearchPattern</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">SearchPattern</span><span class="p">()</span>
+
+        <span class="n">space_controller_name</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="p">[</span><span class="s">&#39;space_controller_name&#39;</span><span class="p">]</span>
+        <span class="n">space_controller_uuid</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="p">[</span><span class="s">&#39;space_controller_uuid&#39;</span><span class="p">]</span>
+        <span class="n">space_controller_state</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="p">[</span><span class="s">&#39;space_controller_state&#39;</span><span class="p">]</span>
+        <span class="n">space_controller_mode</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="p">[</span><span class="s">&#39;space_controller_mode&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Filtering space controllers with pattern=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">search_pattern</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">space_controller_data</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">do_filter</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">current_space_controller_name</span> <span class="o">=</span> <span class="n">space_controller_data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+            <span class="n">current_space_controller_uuid</span> <span class="o">=</span> <span class="n">space_controller_data</span><span class="p">[</span><span class="s">&#39;uuid&#39;</span><span class="p">]</span>
+            <span class="n">current_space_controller_mode</span> <span class="o">=</span> <span class="n">space_controller_data</span><span class="p">[</span><span class="s">&#39;mode&#39;</span><span class="p">]</span>
+            <span class="n">current_space_controller_state</span> <span class="o">=</span> <span class="n">space_controller_data</span><span class="p">[</span><span class="s">&#39;state&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">space_controller_name</span> <span class="ow">and</span> <span class="n">do_filter</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Searcher</span><span class="p">()</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">current_space_controller_name</span><span class="p">,</span> <span class="n">space_controller_name</span><span class="p">):</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">do_filter</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">space_controller_uuid</span> <span class="ow">and</span> <span class="n">do_filter</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">current_space_controller_uuid</span> <span class="o">==</span> <span class="n">space_controller_uuid</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">do_filter</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">space_controller_mode</span> <span class="ow">and</span> <span class="n">do_filter</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">current_space_controller_mode</span> <span class="o">==</span> <span class="n">space_controller_mode</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">do_filter</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">space_controller_state</span> <span class="ow">and</span> <span class="n">do_filter</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">current_space_controller_state</span> <span class="o">==</span> <span class="n">space_controller_state</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">do_filter</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">do_filter</span><span class="o">==</span><span class="bp">True</span><span class="p">:</span>
+                <span class="n">space_controllers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SpaceController</span><span class="p">(</span><span class="n">space_controller_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Filtered space_controllers and returned </span><span class="si">%s</span><span class="s"> object(s)&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">space_controllers</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">space_controllers</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">interactivespaces  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../interactivespaces.html" >interactivespaces</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Author.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

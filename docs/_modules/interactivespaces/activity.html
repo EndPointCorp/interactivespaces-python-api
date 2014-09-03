@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>interactivespaces.activity &mdash; interactivespaces  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="interactivespaces  documentation" href="../../index.html" />
+    <link rel="up" title="interactivespaces" href="../interactivespaces.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">interactivespaces  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../interactivespaces.html" accesskey="U">interactivespaces</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for interactivespaces.activity</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">misc</span> <span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">mixin</span> <span class="kn">import</span> <span class="n">Fetchable</span><span class="p">,</span> <span class="n">Deletable</span>
+<span class="kn">from</span> <span class="nn">serializer</span> <span class="kn">import</span> <span class="n">ActivitySerializer</span>
+<span class="kn">from</span> <span class="nn">abstract</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<div class="viewcode-block" id="Activity"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.activity.Activity">[docs]</a><span class="k">class</span> <span class="nc">Activity</span><span class="p">(</span><span class="n">Fetchable</span><span class="p">,</span> <span class="n">Deletable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       Should be responsible for managing a single activity</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_hash</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">activity_archive_uri</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Activity</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">data_hash</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">uri</span> <span class="o">==</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;No data provided - assuming creation of new Activity&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">data_hash</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">uri</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span> <span class="o">=</span> <span class="n">data_hash</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="n">uri</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">absolute_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_absolute_url</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Instantiated Activity object with url=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">absolute_url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Activity.new"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.activity.Activity.new">[docs]</a>    <span class="k">def</span> <span class="nf">new</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">constructor_args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Method to keep naming convention of .new() methods</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_activity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">constructor_args</span><span class="p">[</span><span class="s">&#39;zip_file_handler&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">new_activity</span>
+</div>
+<div class="viewcode-block" id="Activity.upload"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.activity.Activity.upload">[docs]</a>    <span class="k">def</span> <span class="nf">upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">zip_file_handler</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should make a deployment of the activity with following steps:</span>
+<span class="sd">            - receive handler to a local zipfile</span>
+<span class="sd">            - upload it to the API</span>
+<span class="sd">            - save</span>
+<span class="sd">            - set instance variables for the object</span>
+<span class="sd">            </span>
+<span class="sd">        :return: False or URL to a new Activity</span>
+<span class="sd">        :param uri: stirng</span>
+<span class="sd">        :param zip_file_handler: &#39;file&#39; class instance</span>
+<span class="sd">        :rtype: new Activity object or False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Uploading new Activity from file </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">zip_file_handler</span><span class="p">)</span>
+        <span class="n">route</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">get_route_for</span><span class="p">(</span><span class="s">&#39;Activity&#39;</span><span class="p">,</span> <span class="s">&#39;upload&#39;</span><span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">route</span><span class="p">)</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;_eventId_save&quot;</span> <span class="p">:</span> <span class="s">&quot;Save&quot;</span><span class="p">}</span>
+        <span class="n">request_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_post_json</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">zip_file_handler</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_upload_response</span><span class="p">(</span><span class="n">request_response</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Activity.check_upload_response"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.activity.Activity.check_upload_response">[docs]</a>    <span class="k">def</span> <span class="nf">check_upload_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_response</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Dirty workaround for nasty html redirect</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">request_response</span><span class="o">.</span><span class="n">url</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">absolute_url</span> <span class="o">=</span> <span class="n">request_response</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;view.html&quot;</span><span class="p">,</span> <span class="s">&quot;view.json&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Created new Activity with url=</span><span class="si">%s</span><span class="s">, data_hash is now </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">absolute_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Created new Activity </span><span class="si">%s</span><span class="s"> but returned False&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="Activity.to_json"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.activity.Activity.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Should selected attributes in json form defined by the template</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">serializer</span> <span class="o">=</span> <span class="n">ActivitySerializer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Activity.fetch"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.activity.Activity.fetch">[docs]</a>    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Should retrieve data from Master API&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">absolute_url</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Activity.name"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.activity.Activity.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Should return live activity name&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;activity&#39;</span><span class="p">][</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="Activity.identifying_name"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.activity.Activity.identifying_name">[docs]</a>    <span class="k">def</span> <span class="nf">identifying_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Should return identifying name &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;activity&#39;</span><span class="p">][</span><span class="s">&#39;identifyingName&#39;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="Activity.version"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.activity.Activity.version">[docs]</a>    <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Should return Activity version &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;activity&#39;</span><span class="p">][</span><span class="s">&#39;version&#39;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="Activity.id"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.activity.Activity.id">[docs]</a>    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Should return Activity id &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;activity&#39;</span><span class="p">][</span><span class="s">&#39;id&#39;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="Activity.description"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.activity.Activity.description">[docs]</a>    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Should return Activity description &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;activity&#39;</span><span class="p">][</span><span class="s">&#39;description&#39;</span><span class="p">]</span>
+</div>
+    <span class="sd">&quot;&quot;&quot; Private methods below&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Initial data hash without subattributes that comes</span>
+<span class="sd">            from the all.json method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">activity_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">/activity/</span><span class="si">%s</span><span class="s">/view.json&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">activity_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">url</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">interactivespaces  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../interactivespaces.html" >interactivespaces</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Author.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

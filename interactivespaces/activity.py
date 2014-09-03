@@ -7,14 +7,13 @@ from serializer import ActivitySerializer
 from abstract import Path
 
 class Activity(Fetchable, Deletable):
-    """ 
-        @summary: Should be responsible for managing a single activity
+    """
+       Should be responsible for managing a single activity
     """
     def __init__(self, data_hash=None, uri=None, activity_archive_uri=None, name=None):
         self.class_name = self.__class__.__name__
         self.log = Logger().get_logger()
         super(Activity, self).__init__()
-        
         if (data_hash == None and uri == None):
             self.log.info("No data provided - assuming creation of new Activity")
         elif (data_hash != None and uri != None):
@@ -22,28 +21,29 @@ class Activity(Fetchable, Deletable):
             self.uri = uri
             self.absolute_url = self._get_absolute_url()
             self.log.info("Instantiated Activity object with url=%s" % self.absolute_url)
-    
+
     def __repr__(self):
         return str(self.data_hash)
-    
+
     def new(self, uri, constructor_args):
         """
-            @summary: method to keep naming convention of .new() methods
+            Method to keep naming convention of .new() methods
         """
         new_activity = self.upload(uri, constructor_args['zip_file_handler'])
         return new_activity
-    
+
     def upload(self, uri, zip_file_handler):
         """
-            @summary: Should make a deployment of the activity with followin steps:
-                - receive handler to a local zipfile
-                - upload it to the API
-                - save
-                - set instance variables for the object
-            @return: False or URL to a new Activity
-            @param uri: stirng
-            @param zip_file_handler: 'file' class instance
-            @rtype: new Activity object or False
+        Should make a deployment of the activity with following steps:
+            - receive handler to a local zipfile
+            - upload it to the API
+            - save
+            - set instance variables for the object
+            
+        :return: False or URL to a new Activity
+        :param uri: stirng
+        :param zip_file_handler: 'file' class instance
+        :rtype: new Activity object or False
         """
         self.log.info("Uploading new Activity from file %s" % zip_file_handler)
         route = Path().get_route_for('Activity', 'upload')
@@ -53,8 +53,10 @@ class Activity(Fetchable, Deletable):
         return self.check_upload_response(request_response)
 
     def check_upload_response(self, request_response):
+        """
+            Dirty workaround for nasty html redirect
+        """
         if request_response.url:
-            """ Dirty workaround for nasty html redirect """
             self.absolute_url = request_response.url.replace("view.html", "view.json")
             self.fetch()
             self.log.info("Created new Activity with url=%s, data_hash is now %s" % (self.absolute_url, self.data_hash))
@@ -69,23 +71,23 @@ class Activity(Fetchable, Deletable):
         """
         self.serializer = ActivitySerializer(self.data_hash)
         return self.serializer.to_json()
-    
+
     def fetch(self):
         """ Should retrieve data from Master API"""
         self.data_hash = self._refresh_object(self.absolute_url)
-    
+
     def name(self):
         """ Should return live activity name"""
         return self.data_hash['activity']['name']
-    
+
     def identifying_name(self):
         """ Should return identifying name """
         return self.data_hash['activity']['identifyingName']
-    
+
     def version(self):
         """ Should return Activity version """
         return self.data_hash['activity']['version']
-    
+
     def id(self):
         """ Should return Activity id """
         return self.data_hash['activity']['id']
@@ -93,12 +95,12 @@ class Activity(Fetchable, Deletable):
     def description(self):
         """ Should return Activity description """
         return self.data_hash['activity']['description']
-    
+
     """ Private methods below"""
-    
+
     def _get_absolute_url(self):
         """
-            @summary: Initial data hash without subattributes that comes
+            Initial data hash without subattributes that comes
             from the all.json method
         """
         activity_id = self.data_hash['id']

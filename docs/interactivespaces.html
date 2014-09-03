@@ -1,0 +1,2502 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>interactivespaces package &mdash; interactivespaces  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="interactivespaces  documentation" href="index.html" />
+    <link rel="prev" title="Welcome to interactivespaces’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to interactivespaces’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">interactivespaces  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="interactivespaces-package">
+<h1>interactivespaces package<a class="headerlink" href="#interactivespaces-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-interactivespaces.abstract">
+<span id="interactivespaces-abstract-module"></span><h2>interactivespaces.abstract module<a class="headerlink" href="#module-interactivespaces.abstract" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="interactivespaces.abstract.Path">
+<em class="property">class </em><tt class="descclassname">interactivespaces.abstract.</tt><tt class="descname">Path</tt><a class="reference internal" href="_modules/interactivespaces/abstract.html#Path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.abstract.Path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Should be responsible for static translation of routes</p>
+<dl class="method">
+<dt id="interactivespaces.abstract.Path.get_route_for">
+<tt class="descname">get_route_for</tt><big>(</big><em>class_name</em>, <em>method_name</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/abstract.html#Path.get_route_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.abstract.Path.get_route_for" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should receive caller class name and caller method in order
+to return a proper route in the master API</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-interactivespaces.activity">
+<span id="interactivespaces-activity-module"></span><h2>interactivespaces.activity module<a class="headerlink" href="#module-interactivespaces.activity" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="interactivespaces.activity.Activity">
+<em class="property">class </em><tt class="descclassname">interactivespaces.activity.</tt><tt class="descname">Activity</tt><big>(</big><em>data_hash=None</em>, <em>uri=None</em>, <em>activity_archive_uri=None</em>, <em>name=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/activity.html#Activity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.activity.Activity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Fetchable" title="interactivespaces.mixin.Fetchable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Fetchable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Deletable" title="interactivespaces.mixin.Deletable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Deletable</span></tt></a></p>
+<p>Should be responsible for managing a single activity</p>
+<dl class="method">
+<dt id="interactivespaces.activity.Activity.check_upload_response">
+<tt class="descname">check_upload_response</tt><big>(</big><em>request_response</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/activity.html#Activity.check_upload_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.activity.Activity.check_upload_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dirty workaround for nasty html redirect</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.activity.Activity.description">
+<tt class="descname">description</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/activity.html#Activity.description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.activity.Activity.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return Activity description</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.activity.Activity.fetch">
+<tt class="descname">fetch</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/activity.html#Activity.fetch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.activity.Activity.fetch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should retrieve data from Master API</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.activity.Activity.id">
+<tt class="descname">id</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/activity.html#Activity.id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.activity.Activity.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return Activity id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.activity.Activity.identifying_name">
+<tt class="descname">identifying_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/activity.html#Activity.identifying_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.activity.Activity.identifying_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return identifying name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.activity.Activity.name">
+<tt class="descname">name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/activity.html#Activity.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.activity.Activity.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return live activity name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.activity.Activity.new">
+<tt class="descname">new</tt><big>(</big><em>uri</em>, <em>constructor_args</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/activity.html#Activity.new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.activity.Activity.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to keep naming convention of .new() methods</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.activity.Activity.to_json">
+<tt class="descname">to_json</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/activity.html#Activity.to_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.activity.Activity.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should selected attributes in json form defined by the template</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.activity.Activity.upload">
+<tt class="descname">upload</tt><big>(</big><em>uri</em>, <em>zip_file_handler</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/activity.html#Activity.upload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.activity.Activity.upload" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Should make a deployment of the activity with following steps:</dt>
+<dd><ul class="first last simple">
+<li>receive handler to a local zipfile</li>
+<li>upload it to the API</li>
+<li>save</li>
+<li>set instance variables for the object</li>
+</ul>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">False or URL to a new Activity</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>uri</strong> &#8211; stirng</li>
+<li><strong>zip_file_handler</strong> &#8211; &#8216;file&#8217; class instance</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">new Activity object or False</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.activity.Activity.version">
+<tt class="descname">version</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/activity.html#Activity.version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.activity.Activity.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return Activity version</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-interactivespaces.exception">
+<span id="interactivespaces-exception-module"></span><h2>interactivespaces.exception module<a class="headerlink" href="#module-interactivespaces.exception" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="interactivespaces.exception.ActivityException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.exception.</tt><tt class="descname">ActivityException</tt><a class="reference internal" href="_modules/interactivespaces/exception.html#ActivityException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.exception.ActivityException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.exception.ActivityNotFoundException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.exception.</tt><tt class="descname">ActivityNotFoundException</tt><a class="reference internal" href="_modules/interactivespaces/exception.html#ActivityNotFoundException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.exception.ActivityNotFoundException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.exception.CommunicableException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.exception.</tt><tt class="descname">CommunicableException</tt><a class="reference internal" href="_modules/interactivespaces/exception.html#CommunicableException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.exception.CommunicableException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.exception.ControllerNotFoundException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.exception.</tt><tt class="descname">ControllerNotFoundException</tt><a class="reference internal" href="_modules/interactivespaces/exception.html#ControllerNotFoundException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.exception.ControllerNotFoundException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.exception.LiveActivityException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.exception.</tt><tt class="descname">LiveActivityException</tt><a class="reference internal" href="_modules/interactivespaces/exception.html#LiveActivityException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.exception.LiveActivityException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.exception.LiveActivityGroupNotFoundException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.exception.</tt><tt class="descname">LiveActivityGroupNotFoundException</tt><a class="reference internal" href="_modules/interactivespaces/exception.html#LiveActivityGroupNotFoundException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.exception.LiveActivityGroupNotFoundException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.exception.LiveActivityNotFoundException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.exception.</tt><tt class="descname">LiveActivityNotFoundException</tt><a class="reference internal" href="_modules/interactivespaces/exception.html#LiveActivityNotFoundException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.exception.LiveActivityNotFoundException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.exception.MasterException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.exception.</tt><tt class="descname">MasterException</tt><a class="reference internal" href="_modules/interactivespaces/exception.html#MasterException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.exception.MasterException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.exception.PathException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.exception.</tt><tt class="descname">PathException</tt><a class="reference internal" href="_modules/interactivespaces/exception.html#PathException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.exception.PathException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.exception.SerializerException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.exception.</tt><tt class="descname">SerializerException</tt><a class="reference internal" href="_modules/interactivespaces/exception.html#SerializerException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.exception.SerializerException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.exception.StatusableException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.exception.</tt><tt class="descname">StatusableException</tt><a class="reference internal" href="_modules/interactivespaces/exception.html#StatusableException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.exception.StatusableException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-interactivespaces.helper">
+<span id="interactivespaces-helper-module"></span><h2>interactivespaces.helper module<a class="headerlink" href="#module-interactivespaces.helper" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="interactivespaces.helper.SearchPattern">
+<em class="property">class </em><tt class="descclassname">interactivespaces.helper.</tt><tt class="descname">SearchPattern</tt><a class="reference internal" href="_modules/interactivespaces/helper.html#SearchPattern"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.helper.SearchPattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></p>
+<p>Class that holds dictionary with default values for safe search patterns</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.helper.Searcher">
+<em class="property">class </em><tt class="descclassname">interactivespaces.helper.</tt><tt class="descname">Searcher</tt><a class="reference internal" href="_modules/interactivespaces/helper.html#Searcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.helper.Searcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></p>
+<p>Class responsible for search methods on strings</p>
+<dl class="method">
+<dt id="interactivespaces.helper.Searcher.match">
+<tt class="descname">match</tt><big>(</big><em>string</em>, <em>regular_expression</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/helper.html#Searcher.match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.helper.Searcher.match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Match string with a regular expression</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">bool</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>string</strong> &#8211; given string for matching</li>
+<li><strong>regular_expression</strong> &#8211; expression to be run against the given string</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-interactivespaces.live_activity">
+<span id="interactivespaces-live-activity-module"></span><h2>interactivespaces.live_activity module<a class="headerlink" href="#module-interactivespaces.live_activity" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="interactivespaces.live_activity.LiveActivity">
+<em class="property">class </em><tt class="descclassname">interactivespaces.live_activity.</tt><tt class="descname">LiveActivity</tt><big>(</big><em>data_hash=None</em>, <em>uri=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity.html#LiveActivity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity.LiveActivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Fetchable" title="interactivespaces.mixin.Fetchable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Fetchable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Statusable" title="interactivespaces.mixin.Statusable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Statusable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Deletable" title="interactivespaces.mixin.Deletable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Deletable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Shutdownable" title="interactivespaces.mixin.Shutdownable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Shutdownable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Startupable" title="interactivespaces.mixin.Startupable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Startupable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Activatable" title="interactivespaces.mixin.Activatable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Activatable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Configurable" title="interactivespaces.mixin.Configurable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Configurable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Cleanable" title="interactivespaces.mixin.Cleanable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Cleanable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Metadatable" title="interactivespaces.mixin.Metadatable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Metadatable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Deployable" title="interactivespaces.mixin.Deployable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Deployable</span></tt></a></p>
+<p>Should be responsible for managing single LiveActivity</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Todo:</th><td class="field-body">.new() should return instance of fetched live activity</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="interactivespaces.live_activity.LiveActivity.controller">
+<tt class="descname">controller</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity.html#LiveActivity.controller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity.LiveActivity.controller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return LiveActivity controller data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.live_activity.LiveActivity.id">
+<tt class="descname">id</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity.html#LiveActivity.id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity.LiveActivity.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return LiveActivity id</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.live_activity.LiveActivity.identifying_name">
+<tt class="descname">identifying_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity.html#LiveActivity.identifying_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity.LiveActivity.identifying_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return LiveActivity identifying name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.live_activity.LiveActivity.metadata">
+<tt class="descname">metadata</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity.html#LiveActivity.metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity.LiveActivity.metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return LiveActivity metadata</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.live_activity.LiveActivity.name">
+<tt class="descname">name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity.html#LiveActivity.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity.LiveActivity.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return live activity name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.live_activity.LiveActivity.new">
+<tt class="descname">new</tt><big>(</big><em>uri</em>, <em>new_data_hash</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity.html#LiveActivity.new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity.LiveActivity.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to create new live activity through API and set the &#8220;uri&#8221; so that we
+can operate on this instance of LiveActivity right away after .new() returns True</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>new_data_hash</strong> &#8211; <p>dictionary of a following structure:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;live_activity_name&quot;</span> <span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>            <span class="s">&quot;live_activity_description&quot;</span> <span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>            <span class="s">&quot;activity_id&quot;</span> <span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>            <span class="s">&quot;controller_id&quot;</span> <span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><strong>uri</strong> &#8211; &#8220;<a class="reference external" href="http://some_server/prefix">http://some_server/prefix</a>&#8221; (passed by master)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">new LiveActivity object or False</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.live_activity.LiveActivity.status">
+<tt class="descname">status</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity.html#LiveActivity.status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity.LiveActivity.status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return status that is currently held in the object instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.live_activity.LiveActivity.to_json">
+<tt class="descname">to_json</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity.html#LiveActivity.to_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity.LiveActivity.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should selected attributes in json form defined by the template</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.live_activity.LiveActivity.version">
+<tt class="descname">version</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity.html#LiveActivity.version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity.LiveActivity.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return LiveActivity version</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-interactivespaces.live_activity_group">
+<span id="interactivespaces-live-activity-group-module"></span><h2>interactivespaces.live_activity_group module<a class="headerlink" href="#module-interactivespaces.live_activity_group" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="interactivespaces.live_activity_group.LiveActivityGroup">
+<em class="property">class </em><tt class="descclassname">interactivespaces.live_activity_group.</tt><tt class="descname">LiveActivityGroup</tt><big>(</big><em>data_hash=None</em>, <em>uri=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity_group.html#LiveActivityGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity_group.LiveActivityGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Fetchable" title="interactivespaces.mixin.Fetchable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Fetchable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Statusable" title="interactivespaces.mixin.Statusable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Statusable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Deletable" title="interactivespaces.mixin.Deletable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Deletable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Shutdownable" title="interactivespaces.mixin.Shutdownable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Shutdownable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Startupable" title="interactivespaces.mixin.Startupable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Startupable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Activatable" title="interactivespaces.mixin.Activatable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Activatable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Configurable" title="interactivespaces.mixin.Configurable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Configurable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Metadatable" title="interactivespaces.mixin.Metadatable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Metadatable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Deployable" title="interactivespaces.mixin.Deployable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Deployable</span></tt></a></p>
+<p>Should be responsible for managing single live activity group</p>
+<dl class="method">
+<dt id="interactivespaces.live_activity_group.LiveActivityGroup.description">
+<tt class="descname">description</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity_group.html#LiveActivityGroup.description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity_group.LiveActivityGroup.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return Live Activity Group description</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.live_activity_group.LiveActivityGroup.id">
+<tt class="descname">id</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity_group.html#LiveActivityGroup.id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity_group.LiveActivityGroup.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.live_activity_group.LiveActivityGroup.live_activities">
+<tt class="descname">live_activities</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity_group.html#LiveActivityGroup.live_activities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity_group.LiveActivityGroup.live_activities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return list of live LiveActivity instances</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.live_activity_group.LiveActivityGroup.metadata">
+<tt class="descname">metadata</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity_group.html#LiveActivityGroup.metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity_group.LiveActivityGroup.metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return Live Activity Group metadata</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.live_activity_group.LiveActivityGroup.name">
+<tt class="descname">name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity_group.html#LiveActivityGroup.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity_group.LiveActivityGroup.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return live activity group name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.live_activity_group.LiveActivityGroup.new">
+<tt class="descname">new</tt><big>(</big><em>uri</em>, <em>constructor_args</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity_group.html#LiveActivityGroup.new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity_group.LiveActivityGroup.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to create new live activity group through API and set the &#8220;uri&#8221; so that we
+can operate on this instance of LiveActivityGroup right away after .new() returns True</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>constructor_args</strong> &#8211; <p>dictionary with following structure:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&#39;liveActivityGroup.name&#39;</span> <span class="p">:</span> <span class="s">&#39;live_activity_group_name&#39;</span><span class="p">,</span>            <span class="s">&#39;liveActivityGroup.description&#39;</span> <span class="p">:</span> <span class="s">&#39;live_activity_group_description&#39;</span><span class="p">,</span>            <span class="s">&#39;_eventId_save&#39;</span> <span class="p">:</span> <span class="s">&#39;Save&#39;</span><span class="p">,</span>            <span class="s">&#39;liveActivityIds&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">666</span><span class="p">]</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><strong>uri</strong> &#8211; &#8220;<a class="reference external" href="http://some_server/prefix">http://some_server/prefix</a>&#8221; (passed by master)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">new LiveActivityGroup object or False</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.live_activity_group.LiveActivityGroup.set_live_activities">
+<tt class="descname">set_live_activities</tt><big>(</big><em>live_activities_list</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity_group.html#LiveActivityGroup.set_live_activities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity_group.LiveActivityGroup.set_live_activities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to set new live activities list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><p class="first">dictionary with following structure:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&#39;liveActivityGroup.name&#39;</span> <span class="p">:</span> <span class="s">&#39;live_activity_group_name&#39;</span><span class="p">,</span>            <span class="s">&#39;liveActivityIds&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">666</span><span class="p">]</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>uri</strong> &#8211; &#8220;<a class="reference external" href="http://some_server/prefix">http://some_server/prefix</a>&#8221; (passed by master)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">new LiveActivityGroup object or False</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.live_activity_group.LiveActivityGroup.to_json">
+<tt class="descname">to_json</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/live_activity_group.html#LiveActivityGroup.to_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.live_activity_group.LiveActivityGroup.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should selected attributes in json form defined by the template</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-interactivespaces.master">
+<span id="interactivespaces-master-module"></span><h2>interactivespaces.master module<a class="headerlink" href="#module-interactivespaces.master" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="interactivespaces.master.Master">
+<em class="property">class </em><tt class="descclassname">interactivespaces.master.</tt><tt class="descname">Master</tt><big>(</big><em>host='lg-head'</em>, <em>port='8080'</em>, <em>prefix='/interactivespaces'</em>, <em>logfile_path='ispaces-client.log'</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>This is the main class with all the logic needed for
+high level stuff. You will typically use instance of
+Master for all your scripts.</p>
+<dl class="method">
+<dt id="interactivespaces.master.Master.get_activities">
+<tt class="descname">get_activities</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.get_activities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.get_activities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of Activity objects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary of regexps used for searching through Activities</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre>{            &quot;activity_name&quot; : &quot;regexp&quot;            &quot;activity_version&quot; : &quot;regexp&quot;            }
+</pre></div>
+</div>
+<p>every search_pattern dictionary key may be blank/null</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.get_activity">
+<tt class="descname">get_activity</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.get_activity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.get_activity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of Activity objects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary of regexps used for searching through Activities</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;activity_name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span><span class="p">,</span>            <span class="s">&quot;activity_version&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+<p>every search_pattern dictionary key may be blank/null</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.get_live_activities">
+<tt class="descname">get_live_activities</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.get_live_activities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.get_live_activities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of LiveActivity objects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary of regexps used for searching through LiveActivity names</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;live_activity_name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>each search_pattern dictionary key may be blank/null</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.get_live_activity">
+<tt class="descname">get_live_activity</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.get_live_activity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.get_live_activity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of LiveActivity objects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">LiveActivity or False</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary of regexps used for searching through LiveActivity names</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;live_activity_name&quot;</span> <span class="p">:</span> <span class="s">&quot;GE ViewSync Master on Node A&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;ISCtlDispAScreen00&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+<p>each search_pattern dictionary key may be blank/null</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.get_live_activity_group">
+<tt class="descname">get_live_activity_group</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.get_live_activity_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.get_live_activity_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of live activity groups.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary of regexps used for searching through LiveActivity names</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;live_activity_group_name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.get_live_activity_groups">
+<tt class="descname">get_live_activity_groups</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.get_live_activity_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.get_live_activity_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of live activity groups.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary of regexps used for searching through LiveActivity names</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;live_activity_group_name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.get_named_scripts">
+<tt class="descname">get_named_scripts</tt><big>(</big><em>pattern=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.get_named_scripts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.get_named_scripts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of named scripts.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.get_space">
+<tt class="descname">get_space</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.get_space"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.get_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a Space</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Space</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary containing space name regexp</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;space_name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.get_space_controller">
+<tt class="descname">get_space_controller</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.get_space_controller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.get_space_controller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of live space controllers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">SpaceController</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary containing regexps and strings</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;space_controller_state&quot;</span> <span class="p">:</span> <span class="s">&quot;STRING&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_mode&quot;</span> <span class="p">:</span> <span class="s">&quot;STRING&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_uuid&quot;</span> <span class="p">:</span> <span class="s">&quot;STRING&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.get_space_controllers">
+<tt class="descname">get_space_controllers</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.get_space_controllers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.get_space_controllers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of live space controllers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary containing regexps and strings</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;state&quot;</span> <span class="p">:</span> <span class="s">&quot;STRING&quot;</span><span class="p">,</span>            <span class="s">&quot;mode&quot;</span> <span class="p">:</span> <span class="s">&quot;STRING&quot;</span><span class="p">,</span>            <span class="s">&quot;name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span><span class="p">,</span>            <span class="s">&quot;uuid&quot;</span> <span class="p">:</span> <span class="s">&quot;STRING&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.get_spaces">
+<tt class="descname">get_spaces</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.get_spaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.get_spaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of live activity groups.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary containing space name regexp</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;space_name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.new_activity">
+<tt class="descname">new_activity</tt><big>(</big><em>constructor_args</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.new_activity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.new_activity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new activity and returns it</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>constructor_args</strong> &#8211; <p>dictionary containing all of below keys:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;zip_file_handler&quot;</span><span class="p">:</span> <span class="s">&quot;zipfile object (mandatory)&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Activity or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.new_controller">
+<tt class="descname">new_controller</tt><big>(</big><em>name</em>, <em>description</em>, <em>host_id</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.new_controller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.new_controller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new controller.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.new_live_activity">
+<tt class="descname">new_live_activity</tt><big>(</big><em>constructor_args</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.new_live_activity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.new_live_activity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new live activity and returns it</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>constructor_args</strong> &#8211; <p>dictionary containing all of below keys:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;live_activity_name&quot;</span><span class="p">:</span> <span class="s">&quot;string containing name of a new live activity (mandatory)&quot;</span><span class="p">,</span>            <span class="s">&quot;live_activity_description&quot;</span> <span class="p">:</span> <span class="s">&quot;string containing description&quot;</span><span class="p">,</span>            <span class="s">&quot;activity_name&quot;</span> <span class="p">:</span> <span class="s">&quot;string containing activity name&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;string containing controller name&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">LiveActivity</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.new_live_activity_group">
+<tt class="descname">new_live_activity_group</tt><big>(</big><em>constructor_args</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.new_live_activity_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.new_live_activity_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new live activity group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>constructor_args</strong> &#8211; <p>dictionary with following structure:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;live_activity_group_name&quot;</span> <span class="p">:</span> <span class="s">&quot;example.py live_activity_group_name&quot;</span><span class="p">,</span>            <span class="s">&quot;live_activity_group_description&quot;</span> <span class="p">:</span> <span class="s">&quot;created by example.py&quot;</span><span class="p">,</span>            <span class="s">&quot;live_activities&quot;</span> <span class="p">:</span> <span class="p">[{</span><span class="s">&quot;live_activity_name&quot;</span> <span class="p">:</span> <span class="s">&quot;SV Master on Node A&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;ISCtlDispAScreen00&quot;</span><span class="p">},</span>            <span class="p">{</span><span class="s">&quot;live_activity_name&quot;</span> <span class="p">:</span> <span class="s">&quot;SV Slave 01 on Node A&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;ISCtlDispAScreen00&quot;</span><span class="p">}]</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.new_named_script">
+<tt class="descname">new_named_script</tt><big>(</big><em>name</em>, <em>description</em>, <em>language</em>, <em>content</em>, <em>scheduled=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.new_named_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.new_named_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new named script.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.new_space">
+<tt class="descname">new_space</tt><big>(</big><em>name</em>, <em>description</em>, <em>live_activity_groups</em>, <em>spaces</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.new_space"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.new_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new space.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.new_space_controller">
+<tt class="descname">new_space_controller</tt><big>(</big><em>constructor_args</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.new_space_controller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.new_space_controller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates new controller</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>constructor_args</strong> &#8211; <p>dictionary containing all of below keys:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;mandatory string&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_description&quot;</span> <span class="p">:</span> <span class="s">&quot;non mandatory string&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_host_id&quot;</span> <span class="p">:</span> <span class="s">&quot;mandatory string&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.master.Master.translate_live_activities_names_to_ids">
+<tt class="descname">translate_live_activities_names_to_ids</tt><big>(</big><em>live_activities</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/master.html#Master.translate_live_activities_names_to_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.master.Master.translate_live_activities_names_to_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts live activities dicts to list of ids</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>live_activities</strong> &#8211; <p>list of dictionaries containing following keys:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;live_activity_name&quot;</span> <span class="p">:</span> <span class="s">&quot;some_name&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;some controller name&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-interactivespaces.misc">
+<span id="interactivespaces-misc-module"></span><h2>interactivespaces.misc module<a class="headerlink" href="#module-interactivespaces.misc" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="interactivespaces.misc.Logger">
+<em class="property">class </em><tt class="descclassname">interactivespaces.misc.</tt><tt class="descname">Logger</tt><big>(</big><em>logfile_path='ispaces-client.log'</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/misc.html#Logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.misc.Logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A common logger for this library</p>
+<dl class="method">
+<dt id="interactivespaces.misc.Logger.get_logger">
+<tt class="descname">get_logger</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/misc.html#Logger.get_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.misc.Logger.get_logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-interactivespaces.mixin">
+<span id="interactivespaces-mixin-module"></span><h2>interactivespaces.mixin module<a class="headerlink" href="#module-interactivespaces.mixin" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="interactivespaces.mixin.Activatable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.mixin.</tt><tt class="descname">Activatable</tt><a class="reference internal" href="_modules/interactivespaces/mixin.html#Activatable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Activatable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for sending the &#8220;activate&#8221; action</p>
+<dl class="method">
+<dt id="interactivespaces.mixin.Activatable.send_activate">
+<tt class="descname">send_activate</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/mixin.html#Activatable.send_activate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Activatable.send_activate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.mixin.Activatable.send_deactivate">
+<tt class="descname">send_deactivate</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/mixin.html#Activatable.send_deactivate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Activatable.send_deactivate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.mixin.Cleanable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.mixin.</tt><tt class="descname">Cleanable</tt><a class="reference internal" href="_modules/interactivespaces/mixin.html#Cleanable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Cleanable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for permanent clean and cleaning the tmp</p>
+<dl class="method">
+<dt id="interactivespaces.mixin.Cleanable.send_clean_permanent">
+<tt class="descname">send_clean_permanent</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/mixin.html#Cleanable.send_clean_permanent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Cleanable.send_clean_permanent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.mixin.Cleanable.send_clean_tmp">
+<tt class="descname">send_clean_tmp</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/mixin.html#Cleanable.send_clean_tmp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Cleanable.send_clean_tmp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.mixin.Communicable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.mixin.</tt><tt class="descname">Communicable</tt><a class="reference internal" href="_modules/interactivespaces/mixin.html#Communicable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Communicable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="interactivespaces.mixin.Communicable.json_raw">
+<tt class="descname">json_raw</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/mixin.html#Communicable.json_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Communicable.json_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns raw unformatted/unmapped json from Master API
+:rtype: dict</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.mixin.Configurable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.mixin.</tt><tt class="descname">Configurable</tt><a class="reference internal" href="_modules/interactivespaces/mixin.html#Configurable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Configurable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for sending the &#8220;configure&#8221; action</p>
+<dl class="method">
+<dt id="interactivespaces.mixin.Configurable.send_configure">
+<tt class="descname">send_configure</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/mixin.html#Configurable.send_configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Configurable.send_configure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.mixin.Connectable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.mixin.</tt><tt class="descname">Connectable</tt><a class="reference internal" href="_modules/interactivespaces/mixin.html#Connectable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Connectable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for connecting/disconnecting space controllers</p>
+<dl class="method">
+<dt id="interactivespaces.mixin.Connectable.send_connect">
+<tt class="descname">send_connect</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/mixin.html#Connectable.send_connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Connectable.send_connect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.mixin.Connectable.send_disconnect">
+<tt class="descname">send_disconnect</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/mixin.html#Connectable.send_disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Connectable.send_disconnect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.mixin.Deletable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.mixin.</tt><tt class="descname">Deletable</tt><a class="reference internal" href="_modules/interactivespaces/mixin.html#Deletable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Deletable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for the deletion of an object</p>
+<dl class="method">
+<dt id="interactivespaces.mixin.Deletable.send_delete">
+<tt class="descname">send_delete</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/mixin.html#Deletable.send_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Deletable.send_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends the &#8220;delete&#8221; GET request to a route</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.mixin.Deployable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.mixin.</tt><tt class="descname">Deployable</tt><a class="reference internal" href="_modules/interactivespaces/mixin.html#Deployable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Deployable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for sending the &#8220;deploy&#8221; action</p>
+<dl class="method">
+<dt id="interactivespaces.mixin.Deployable.send_deploy">
+<tt class="descname">send_deploy</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/mixin.html#Deployable.send_deploy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Deployable.send_deploy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.mixin.Fetchable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.mixin.</tt><tt class="descname">Fetchable</tt><a class="reference internal" href="_modules/interactivespaces/mixin.html#Fetchable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Fetchable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for fetching most up to date data from API</p>
+<dl class="method">
+<dt id="interactivespaces.mixin.Fetchable.fetch">
+<tt class="descname">fetch</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/mixin.html#Fetchable.fetch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Fetchable.fetch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should retrieve private data for an object from Master API</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.mixin.Metadatable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.mixin.</tt><tt class="descname">Metadatable</tt><a class="reference internal" href="_modules/interactivespaces/mixin.html#Metadatable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Metadatable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for setting metadata</p>
+<dl class="method">
+<dt id="interactivespaces.mixin.Metadatable.set_metadata">
+<tt class="descname">set_metadata</tt><big>(</big><em>metadata_dictionary</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/mixin.html#Metadatable.set_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Metadatable.set_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accepts dictionary of keys that will be unpacked to &#8220;key=value&#8221; strings and
+makes a request overwriting any previous metadata</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>metadata_args</strong> &#8211; Dictionary with keys and values</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.mixin.Shutdownable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.mixin.</tt><tt class="descname">Shutdownable</tt><a class="reference internal" href="_modules/interactivespaces/mixin.html#Shutdownable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Shutdownable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for sending &#8220;shutdown&#8221; command to live activities,
+controllers, spaces and live groups.</p>
+<dl class="method">
+<dt id="interactivespaces.mixin.Shutdownable.send_shutdown">
+<tt class="descname">send_shutdown</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/mixin.html#Shutdownable.send_shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Shutdownable.send_shutdown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.mixin.Startupable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.mixin.</tt><tt class="descname">Startupable</tt><a class="reference internal" href="_modules/interactivespaces/mixin.html#Startupable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Startupable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for sending &#8220;startup&#8221; command to live activities,
+controllers, spaces and live groups.</p>
+<dl class="method">
+<dt id="interactivespaces.mixin.Startupable.send_startup">
+<tt class="descname">send_startup</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/mixin.html#Startupable.send_startup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Startupable.send_startup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.mixin.Statusable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.mixin.</tt><tt class="descname">Statusable</tt><a class="reference internal" href="_modules/interactivespaces/mixin.html#Statusable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Statusable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for _refreshing_ status of the object,
+which means that it will send &#8220;status&#8221; command to IS Controllers.
+In order to fetch the fresh and most up-to-date status you should use
+.fetch() method on the object.</p>
+<dl class="method">
+<dt id="interactivespaces.mixin.Statusable.send_status_refresh">
+<tt class="descname">send_status_refresh</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/mixin.html#Statusable.send_status_refresh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Statusable.send_status_refresh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts self.data_hash and self.class_name from children class
+and finds out to which route send GET request to ands sends it</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.mixin.Updatable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.mixin.</tt><tt class="descname">Updatable</tt><a class="reference internal" href="_modules/interactivespaces/mixin.html#Updatable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.mixin.Updatable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Todo:</th><td class="field-body">Create methods for updating all the fields</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-interactivespaces.named_script">
+<span id="interactivespaces-named-script-module"></span><h2>interactivespaces.named_script module<a class="headerlink" href="#module-interactivespaces.named_script" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="interactivespaces.named_script.NamedScript">
+<em class="property">class </em><tt class="descclassname">interactivespaces.named_script.</tt><tt class="descname">NamedScript</tt><a class="reference internal" href="_modules/interactivespaces/named_script.html#NamedScript"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.named_script.NamedScript" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-interactivespaces.serializer">
+<span id="interactivespaces-serializer-module"></span><h2>interactivespaces.serializer module<a class="headerlink" href="#module-interactivespaces.serializer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="interactivespaces.serializer.ActivitySerializer">
+<em class="property">class </em><tt class="descclassname">interactivespaces.serializer.</tt><tt class="descname">ActivitySerializer</tt><big>(</big><em>data_hash</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/serializer.html#ActivitySerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.serializer.ActivitySerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.serializer.JsonSerializer" title="interactivespaces.serializer.JsonSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.JsonSerializer</span></tt></a>, <a class="reference internal" href="#interactivespaces.serializer.StringSerializer" title="interactivespaces.serializer.StringSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.StringSerializer</span></tt></a></p>
+<p>Should be responsible for representing Activity data using
+desired format, attributes and method of representation
+Should be initialized only with the Activity data_hash</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.serializer.JsonSerializer">
+<em class="property">class </em><tt class="descclassname">interactivespaces.serializer.</tt><tt class="descname">JsonSerializer</tt><a class="reference internal" href="_modules/interactivespaces/serializer.html#JsonSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.serializer.JsonSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.serializer.Serializer" title="interactivespaces.serializer.Serializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.Serializer</span></tt></a></p>
+<p>Should know everything about serializing data to json format</p>
+<dl class="method">
+<dt id="interactivespaces.serializer.JsonSerializer.to_json">
+<tt class="descname">to_json</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/serializer.html#JsonSerializer.to_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.serializer.JsonSerializer.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">json string formatted by attributes dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.serializer.JsonSerializer.to_json_raw">
+<tt class="descname">to_json_raw</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/serializer.html#JsonSerializer.to_json_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.serializer.JsonSerializer.to_json_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return data_hash in original form
+:rtype: dict</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.serializer.LiveActivityGroupSerializer">
+<em class="property">class </em><tt class="descclassname">interactivespaces.serializer.</tt><tt class="descname">LiveActivityGroupSerializer</tt><big>(</big><em>data_hash</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/serializer.html#LiveActivityGroupSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.serializer.LiveActivityGroupSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.serializer.JsonSerializer" title="interactivespaces.serializer.JsonSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.JsonSerializer</span></tt></a>, <a class="reference internal" href="#interactivespaces.serializer.StringSerializer" title="interactivespaces.serializer.StringSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.StringSerializer</span></tt></a></p>
+<p>Should be responsible for representing LiveActivity data using
+desired format, attributes and method of representation
+Should be initialized only with the Activity data_hash</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.serializer.LiveActivitySerializer">
+<em class="property">class </em><tt class="descclassname">interactivespaces.serializer.</tt><tt class="descname">LiveActivitySerializer</tt><big>(</big><em>data_hash</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/serializer.html#LiveActivitySerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.serializer.LiveActivitySerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.serializer.JsonSerializer" title="interactivespaces.serializer.JsonSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.JsonSerializer</span></tt></a>, <a class="reference internal" href="#interactivespaces.serializer.StringSerializer" title="interactivespaces.serializer.StringSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.StringSerializer</span></tt></a></p>
+<p>Should be responsible for representing LiveActivity data using
+desired format, attributes and method of representation
+Should be initialized only with the Activity data_hash</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.serializer.Serializer">
+<em class="property">class </em><tt class="descclassname">interactivespaces.serializer.</tt><tt class="descname">Serializer</tt><a class="reference internal" href="_modules/interactivespaces/serializer.html#Serializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.serializer.Serializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Should be responsible for representing instances of classes in desired form</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.serializer.SpaceControllerSerializer">
+<em class="property">class </em><tt class="descclassname">interactivespaces.serializer.</tt><tt class="descname">SpaceControllerSerializer</tt><big>(</big><em>data_hash</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/serializer.html#SpaceControllerSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.serializer.SpaceControllerSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.serializer.JsonSerializer" title="interactivespaces.serializer.JsonSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.JsonSerializer</span></tt></a>, <a class="reference internal" href="#interactivespaces.serializer.StringSerializer" title="interactivespaces.serializer.StringSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.StringSerializer</span></tt></a></p>
+<p>Should be responsible for representing LiveActivity data using
+desired format, attributes and method of representation
+Should be initialized only with the Activity data_hash</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.serializer.SpaceSerializer">
+<em class="property">class </em><tt class="descclassname">interactivespaces.serializer.</tt><tt class="descname">SpaceSerializer</tt><big>(</big><em>data_hash</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/serializer.html#SpaceSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.serializer.SpaceSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.serializer.JsonSerializer" title="interactivespaces.serializer.JsonSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.JsonSerializer</span></tt></a>, <a class="reference internal" href="#interactivespaces.serializer.StringSerializer" title="interactivespaces.serializer.StringSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.StringSerializer</span></tt></a></p>
+<p>Should be responsible for representing LiveActivity data using
+desired format, attributes and method of representation
+Should be initialized only with the Activity data_hash</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.serializer.StringSerializer">
+<em class="property">class </em><tt class="descclassname">interactivespaces.serializer.</tt><tt class="descname">StringSerializer</tt><a class="reference internal" href="_modules/interactivespaces/serializer.html#StringSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.serializer.StringSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.serializer.Serializer" title="interactivespaces.serializer.Serializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.Serializer</span></tt></a></p>
+<p>In future should be responsible for custom string serialization</p>
+<dl class="method">
+<dt id="interactivespaces.serializer.StringSerializer.to_string">
+<tt class="descname">to_string</tt><big>(</big><em>key</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/serializer.html#StringSerializer.to_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.serializer.StringSerializer.to_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should accept key that needs to retrieved from Activity attributes
+:return: string</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-interactivespaces.space">
+<span id="interactivespaces-space-module"></span><h2>interactivespaces.space module<a class="headerlink" href="#module-interactivespaces.space" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="interactivespaces.space.Space">
+<em class="property">class </em><tt class="descclassname">interactivespaces.space.</tt><tt class="descname">Space</tt><big>(</big><em>data_hash</em>, <em>uri</em>, <em>name=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/space.html#Space"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.space.Space" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Fetchable" title="interactivespaces.mixin.Fetchable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Fetchable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Statusable" title="interactivespaces.mixin.Statusable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Statusable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Deletable" title="interactivespaces.mixin.Deletable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Deletable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Shutdownable" title="interactivespaces.mixin.Shutdownable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Shutdownable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Startupable" title="interactivespaces.mixin.Startupable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Startupable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Activatable" title="interactivespaces.mixin.Activatable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Activatable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Configurable" title="interactivespaces.mixin.Configurable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Configurable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Metadatable" title="interactivespaces.mixin.Metadatable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Metadatable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Deployable" title="interactivespaces.mixin.Deployable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Deployable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Cleanable" title="interactivespaces.mixin.Cleanable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Cleanable</span></tt></a></p>
+<p>Space is a LiveActivityGroup aggregator</p>
+<dl class="method">
+<dt id="interactivespaces.space.Space.create">
+<tt class="descname">create</tt><big>(</big><em>live_activity_group_name</em>, <em>live_activity_names</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/space.html#Space.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.space.Space.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should be responsible for creating space</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>live_activity_group_name</strong> &#8211; string</li>
+<li><strong>live_activity_names</strong> &#8211; list of existing names</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.space.Space.description">
+<tt class="descname">description</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/space.html#Space.description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.space.Space.description" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body">Should return Space description</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.space.Space.id">
+<tt class="descname">id</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/space.html#Space.id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.space.Space.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.space.Space.name">
+<tt class="descname">name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/space.html#Space.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.space.Space.name" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body">Should return live activity name</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.space.Space.to_json">
+<tt class="descname">to_json</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/space.html#Space.to_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.space.Space.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should selected attributes in json form defined by the template</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-interactivespaces.space_controller">
+<span id="interactivespaces-space-controller-module"></span><h2>interactivespaces.space_controller module<a class="headerlink" href="#module-interactivespaces.space_controller" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="interactivespaces.space_controller.SpaceController">
+<em class="property">class </em><tt class="descclassname">interactivespaces.space_controller.</tt><tt class="descname">SpaceController</tt><big>(</big><em>data_hash=None</em>, <em>uri=None</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/space_controller.html#SpaceController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.space_controller.SpaceController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Fetchable" title="interactivespaces.mixin.Fetchable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Fetchable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Statusable" title="interactivespaces.mixin.Statusable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Statusable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Deletable" title="interactivespaces.mixin.Deletable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Deletable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Shutdownable" title="interactivespaces.mixin.Shutdownable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Shutdownable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Connectable" title="interactivespaces.mixin.Connectable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Connectable</span></tt></a></p>
+<p>Should be responsible for managing live activity groups</p>
+<dl class="method">
+<dt id="interactivespaces.space_controller.SpaceController.description">
+<tt class="descname">description</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/space_controller.html#SpaceController.description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.space_controller.SpaceController.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return space controller description</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.space_controller.SpaceController.id">
+<tt class="descname">id</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/space_controller.html#SpaceController.id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.space_controller.SpaceController.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.space_controller.SpaceController.mode">
+<tt class="descname">mode</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/space_controller.html#SpaceController.mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.space_controller.SpaceController.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return status of the controller</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.space_controller.SpaceController.name">
+<tt class="descname">name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/space_controller.html#SpaceController.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.space_controller.SpaceController.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return space controller name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.space_controller.SpaceController.new">
+<tt class="descname">new</tt><big>(</big><em>uri</em>, <em>constructor_args</em><big>)</big><a class="reference internal" href="_modules/interactivespaces/space_controller.html#SpaceController.new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.space_controller.SpaceController.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to create new space controller through API and set the &#8220;uri&#8221; so that we
+can operate on this instance of SpaceController right away after .new() returns True</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>constructor_args</strong> &#8211; <p>dictionary with following structure:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;mandatory string&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_description&quot;</span> <span class="p">:</span> <span class="s">&quot;non mandatory string&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_host_id&quot;</span> <span class="p">:</span> <span class="s">&quot;mandatory string&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><strong>uri</strong> &#8211; &#8220;<a class="reference external" href="http://some_server/prefix">http://some_server/prefix</a>&#8221; (passed by master)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">new SpaceController object or False</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.space_controller.SpaceController.to_json">
+<tt class="descname">to_json</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/interactivespaces/space_controller.html#SpaceController.to_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interactivespaces.space_controller.SpaceController.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should selected attributes in json form defined by the template</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-interactivespaces">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-interactivespaces" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="interactivespaces.Path">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Path</tt><a class="headerlink" href="#interactivespaces.Path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Should be responsible for static translation of routes</p>
+<dl class="method">
+<dt id="interactivespaces.Path.get_route_for">
+<tt class="descname">get_route_for</tt><big>(</big><em>class_name</em>, <em>method_name</em><big>)</big><a class="headerlink" href="#interactivespaces.Path.get_route_for" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should receive caller class name and caller method in order
+to return a proper route in the master API</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Activity">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Activity</tt><big>(</big><em>data_hash=None</em>, <em>uri=None</em>, <em>activity_archive_uri=None</em>, <em>name=None</em><big>)</big><a class="headerlink" href="#interactivespaces.Activity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Fetchable" title="interactivespaces.mixin.Fetchable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Fetchable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Deletable" title="interactivespaces.mixin.Deletable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Deletable</span></tt></a></p>
+<p>Should be responsible for managing a single activity</p>
+<dl class="method">
+<dt id="interactivespaces.Activity.check_upload_response">
+<tt class="descname">check_upload_response</tt><big>(</big><em>request_response</em><big>)</big><a class="headerlink" href="#interactivespaces.Activity.check_upload_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dirty workaround for nasty html redirect</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Activity.description">
+<tt class="descname">description</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Activity.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return Activity description</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Activity.fetch">
+<tt class="descname">fetch</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Activity.fetch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should retrieve data from Master API</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Activity.id">
+<tt class="descname">id</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Activity.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return Activity id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Activity.identifying_name">
+<tt class="descname">identifying_name</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Activity.identifying_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return identifying name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Activity.name">
+<tt class="descname">name</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Activity.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return live activity name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Activity.new">
+<tt class="descname">new</tt><big>(</big><em>uri</em>, <em>constructor_args</em><big>)</big><a class="headerlink" href="#interactivespaces.Activity.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to keep naming convention of .new() methods</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Activity.to_json">
+<tt class="descname">to_json</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Activity.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should selected attributes in json form defined by the template</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Activity.upload">
+<tt class="descname">upload</tt><big>(</big><em>uri</em>, <em>zip_file_handler</em><big>)</big><a class="headerlink" href="#interactivespaces.Activity.upload" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Should make a deployment of the activity with following steps:</dt>
+<dd><ul class="first last simple">
+<li>receive handler to a local zipfile</li>
+<li>upload it to the API</li>
+<li>save</li>
+<li>set instance variables for the object</li>
+</ul>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">False or URL to a new Activity</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>uri</strong> &#8211; stirng</li>
+<li><strong>zip_file_handler</strong> &#8211; &#8216;file&#8217; class instance</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">new Activity object or False</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Activity.version">
+<tt class="descname">version</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Activity.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return Activity version</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.MasterException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">MasterException</tt><a class="headerlink" href="#interactivespaces.MasterException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.PathException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">PathException</tt><a class="headerlink" href="#interactivespaces.PathException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.CommunicableException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">CommunicableException</tt><a class="headerlink" href="#interactivespaces.CommunicableException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.ControllerNotFoundException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">ControllerNotFoundException</tt><a class="headerlink" href="#interactivespaces.ControllerNotFoundException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.LiveActivityException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">LiveActivityException</tt><a class="headerlink" href="#interactivespaces.LiveActivityException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.StatusableException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">StatusableException</tt><a class="headerlink" href="#interactivespaces.StatusableException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.ActivityException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">ActivityException</tt><a class="headerlink" href="#interactivespaces.ActivityException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="interactivespaces.SerializerException">
+<em class="property">exception </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">SerializerException</tt><a class="headerlink" href="#interactivespaces.SerializerException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.SearchPattern">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">SearchPattern</tt><a class="headerlink" href="#interactivespaces.SearchPattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></p>
+<p>Class that holds dictionary with default values for safe search patterns</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Searcher">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Searcher</tt><a class="headerlink" href="#interactivespaces.Searcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></p>
+<p>Class responsible for search methods on strings</p>
+<dl class="method">
+<dt id="interactivespaces.Searcher.match">
+<tt class="descname">match</tt><big>(</big><em>string</em>, <em>regular_expression</em><big>)</big><a class="headerlink" href="#interactivespaces.Searcher.match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Match string with a regular expression</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">bool</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>string</strong> &#8211; given string for matching</li>
+<li><strong>regular_expression</strong> &#8211; expression to be run against the given string</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.LiveActivityGroup">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">LiveActivityGroup</tt><big>(</big><em>data_hash=None</em>, <em>uri=None</em><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivityGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Fetchable" title="interactivespaces.mixin.Fetchable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Fetchable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Statusable" title="interactivespaces.mixin.Statusable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Statusable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Deletable" title="interactivespaces.mixin.Deletable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Deletable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Shutdownable" title="interactivespaces.mixin.Shutdownable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Shutdownable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Startupable" title="interactivespaces.mixin.Startupable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Startupable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Activatable" title="interactivespaces.mixin.Activatable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Activatable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Configurable" title="interactivespaces.mixin.Configurable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Configurable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Metadatable" title="interactivespaces.mixin.Metadatable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Metadatable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Deployable" title="interactivespaces.mixin.Deployable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Deployable</span></tt></a></p>
+<p>Should be responsible for managing single live activity group</p>
+<dl class="method">
+<dt id="interactivespaces.LiveActivityGroup.description">
+<tt class="descname">description</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivityGroup.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return Live Activity Group description</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.LiveActivityGroup.id">
+<tt class="descname">id</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivityGroup.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.LiveActivityGroup.live_activities">
+<tt class="descname">live_activities</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivityGroup.live_activities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return list of live LiveActivity instances</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.LiveActivityGroup.metadata">
+<tt class="descname">metadata</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivityGroup.metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return Live Activity Group metadata</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.LiveActivityGroup.name">
+<tt class="descname">name</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivityGroup.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return live activity group name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.LiveActivityGroup.new">
+<tt class="descname">new</tt><big>(</big><em>uri</em>, <em>constructor_args</em><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivityGroup.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to create new live activity group through API and set the &#8220;uri&#8221; so that we
+can operate on this instance of LiveActivityGroup right away after .new() returns True</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>constructor_args</strong> &#8211; <p>dictionary with following structure:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&#39;liveActivityGroup.name&#39;</span> <span class="p">:</span> <span class="s">&#39;live_activity_group_name&#39;</span><span class="p">,</span>            <span class="s">&#39;liveActivityGroup.description&#39;</span> <span class="p">:</span> <span class="s">&#39;live_activity_group_description&#39;</span><span class="p">,</span>            <span class="s">&#39;_eventId_save&#39;</span> <span class="p">:</span> <span class="s">&#39;Save&#39;</span><span class="p">,</span>            <span class="s">&#39;liveActivityIds&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">666</span><span class="p">]</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><strong>uri</strong> &#8211; &#8220;<a class="reference external" href="http://some_server/prefix">http://some_server/prefix</a>&#8221; (passed by master)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">new LiveActivityGroup object or False</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.LiveActivityGroup.set_live_activities">
+<tt class="descname">set_live_activities</tt><big>(</big><em>live_activities_list</em><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivityGroup.set_live_activities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to set new live activities list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><p class="first">dictionary with following structure:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&#39;liveActivityGroup.name&#39;</span> <span class="p">:</span> <span class="s">&#39;live_activity_group_name&#39;</span><span class="p">,</span>            <span class="s">&#39;liveActivityIds&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">666</span><span class="p">]</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>uri</strong> &#8211; &#8220;<a class="reference external" href="http://some_server/prefix">http://some_server/prefix</a>&#8221; (passed by master)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">new LiveActivityGroup object or False</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.LiveActivityGroup.to_json">
+<tt class="descname">to_json</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivityGroup.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should selected attributes in json form defined by the template</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.LiveActivity">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">LiveActivity</tt><big>(</big><em>data_hash=None</em>, <em>uri=None</em><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Fetchable" title="interactivespaces.mixin.Fetchable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Fetchable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Statusable" title="interactivespaces.mixin.Statusable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Statusable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Deletable" title="interactivespaces.mixin.Deletable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Deletable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Shutdownable" title="interactivespaces.mixin.Shutdownable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Shutdownable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Startupable" title="interactivespaces.mixin.Startupable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Startupable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Activatable" title="interactivespaces.mixin.Activatable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Activatable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Configurable" title="interactivespaces.mixin.Configurable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Configurable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Cleanable" title="interactivespaces.mixin.Cleanable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Cleanable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Metadatable" title="interactivespaces.mixin.Metadatable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Metadatable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Deployable" title="interactivespaces.mixin.Deployable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Deployable</span></tt></a></p>
+<p>Should be responsible for managing single LiveActivity</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Todo:</th><td class="field-body">.new() should return instance of fetched live activity</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="interactivespaces.LiveActivity.controller">
+<tt class="descname">controller</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivity.controller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return LiveActivity controller data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.LiveActivity.id">
+<tt class="descname">id</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivity.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return LiveActivity id</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.LiveActivity.identifying_name">
+<tt class="descname">identifying_name</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivity.identifying_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return LiveActivity identifying name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.LiveActivity.metadata">
+<tt class="descname">metadata</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivity.metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return LiveActivity metadata</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.LiveActivity.name">
+<tt class="descname">name</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivity.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return live activity name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.LiveActivity.new">
+<tt class="descname">new</tt><big>(</big><em>uri</em>, <em>new_data_hash</em><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivity.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to create new live activity through API and set the &#8220;uri&#8221; so that we
+can operate on this instance of LiveActivity right away after .new() returns True</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>new_data_hash</strong> &#8211; <p>dictionary of a following structure:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;live_activity_name&quot;</span> <span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>            <span class="s">&quot;live_activity_description&quot;</span> <span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>            <span class="s">&quot;activity_id&quot;</span> <span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>            <span class="s">&quot;controller_id&quot;</span> <span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><strong>uri</strong> &#8211; &#8220;<a class="reference external" href="http://some_server/prefix">http://some_server/prefix</a>&#8221; (passed by master)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">new LiveActivity object or False</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.LiveActivity.status">
+<tt class="descname">status</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivity.status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return status that is currently held in the object instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.LiveActivity.to_json">
+<tt class="descname">to_json</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivity.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should selected attributes in json form defined by the template</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.LiveActivity.version">
+<tt class="descname">version</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivity.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return LiveActivity version</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Master">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Master</tt><big>(</big><em>host='lg-head'</em>, <em>port='8080'</em>, <em>prefix='/interactivespaces'</em>, <em>logfile_path='ispaces-client.log'</em><big>)</big><a class="headerlink" href="#interactivespaces.Master" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>This is the main class with all the logic needed for
+high level stuff. You will typically use instance of
+Master for all your scripts.</p>
+<dl class="method">
+<dt id="interactivespaces.Master.get_activities">
+<tt class="descname">get_activities</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.get_activities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of Activity objects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary of regexps used for searching through Activities</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre>{            &quot;activity_name&quot; : &quot;regexp&quot;            &quot;activity_version&quot; : &quot;regexp&quot;            }
+</pre></div>
+</div>
+<p>every search_pattern dictionary key may be blank/null</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.get_activity">
+<tt class="descname">get_activity</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.get_activity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of Activity objects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary of regexps used for searching through Activities</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;activity_name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span><span class="p">,</span>            <span class="s">&quot;activity_version&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+<p>every search_pattern dictionary key may be blank/null</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.get_live_activities">
+<tt class="descname">get_live_activities</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.get_live_activities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of LiveActivity objects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary of regexps used for searching through LiveActivity names</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;live_activity_name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>each search_pattern dictionary key may be blank/null</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.get_live_activity">
+<tt class="descname">get_live_activity</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.get_live_activity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of LiveActivity objects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">LiveActivity or False</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary of regexps used for searching through LiveActivity names</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;live_activity_name&quot;</span> <span class="p">:</span> <span class="s">&quot;GE ViewSync Master on Node A&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;ISCtlDispAScreen00&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+<p>each search_pattern dictionary key may be blank/null</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.get_live_activity_group">
+<tt class="descname">get_live_activity_group</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.get_live_activity_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of live activity groups.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary of regexps used for searching through LiveActivity names</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;live_activity_group_name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.get_live_activity_groups">
+<tt class="descname">get_live_activity_groups</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.get_live_activity_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of live activity groups.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary of regexps used for searching through LiveActivity names</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;live_activity_group_name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.get_named_scripts">
+<tt class="descname">get_named_scripts</tt><big>(</big><em>pattern=None</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.get_named_scripts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of named scripts.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.get_space">
+<tt class="descname">get_space</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.get_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a Space</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Space</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary containing space name regexp</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;space_name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.get_space_controller">
+<tt class="descname">get_space_controller</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.get_space_controller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of live space controllers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">SpaceController</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary containing regexps and strings</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;space_controller_state&quot;</span> <span class="p">:</span> <span class="s">&quot;STRING&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_mode&quot;</span> <span class="p">:</span> <span class="s">&quot;STRING&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_uuid&quot;</span> <span class="p">:</span> <span class="s">&quot;STRING&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.get_space_controllers">
+<tt class="descname">get_space_controllers</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.get_space_controllers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of live space controllers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary containing regexps and strings</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;state&quot;</span> <span class="p">:</span> <span class="s">&quot;STRING&quot;</span><span class="p">,</span>            <span class="s">&quot;mode&quot;</span> <span class="p">:</span> <span class="s">&quot;STRING&quot;</span><span class="p">,</span>            <span class="s">&quot;name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span><span class="p">,</span>            <span class="s">&quot;uuid&quot;</span> <span class="p">:</span> <span class="s">&quot;STRING&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.get_spaces">
+<tt class="descname">get_spaces</tt><big>(</big><em>search_pattern=None</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.get_spaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of live activity groups.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>search_pattern</strong> &#8211; dictionary containing space name regexp</td>
+</tr>
+</tbody>
+</table>
+<p>example regexp dict:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;space_name&quot;</span> <span class="p">:</span> <span class="s">&quot;regexp&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.new_activity">
+<tt class="descname">new_activity</tt><big>(</big><em>constructor_args</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.new_activity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new activity and returns it</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>constructor_args</strong> &#8211; <p>dictionary containing all of below keys:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;zip_file_handler&quot;</span><span class="p">:</span> <span class="s">&quot;zipfile object (mandatory)&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Activity or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.new_controller">
+<tt class="descname">new_controller</tt><big>(</big><em>name</em>, <em>description</em>, <em>host_id</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.new_controller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new controller.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.new_live_activity">
+<tt class="descname">new_live_activity</tt><big>(</big><em>constructor_args</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.new_live_activity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new live activity and returns it</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>constructor_args</strong> &#8211; <p>dictionary containing all of below keys:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;live_activity_name&quot;</span><span class="p">:</span> <span class="s">&quot;string containing name of a new live activity (mandatory)&quot;</span><span class="p">,</span>            <span class="s">&quot;live_activity_description&quot;</span> <span class="p">:</span> <span class="s">&quot;string containing description&quot;</span><span class="p">,</span>            <span class="s">&quot;activity_name&quot;</span> <span class="p">:</span> <span class="s">&quot;string containing activity name&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;string containing controller name&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">LiveActivity</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.new_live_activity_group">
+<tt class="descname">new_live_activity_group</tt><big>(</big><em>constructor_args</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.new_live_activity_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new live activity group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>constructor_args</strong> &#8211; <p>dictionary with following structure:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;live_activity_group_name&quot;</span> <span class="p">:</span> <span class="s">&quot;example.py live_activity_group_name&quot;</span><span class="p">,</span>            <span class="s">&quot;live_activity_group_description&quot;</span> <span class="p">:</span> <span class="s">&quot;created by example.py&quot;</span><span class="p">,</span>            <span class="s">&quot;live_activities&quot;</span> <span class="p">:</span> <span class="p">[{</span><span class="s">&quot;live_activity_name&quot;</span> <span class="p">:</span> <span class="s">&quot;SV Master on Node A&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;ISCtlDispAScreen00&quot;</span><span class="p">},</span>            <span class="p">{</span><span class="s">&quot;live_activity_name&quot;</span> <span class="p">:</span> <span class="s">&quot;SV Slave 01 on Node A&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;ISCtlDispAScreen00&quot;</span><span class="p">}]</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.new_named_script">
+<tt class="descname">new_named_script</tt><big>(</big><em>name</em>, <em>description</em>, <em>language</em>, <em>content</em>, <em>scheduled=None</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.new_named_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new named script.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.new_space">
+<tt class="descname">new_space</tt><big>(</big><em>name</em>, <em>description</em>, <em>live_activity_groups</em>, <em>spaces</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.new_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new space.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.new_space_controller">
+<tt class="descname">new_space_controller</tt><big>(</big><em>constructor_args</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.new_space_controller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates new controller</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>constructor_args</strong> &#8211; <p>dictionary containing all of below keys:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;mandatory string&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_description&quot;</span> <span class="p">:</span> <span class="s">&quot;non mandatory string&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_host_id&quot;</span> <span class="p">:</span> <span class="s">&quot;mandatory string&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Master.translate_live_activities_names_to_ids">
+<tt class="descname">translate_live_activities_names_to_ids</tt><big>(</big><em>live_activities</em><big>)</big><a class="headerlink" href="#interactivespaces.Master.translate_live_activities_names_to_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts live activities dicts to list of ids</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>live_activities</strong> &#8211; <p>list of dictionaries containing following keys:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>            <span class="s">&quot;live_activity_name&quot;</span> <span class="p">:</span> <span class="s">&quot;some_name&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;some controller name&quot;</span>            <span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Logger">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Logger</tt><big>(</big><em>logfile_path='ispaces-client.log'</em><big>)</big><a class="headerlink" href="#interactivespaces.Logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A common logger for this library</p>
+<dl class="method">
+<dt id="interactivespaces.Logger.get_logger">
+<tt class="descname">get_logger</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Logger.get_logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Communicable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Communicable</tt><a class="headerlink" href="#interactivespaces.Communicable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="interactivespaces.Communicable.json_raw">
+<tt class="descname">json_raw</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Communicable.json_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns raw unformatted/unmapped json from Master API
+:rtype: dict</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Fetchable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Fetchable</tt><a class="headerlink" href="#interactivespaces.Fetchable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for fetching most up to date data from API</p>
+<dl class="method">
+<dt id="interactivespaces.Fetchable.fetch">
+<tt class="descname">fetch</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Fetchable.fetch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should retrieve private data for an object from Master API</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Statusable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Statusable</tt><a class="headerlink" href="#interactivespaces.Statusable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for _refreshing_ status of the object,
+which means that it will send &#8220;status&#8221; command to IS Controllers.
+In order to fetch the fresh and most up-to-date status you should use
+.fetch() method on the object.</p>
+<dl class="method">
+<dt id="interactivespaces.Statusable.send_status_refresh">
+<tt class="descname">send_status_refresh</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Statusable.send_status_refresh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts self.data_hash and self.class_name from children class
+and finds out to which route send GET request to ands sends it</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Deletable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Deletable</tt><a class="headerlink" href="#interactivespaces.Deletable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for the deletion of an object</p>
+<dl class="method">
+<dt id="interactivespaces.Deletable.send_delete">
+<tt class="descname">send_delete</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Deletable.send_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends the &#8220;delete&#8221; GET request to a route</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Shutdownable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Shutdownable</tt><a class="headerlink" href="#interactivespaces.Shutdownable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for sending &#8220;shutdown&#8221; command to live activities,
+controllers, spaces and live groups.</p>
+<dl class="method">
+<dt id="interactivespaces.Shutdownable.send_shutdown">
+<tt class="descname">send_shutdown</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Shutdownable.send_shutdown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Startupable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Startupable</tt><a class="headerlink" href="#interactivespaces.Startupable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for sending &#8220;startup&#8221; command to live activities,
+controllers, spaces and live groups.</p>
+<dl class="method">
+<dt id="interactivespaces.Startupable.send_startup">
+<tt class="descname">send_startup</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Startupable.send_startup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Activatable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Activatable</tt><a class="headerlink" href="#interactivespaces.Activatable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for sending the &#8220;activate&#8221; action</p>
+<dl class="method">
+<dt id="interactivespaces.Activatable.send_activate">
+<tt class="descname">send_activate</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Activatable.send_activate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Activatable.send_deactivate">
+<tt class="descname">send_deactivate</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Activatable.send_deactivate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Deployable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Deployable</tt><a class="headerlink" href="#interactivespaces.Deployable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for sending the &#8220;deploy&#8221; action</p>
+<dl class="method">
+<dt id="interactivespaces.Deployable.send_deploy">
+<tt class="descname">send_deploy</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Deployable.send_deploy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Configurable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Configurable</tt><a class="headerlink" href="#interactivespaces.Configurable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for sending the &#8220;configure&#8221; action</p>
+<dl class="method">
+<dt id="interactivespaces.Configurable.send_configure">
+<tt class="descname">send_configure</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Configurable.send_configure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Cleanable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Cleanable</tt><a class="headerlink" href="#interactivespaces.Cleanable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for permanent clean and cleaning the tmp</p>
+<dl class="method">
+<dt id="interactivespaces.Cleanable.send_clean_permanent">
+<tt class="descname">send_clean_permanent</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Cleanable.send_clean_permanent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Cleanable.send_clean_tmp">
+<tt class="descname">send_clean_tmp</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Cleanable.send_clean_tmp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Connectable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Connectable</tt><a class="headerlink" href="#interactivespaces.Connectable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for connecting/disconnecting space controllers</p>
+<dl class="method">
+<dt id="interactivespaces.Connectable.send_connect">
+<tt class="descname">send_connect</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Connectable.send_connect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Connectable.send_disconnect">
+<tt class="descname">send_disconnect</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Connectable.send_disconnect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Metadatable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Metadatable</tt><a class="headerlink" href="#interactivespaces.Metadatable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<p>Should be responsible for setting metadata</p>
+<dl class="method">
+<dt id="interactivespaces.Metadatable.set_metadata">
+<tt class="descname">set_metadata</tt><big>(</big><em>metadata_dictionary</em><big>)</big><a class="headerlink" href="#interactivespaces.Metadatable.set_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accepts dictionary of keys that will be unpacked to &#8220;key=value&#8221; strings and
+makes a request overwriting any previous metadata</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>metadata_args</strong> &#8211; Dictionary with keys and values</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Updatable">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Updatable</tt><a class="headerlink" href="#interactivespaces.Updatable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Communicable" title="interactivespaces.mixin.Communicable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Communicable</span></tt></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Todo:</th><td class="field-body">Create methods for updating all the fields</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.NamedScript">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">NamedScript</tt><a class="headerlink" href="#interactivespaces.NamedScript" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Serializer">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Serializer</tt><a class="headerlink" href="#interactivespaces.Serializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Should be responsible for representing instances of classes in desired form</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.StringSerializer">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">StringSerializer</tt><a class="headerlink" href="#interactivespaces.StringSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.serializer.Serializer" title="interactivespaces.serializer.Serializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.Serializer</span></tt></a></p>
+<p>In future should be responsible for custom string serialization</p>
+<dl class="method">
+<dt id="interactivespaces.StringSerializer.to_string">
+<tt class="descname">to_string</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#interactivespaces.StringSerializer.to_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should accept key that needs to retrieved from Activity attributes
+:return: string</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.JsonSerializer">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">JsonSerializer</tt><a class="headerlink" href="#interactivespaces.JsonSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.serializer.Serializer" title="interactivespaces.serializer.Serializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.Serializer</span></tt></a></p>
+<p>Should know everything about serializing data to json format</p>
+<dl class="method">
+<dt id="interactivespaces.JsonSerializer.to_json">
+<tt class="descname">to_json</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.JsonSerializer.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">json string formatted by attributes dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.JsonSerializer.to_json_raw">
+<tt class="descname">to_json_raw</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.JsonSerializer.to_json_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return data_hash in original form
+:rtype: dict</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.ActivitySerializer">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">ActivitySerializer</tt><big>(</big><em>data_hash</em><big>)</big><a class="headerlink" href="#interactivespaces.ActivitySerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.serializer.JsonSerializer" title="interactivespaces.serializer.JsonSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.JsonSerializer</span></tt></a>, <a class="reference internal" href="#interactivespaces.serializer.StringSerializer" title="interactivespaces.serializer.StringSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.StringSerializer</span></tt></a></p>
+<p>Should be responsible for representing Activity data using
+desired format, attributes and method of representation
+Should be initialized only with the Activity data_hash</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.SpaceControllerSerializer">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">SpaceControllerSerializer</tt><big>(</big><em>data_hash</em><big>)</big><a class="headerlink" href="#interactivespaces.SpaceControllerSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.serializer.JsonSerializer" title="interactivespaces.serializer.JsonSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.JsonSerializer</span></tt></a>, <a class="reference internal" href="#interactivespaces.serializer.StringSerializer" title="interactivespaces.serializer.StringSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.StringSerializer</span></tt></a></p>
+<p>Should be responsible for representing LiveActivity data using
+desired format, attributes and method of representation
+Should be initialized only with the Activity data_hash</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.LiveActivitySerializer">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">LiveActivitySerializer</tt><big>(</big><em>data_hash</em><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivitySerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.serializer.JsonSerializer" title="interactivespaces.serializer.JsonSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.JsonSerializer</span></tt></a>, <a class="reference internal" href="#interactivespaces.serializer.StringSerializer" title="interactivespaces.serializer.StringSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.StringSerializer</span></tt></a></p>
+<p>Should be responsible for representing LiveActivity data using
+desired format, attributes and method of representation
+Should be initialized only with the Activity data_hash</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.LiveActivityGroupSerializer">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">LiveActivityGroupSerializer</tt><big>(</big><em>data_hash</em><big>)</big><a class="headerlink" href="#interactivespaces.LiveActivityGroupSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.serializer.JsonSerializer" title="interactivespaces.serializer.JsonSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.JsonSerializer</span></tt></a>, <a class="reference internal" href="#interactivespaces.serializer.StringSerializer" title="interactivespaces.serializer.StringSerializer"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.serializer.StringSerializer</span></tt></a></p>
+<p>Should be responsible for representing LiveActivity data using
+desired format, attributes and method of representation
+Should be initialized only with the Activity data_hash</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.SpaceController">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">SpaceController</tt><big>(</big><em>data_hash=None</em>, <em>uri=None</em><big>)</big><a class="headerlink" href="#interactivespaces.SpaceController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Fetchable" title="interactivespaces.mixin.Fetchable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Fetchable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Statusable" title="interactivespaces.mixin.Statusable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Statusable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Deletable" title="interactivespaces.mixin.Deletable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Deletable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Shutdownable" title="interactivespaces.mixin.Shutdownable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Shutdownable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Connectable" title="interactivespaces.mixin.Connectable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Connectable</span></tt></a></p>
+<p>Should be responsible for managing live activity groups</p>
+<dl class="method">
+<dt id="interactivespaces.SpaceController.description">
+<tt class="descname">description</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.SpaceController.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return space controller description</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.SpaceController.id">
+<tt class="descname">id</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.SpaceController.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.SpaceController.mode">
+<tt class="descname">mode</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.SpaceController.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return status of the controller</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.SpaceController.name">
+<tt class="descname">name</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.SpaceController.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should return space controller name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.SpaceController.new">
+<tt class="descname">new</tt><big>(</big><em>uri</em>, <em>constructor_args</em><big>)</big><a class="headerlink" href="#interactivespaces.SpaceController.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to create new space controller through API and set the &#8220;uri&#8221; so that we
+can operate on this instance of SpaceController right away after .new() returns True</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>constructor_args</strong> &#8211; <p>dictionary with following structure:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;space_controller_name&quot;</span> <span class="p">:</span> <span class="s">&quot;mandatory string&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_description&quot;</span> <span class="p">:</span> <span class="s">&quot;non mandatory string&quot;</span><span class="p">,</span>            <span class="s">&quot;space_controller_host_id&quot;</span> <span class="p">:</span> <span class="s">&quot;mandatory string&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><strong>uri</strong> &#8211; &#8220;<a class="reference external" href="http://some_server/prefix">http://some_server/prefix</a>&#8221; (passed by master)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">new SpaceController object or False</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.SpaceController.to_json">
+<tt class="descname">to_json</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.SpaceController.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should selected attributes in json form defined by the template</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="interactivespaces.Space">
+<em class="property">class </em><tt class="descclassname">interactivespaces.</tt><tt class="descname">Space</tt><big>(</big><em>data_hash</em>, <em>uri</em>, <em>name=None</em><big>)</big><a class="headerlink" href="#interactivespaces.Space" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#interactivespaces.mixin.Fetchable" title="interactivespaces.mixin.Fetchable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Fetchable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Statusable" title="interactivespaces.mixin.Statusable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Statusable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Deletable" title="interactivespaces.mixin.Deletable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Deletable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Shutdownable" title="interactivespaces.mixin.Shutdownable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Shutdownable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Startupable" title="interactivespaces.mixin.Startupable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Startupable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Activatable" title="interactivespaces.mixin.Activatable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Activatable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Configurable" title="interactivespaces.mixin.Configurable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Configurable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Metadatable" title="interactivespaces.mixin.Metadatable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Metadatable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Deployable" title="interactivespaces.mixin.Deployable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Deployable</span></tt></a>, <a class="reference internal" href="#interactivespaces.mixin.Cleanable" title="interactivespaces.mixin.Cleanable"><tt class="xref py py-class docutils literal"><span class="pre">interactivespaces.mixin.Cleanable</span></tt></a></p>
+<p>Space is a LiveActivityGroup aggregator</p>
+<dl class="method">
+<dt id="interactivespaces.Space.create">
+<tt class="descname">create</tt><big>(</big><em>live_activity_group_name</em>, <em>live_activity_names</em><big>)</big><a class="headerlink" href="#interactivespaces.Space.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should be responsible for creating space</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>live_activity_group_name</strong> &#8211; string</li>
+<li><strong>live_activity_names</strong> &#8211; list of existing names</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Space.description">
+<tt class="descname">description</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Space.description" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body">Should return Space description</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Space.id">
+<tt class="descname">id</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Space.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Space.name">
+<tt class="descname">name</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Space.name" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body">Should return live activity name</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="interactivespaces.Space.to_json">
+<tt class="descname">to_json</tt><big>(</big><big>)</big><a class="headerlink" href="#interactivespaces.Space.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should selected attributes in json form defined by the template</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">interactivespaces package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-interactivespaces.abstract">interactivespaces.abstract module</a></li>
+<li><a class="reference internal" href="#module-interactivespaces.activity">interactivespaces.activity module</a></li>
+<li><a class="reference internal" href="#module-interactivespaces.exception">interactivespaces.exception module</a></li>
+<li><a class="reference internal" href="#module-interactivespaces.helper">interactivespaces.helper module</a></li>
+<li><a class="reference internal" href="#module-interactivespaces.live_activity">interactivespaces.live_activity module</a></li>
+<li><a class="reference internal" href="#module-interactivespaces.live_activity_group">interactivespaces.live_activity_group module</a></li>
+<li><a class="reference internal" href="#module-interactivespaces.master">interactivespaces.master module</a></li>
+<li><a class="reference internal" href="#module-interactivespaces.misc">interactivespaces.misc module</a></li>
+<li><a class="reference internal" href="#module-interactivespaces.mixin">interactivespaces.mixin module</a></li>
+<li><a class="reference internal" href="#module-interactivespaces.named_script">interactivespaces.named_script module</a></li>
+<li><a class="reference internal" href="#module-interactivespaces.serializer">interactivespaces.serializer module</a></li>
+<li><a class="reference internal" href="#module-interactivespaces.space">interactivespaces.space module</a></li>
+<li><a class="reference internal" href="#module-interactivespaces.space_controller">interactivespaces.space_controller module</a></li>
+<li><a class="reference internal" href="#module-interactivespaces">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to interactivespaces&#8217;s documentation!</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/interactivespaces.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to interactivespaces’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">interactivespaces  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Author.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

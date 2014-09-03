@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>interactivespaces.live_activity_group &mdash; interactivespaces  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="interactivespaces  documentation" href="../../index.html" />
+    <link rel="up" title="interactivespaces" href="../interactivespaces.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">interactivespaces  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../interactivespaces.html" accesskey="U">interactivespaces</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for interactivespaces.live_activity_group</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">mixin</span> <span class="kn">import</span> <span class="n">Fetchable</span><span class="p">,</span> <span class="n">Statusable</span><span class="p">,</span> <span class="n">Shutdownable</span><span class="p">,</span> <span class="n">Startupable</span>
+<span class="kn">from</span> <span class="nn">mixin</span> <span class="kn">import</span> <span class="n">Deletable</span><span class="p">,</span> <span class="n">Activatable</span><span class="p">,</span> <span class="n">Configurable</span><span class="p">,</span> <span class="n">Metadatable</span>
+<span class="kn">from</span> <span class="nn">mixin</span> <span class="kn">import</span> <span class="n">Deployable</span>
+<span class="kn">from</span> <span class="nn">misc</span> <span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">serializer</span> <span class="kn">import</span> <span class="n">LiveActivityGroupSerializer</span>
+<span class="kn">from</span> <span class="nn">abstract</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">live_activity</span> <span class="kn">import</span> <span class="n">LiveActivity</span>
+
+<div class="viewcode-block" id="LiveActivityGroup"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity_group.LiveActivityGroup">[docs]</a><span class="k">class</span> <span class="nc">LiveActivityGroup</span><span class="p">(</span><span class="n">Fetchable</span><span class="p">,</span> <span class="n">Statusable</span><span class="p">,</span> <span class="n">Deletable</span><span class="p">,</span> <span class="n">Shutdownable</span><span class="p">,</span>
+                        <span class="n">Startupable</span><span class="p">,</span> <span class="n">Activatable</span><span class="p">,</span> <span class="n">Configurable</span><span class="p">,</span> <span class="n">Metadatable</span><span class="p">,</span>
+                        <span class="n">Deployable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Should be responsible for managing single live activity group</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_hash</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LiveActivityGroup</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">data_hash</span><span class="o">==</span><span class="bp">None</span> <span class="ow">and</span> <span class="n">uri</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;No data_hash and uri provided for LiveActivityGroup constructor, assuming creation&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span> <span class="o">=</span> <span class="n">data_hash</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="n">uri</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">absolute_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_absolute_url</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Instantiated Activity object with url=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">absolute_url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LiveActivityGroup.new"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity_group.LiveActivityGroup.new">[docs]</a>    <span class="k">def</span> <span class="nf">new</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">constructor_args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used to create new live activity group through API and set the &quot;uri&quot; so that we</span>
+<span class="sd">        can operate on this instance of LiveActivityGroup right away after .new() returns True</span>
+<span class="sd">        </span>
+<span class="sd">        :param constructor_args: dictionary with following structure::</span>
+<span class="sd">        </span>
+<span class="sd">            {\</span>
+<span class="sd">            &#39;liveActivityGroup.name&#39; : &#39;live_activity_group_name&#39;,\</span>
+<span class="sd">            &#39;liveActivityGroup.description&#39; : &#39;live_activity_group_description&#39;,\</span>
+<span class="sd">            &#39;_eventId_save&#39; : &#39;Save&#39;,\</span>
+<span class="sd">            &#39;liveActivityIds&#39; : [1,2,666]\</span>
+<span class="sd">            }</span>
+<span class="sd">        </span>
+<span class="sd">        :param uri: &quot;http://some_server/prefix&quot; (passed by master)</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: new LiveActivityGroup object or False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Creating new LiveActivityGroup with arguments: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">constructor_args</span><span class="p">)</span>
+        <span class="n">route</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">get_route_for</span><span class="p">(</span><span class="s">&#39;LiveActivityGroup&#39;</span><span class="p">,</span> <span class="s">&#39;new&#39;</span><span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">route</span><span class="p">)</span>
+        <span class="n">request_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_post_json</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">constructor_args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">request_response</span><span class="o">.</span><span class="n">url</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">absolute_url</span> <span class="o">=</span> <span class="n">request_response</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;view.html&quot;</span><span class="p">,</span> <span class="s">&quot;view.json&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Created new LiveActivityGroup with url=</span><span class="si">%s</span><span class="s">, data_hash is now </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">absolute_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Created new LiveActivityGroup </span><span class="si">%s</span><span class="s"> but returned False&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="LiveActivityGroup.set_live_activities"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity_group.LiveActivityGroup.set_live_activities">[docs]</a>    <span class="k">def</span> <span class="nf">set_live_activities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">live_activities_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used to set new live activities list</span>
+<span class="sd">        </span>
+<span class="sd">        :param: dictionary with following structure::</span>
+<span class="sd">    </span>
+<span class="sd">            {\</span>
+<span class="sd">            &#39;liveActivityGroup.name&#39; : &#39;live_activity_group_name&#39;,\</span>
+<span class="sd">            &#39;liveActivityIds&#39; : [1,2,666]\</span>
+<span class="sd">            }</span>
+<span class="sd">            </span>
+<span class="sd">        :param uri: &quot;http://some_server/prefix&quot; (passed by master)</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: new LiveActivityGroup object or False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;liveActivityGroup.name&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(),</span>
+                   <span class="s">&#39;liveActivityIds&#39;</span> <span class="p">:</span> <span class="n">live_activities_list</span><span class="p">,</span>
+                   <span class="s">&#39;liveActivityGroup.description&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">()</span>
+                 <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Updating LiveActivityGroup with arguments: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">params</span><span class="p">)</span>
+        <span class="n">route</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">get_route_for</span><span class="p">(</span><span class="s">&#39;LiveActivityGroup&#39;</span><span class="p">,</span> <span class="s">&#39;edit&#39;</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">route</span><span class="p">)</span>
+        <span class="n">request_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_post_json_no_cookies</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">request_response</span><span class="o">.</span><span class="n">url</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">absolute_url</span> <span class="o">=</span> <span class="n">request_response</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;view.html&quot;</span><span class="p">,</span> <span class="s">&quot;view.json&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Updated LiveActivityGroup with url=</span><span class="si">%s</span><span class="s">, data_hash is now </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">absolute_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Updated LiveActivityGroup </span><span class="si">%s</span><span class="s"> but returned False&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="LiveActivityGroup.to_json"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity_group.LiveActivityGroup.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should selected attributes in json form defined by the template</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">serializer</span> <span class="o">=</span> <span class="n">LiveActivityGroupSerializer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="LiveActivityGroup.id"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity_group.LiveActivityGroup.id">[docs]</a>    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="LiveActivityGroup.name"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity_group.LiveActivityGroup.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Should return live activity group name&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="LiveActivityGroup.live_activities"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity_group.LiveActivityGroup.live_activities">[docs]</a>    <span class="k">def</span> <span class="nf">live_activities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Should return list of live LiveActivity instances&quot;&quot;&quot;</span>
+        <span class="n">live_activities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;liveActivities&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">live_activity_data</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="n">live_activity_data</span><span class="p">[</span><span class="s">&#39;active&#39;</span><span class="p">][</span><span class="s">&#39;runtimeState&#39;</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="s">&#39;UNKNOWN&#39;</span>
+            <span class="n">live_activity_group_live_activity</span> <span class="o">=</span> <span class="n">LiveActivity</span><span class="p">(</span><span class="n">data_hash</span><span class="o">=</span><span class="n">live_activity_data</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+            <span class="n">live_activities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">live_activity_group_live_activity</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">live_activities</span>
+</div>
+<div class="viewcode-block" id="LiveActivityGroup.description"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity_group.LiveActivityGroup.description">[docs]</a>    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Should return Live Activity Group description &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;description&#39;</span><span class="p">]</span>
+</div>
+    <span class="sd">&quot;&quot;&quot; Private methods below &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LiveActivityGroup.metadata"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity_group.LiveActivityGroup.metadata">[docs]</a>    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Should return Live Activity Group metadata &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;metadata&#39;</span><span class="p">]</span>
+</div>
+    <span class="sd">&quot;&quot;&quot; Private methods below &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">live_activity_group_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">/liveactivitygroup/</span><span class="si">%s</span><span class="s">/view.json&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">live_activity_group_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">url</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">interactivespaces  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../interactivespaces.html" >interactivespaces</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Author.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

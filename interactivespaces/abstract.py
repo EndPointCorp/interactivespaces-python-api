@@ -6,7 +6,7 @@ from misc import Logger
 
 class Path(object):
     '''
-        @summary: should be responsible for static translation of routes
+    Should be responsible for static translation of routes
     '''
     def __init__(self):
         self.routes = {
@@ -83,9 +83,10 @@ class Path(object):
 
     def get_route_for(self, class_name, method_name):
         """
-            @summary: should receive caller class name and caller method in order
-            to return a proper route in the master API
-            @rtype: string
+        Should receive caller class name and caller method in order
+        to return a proper route in the master API
+            
+        :rtype: string
         """
         try:
             return self.routes[class_name][method_name]

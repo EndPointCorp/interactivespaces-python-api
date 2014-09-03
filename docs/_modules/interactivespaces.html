@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>interactivespaces &mdash; interactivespaces  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="interactivespaces  documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">interactivespaces  documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for interactivespaces</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">abstract</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">activity</span> <span class="kn">import</span> <span class="n">Activity</span>
+<span class="kn">from</span> <span class="nn">exception</span> <span class="kn">import</span> <span class="n">MasterException</span><span class="p">,</span> <span class="n">PathException</span><span class="p">,</span> <span class="n">CommunicableException</span>
+<span class="kn">from</span> <span class="nn">exception</span> <span class="kn">import</span> <span class="n">LiveActivityException</span><span class="p">,</span> <span class="n">StatusableException</span><span class="p">,</span> <span class="n">ActivityException</span>
+<span class="kn">from</span> <span class="nn">exception</span> <span class="kn">import</span> <span class="n">SerializerException</span><span class="p">,</span> <span class="n">ControllerNotFoundException</span>
+<span class="kn">from</span> <span class="nn">exception</span> <span class="kn">import</span> <span class="n">ControllerNotFoundException</span><span class="p">,</span> <span class="n">LiveActivityGroupNotFoundException</span>
+<span class="kn">from</span> <span class="nn">exception</span> <span class="kn">import</span> <span class="n">LiveActivityNotFoundException</span><span class="p">,</span> <span class="n">ActivityNotFoundException</span>
+<span class="kn">from</span> <span class="nn">helper</span> <span class="kn">import</span> <span class="n">SearchPattern</span><span class="p">,</span> <span class="n">Searcher</span>
+<span class="kn">from</span> <span class="nn">live_activity_group</span> <span class="kn">import</span> <span class="n">LiveActivityGroup</span>
+<span class="kn">from</span> <span class="nn">live_activity</span> <span class="kn">import</span> <span class="n">LiveActivity</span>
+<span class="kn">from</span> <span class="nn">master</span> <span class="kn">import</span> <span class="n">Master</span>
+<span class="kn">from</span> <span class="nn">misc</span> <span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">mixin</span> <span class="kn">import</span> <span class="n">Communicable</span><span class="p">,</span> <span class="n">Fetchable</span><span class="p">,</span> <span class="n">Statusable</span><span class="p">,</span> <span class="n">Deletable</span><span class="p">,</span> <span class="n">Shutdownable</span>
+<span class="kn">from</span> <span class="nn">mixin</span> <span class="kn">import</span> <span class="n">Startupable</span><span class="p">,</span> <span class="n">Activatable</span><span class="p">,</span> <span class="n">Deployable</span><span class="p">,</span> <span class="n">Configurable</span><span class="p">,</span> <span class="n">Cleanable</span>
+<span class="kn">from</span> <span class="nn">mixin</span> <span class="kn">import</span> <span class="n">Connectable</span><span class="p">,</span> <span class="n">Metadatable</span><span class="p">,</span> <span class="n">Updatable</span>
+<span class="kn">from</span> <span class="nn">named_script</span> <span class="kn">import</span> <span class="n">NamedScript</span>
+<span class="kn">from</span> <span class="nn">serializer</span> <span class="kn">import</span> <span class="n">Serializer</span><span class="p">,</span> <span class="n">StringSerializer</span><span class="p">,</span> <span class="n">JsonSerializer</span><span class="p">,</span> <span class="n">ActivitySerializer</span>
+<span class="kn">from</span> <span class="nn">serializer</span> <span class="kn">import</span> <span class="n">LiveActivitySerializer</span><span class="p">,</span> <span class="n">LiveActivityGroupSerializer</span>
+<span class="kn">from</span> <span class="nn">serializer</span> <span class="kn">import</span> <span class="n">SpaceControllerSerializer</span><span class="p">,</span> <span class="n">SpaceSerializer</span>
+<span class="kn">from</span> <span class="nn">space_controller</span> <span class="kn">import</span> <span class="n">SpaceController</span>
+<span class="kn">from</span> <span class="nn">space</span> <span class="kn">import</span> <span class="n">Space</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+           <span class="s">&#39;Path&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Activity&#39;</span><span class="p">,</span>
+           <span class="s">&#39;MasterException&#39;</span><span class="p">,</span>
+           <span class="s">&#39;PathException&#39;</span><span class="p">,</span>
+           <span class="s">&#39;CommunicableException&#39;</span><span class="p">,</span>
+           <span class="s">&#39;ControllerNotFoundException&#39;</span><span class="p">,</span>
+           <span class="s">&#39;LiveActivityException&#39;</span><span class="p">,</span>
+           <span class="s">&#39;StatusableException&#39;</span><span class="p">,</span>
+           <span class="s">&#39;ActivityException&#39;</span><span class="p">,</span>
+           <span class="s">&#39;SerializerException&#39;</span><span class="p">,</span>
+           <span class="s">&#39;SearchPattern&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Searcher&#39;</span><span class="p">,</span>
+           <span class="s">&#39;LiveActivityGroup&#39;</span><span class="p">,</span>
+           <span class="s">&#39;LiveActivity&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Master&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Logger&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Communicable&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Fetchable&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Statusable&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Deletable&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Shutdownable&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Startupable&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Activatable&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Deployable&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Configurable&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Cleanable&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Connectable&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Metadatable&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Updatable&#39;</span><span class="p">,</span>
+           <span class="s">&#39;NamedScript&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Serializer&#39;</span><span class="p">,</span>
+           <span class="s">&#39;StringSerializer&#39;</span><span class="p">,</span>
+           <span class="s">&#39;JsonSerializer&#39;</span><span class="p">,</span>
+           <span class="s">&#39;ActivitySerializer&#39;</span><span class="p">,</span>
+           <span class="s">&#39;SpaceControllerSerializer&#39;</span><span class="p">,</span>
+           <span class="s">&#39;LiveActivitySerializer&#39;</span><span class="p">,</span>
+           <span class="s">&#39;LiveActivityGroupSerializer&#39;</span><span class="p">,</span>
+           <span class="s">&#39;SpaceController&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Space&#39;</span>
+        <span class="p">]</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">interactivespaces  documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Author.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

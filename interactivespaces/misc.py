@@ -2,7 +2,7 @@ import logging
 
 class Logger(object):
     """
-        @summary: A common logger for this library
+        A common logger for this library
     """
     def __init__(self, logfile_path='ispaces-client.log'):
         self.logger = logging.getLogger(__name__)

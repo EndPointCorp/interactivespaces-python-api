@@ -5,7 +5,7 @@ import json
 
 class Serializer(object):
     """
-        @summary: Should be responsible for representing instances of classes in desired form
+        Should be responsible for representing instances of classes in desired form
     """
     def __init__(self):
         self.log = Logger().get_logger()
@@ -21,7 +21,7 @@ class Serializer(object):
     def _assign_attributes(self):
         """
             Should change the key names from original API keys to the ones we want
-            @return: None
+            :return: None
         """
         for new_key, old_key in self.attributes.iteritems():
             try:
@@ -34,7 +34,7 @@ class Serializer(object):
 
 class StringSerializer(Serializer):
     """
-        @summary: in future should be responsible for custom string serialization
+        In future should be responsible for custom string serialization
     """
     def __init__(self):
         super(StringSerializer, self).__init__()
@@ -42,14 +42,14 @@ class StringSerializer(Serializer):
     def to_string(self, key):
         """
             Should accept key that needs to retrieved from Activity attributes
-            @return: string
+            :return: string
         """
         self._assign_attributes()
         pass
 
 class JsonSerializer(Serializer):
     """
-        @summary: Should know everything about serializing data to json format
+        Should know everything about serializing data to json format
     """
 
     def __init__(self):
@@ -59,13 +59,13 @@ class JsonSerializer(Serializer):
     def to_json_raw(self):
         """
             Should return data_hash in original form
-            @rtype: dict
+            :rtype: dict
         """
         return self.data_hash
 
     def to_json(self):
         """
-            @return: json string formatted by attributes dictionary
+            :return: json string formatted by attributes dictionary
         """
         self._assign_attributes()
         return json.dumps(self.data)
@@ -73,7 +73,7 @@ class JsonSerializer(Serializer):
 
 class ActivitySerializer(JsonSerializer, StringSerializer):
     """
-        @summary: Should be responsible for representing Activity data using
+        Should be responsible for representing Activity data using
         desired format, attributes and method of representation
         Should be initialized only with the Activity data_hash
     """
@@ -92,7 +92,7 @@ class ActivitySerializer(JsonSerializer, StringSerializer):
 
 class LiveActivitySerializer(JsonSerializer, StringSerializer):
     """
-        @summary: should be responsible for representing LiveActivity data using
+        Should be responsible for representing LiveActivity data using
         desired format, attributes and method of representation
         Should be initialized only with the Activity data_hash
 
@@ -112,7 +112,7 @@ class LiveActivitySerializer(JsonSerializer, StringSerializer):
 
 class LiveActivityGroupSerializer(JsonSerializer, StringSerializer):
     """
-        @summary: should be responsible for representing LiveActivity data using
+        Should be responsible for representing LiveActivity data using
         desired format, attributes and method of representation
         Should be initialized only with the Activity data_hash
 
@@ -132,7 +132,7 @@ class LiveActivityGroupSerializer(JsonSerializer, StringSerializer):
 
 class SpaceSerializer(JsonSerializer, StringSerializer):
     """
-        @summary: should be responsible for representing LiveActivity data using
+        Should be responsible for representing LiveActivity data using
         desired format, attributes and method of representation
         Should be initialized only with the Activity data_hash
     """
@@ -151,7 +151,7 @@ class SpaceSerializer(JsonSerializer, StringSerializer):
 
 class SpaceControllerSerializer(JsonSerializer, StringSerializer):
     """
-        @summary: should be responsible for representing LiveActivity data using
+        Should be responsible for representing LiveActivity data using
         desired format, attributes and method of representation
         Should be initialized only with the Activity data_hash
 

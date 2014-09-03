@@ -13,7 +13,7 @@ class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable,
                         Startupable, Activatable, Configurable, Metadatable,
                         Deployable):
     """
-        @summary: Should be responsible for managing single live activity group
+    Should be responsible for managing single live activity group
     """
     def __init__(self, data_hash=None, uri=None):
         self.log = Logger().get_logger()
@@ -32,17 +32,21 @@ class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable,
 
     def new(self, uri, constructor_args):
         """
-            @summary: used to create new live activity group through API and set the "uri" so that we
-            can operate on this instance of LiveActivityGroup right away after .new() returns True
-            @param constructor_args: dictionary with following structure:
-                {
-                'liveActivityGroup.name' : 'live_activity_group_name',
-                'liveActivityGroup.description' : 'live_activity_group_description',
-                '_eventId_save' : 'Save',
-                'liveActivityIds' : [1,2,666]
-                }
-            @param uri: "http://some_server/prefix (passed by master)"
-            @rtype: new LiveActivityGroup object or False
+        Used to create new live activity group through API and set the "uri" so that we
+        can operate on this instance of LiveActivityGroup right away after .new() returns True
+        
+        :param constructor_args: dictionary with following structure::
+        
+            {\
+            'liveActivityGroup.name' : 'live_activity_group_name',\
+            'liveActivityGroup.description' : 'live_activity_group_description',\
+            '_eventId_save' : 'Save',\
+            'liveActivityIds' : [1,2,666]\
+            }
+        
+        :param uri: "http://some_server/prefix" (passed by master)
+        
+        :rtype: new LiveActivityGroup object or False
         """
 
         self.log.info("Creating new LiveActivityGroup with arguments: %s" % constructor_args)
@@ -60,14 +64,18 @@ class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable,
 
     def set_live_activities(self, live_activities_list):
         """
-            @summary: used to set new live activities list
-            @param : dictionary with following structure:
-                {
-                'liveActivityGroup.name' : 'live_activity_group_name',
-                'liveActivityIds' : [1,2,666]
-                }
-            @param uri: "http://some_server/prefix (passed by master)"
-            @rtype: new LiveActivityGroup object or False
+        Used to set new live activities list
+        
+        :param: dictionary with following structure::
+    
+            {\
+            'liveActivityGroup.name' : 'live_activity_group_name',\
+            'liveActivityIds' : [1,2,666]\
+            }
+            
+        :param uri: "http://some_server/prefix" (passed by master)
+        
+        :rtype: new LiveActivityGroup object or False
         """
         params = { 'liveActivityGroup.name' : self.name(),
                    'liveActivityIds' : live_activities_list,
@@ -88,7 +96,7 @@ class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable,
 
     def to_json(self):
         """
-            Should selected attributes in json form defined by the template
+        Should selected attributes in json form defined by the template
         """
         self.serializer = LiveActivityGroupSerializer(self.data_hash)
         return self.serializer.to_json()

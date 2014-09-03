@@ -13,15 +13,18 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
                    Startupable, Activatable, Configurable, Cleanable,
                    Metadatable, Deployable):
     """
-        @summary: Should be responsible for managing single LiveActivity
-        @todo: .new() should return instance of fetched live activity
+    Should be responsible for managing single LiveActivity
+    
+    :todo: .new() should return instance of fetched live activity
     """
     def __init__(self, data_hash=None, uri=None):
         """
-            @summary: when called with constructor_args and other vars set to None, new
-            LiveActivity will be created
-            @param data_hash: should be master API liveActivity json, may be blank
-            @param uri: should be a link to "view.json" of the given live activity
+        When called with constructor_args and other vars set to None, new
+        LiveActivity will be created.
+        
+        :param data_hash: should be master API liveActivity json, may be blank
+        
+        :param uri: should be a link to "view.json" of the given live activity
         """
         self.log = Logger().get_logger()
         self.class_name = self.__class__.__name__
@@ -39,15 +42,19 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
 
     def new(self, uri, new_data_hash):
         """
-        @summary: used to create new live activity through API and set the "uri" so that we
-            can operate on this instance of LiveActivity right away after .new() returns True
-        @param new_data_hash: dict {"live_activity_name" : "",
-                                        "live_activity_description" : "",
-                                        "activity_id" : "",
-                                        "controller_id" : ""
-                                        }
-        @param uri: "http://some_server/prefix (passed by master)"
-        @rtype: new LiveActivity object or False
+        Used to create new live activity through API and set the "uri" so that we
+        can operate on this instance of LiveActivity right away after .new() returns True
+        
+        :param new_data_hash: dictionary of a following structure::
+        
+            {"live_activity_name" : "",\
+            "live_activity_description" : "",\
+            "activity_id" : "",\
+            "controller_id" : ""}
+        
+        :param uri: "http://some_server/prefix" (passed by master)
+        
+        :rtype: new LiveActivity object or False
         """
         self.log.info("Creating new Live Activity with arguments: %s" % new_data_hash)
         route = Path().get_route_for('LiveActivity', 'new')
@@ -64,20 +71,20 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
 
     def to_json(self):
         """
-            @summary: Should selected attributes in json form defined by the template
+        Should selected attributes in json form defined by the template
         """
         self.serializer = LiveActivitySerializer(self.data_hash)
         return self.serializer.to_json()
 
     def name(self):
         """
-            @summary: Should return live activity name
+        Should return live activity name
         """
         return self.data_hash['name']
 
     def status(self):
         """
-            @summary: Should return status that is currently held in the object instance
+        Should return status that is currently held in the object instance
         """
         try:
             status_data = self.data_hash['active']['runtimeState']
@@ -87,33 +94,35 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
 
     def identifying_name(self):
         """
-            @summary: Should return LiveActivity identifying name
+        Should return LiveActivity identifying name
         """
         return self.data_hash['activity']['identifyingName']
 
     def version(self):
         """
-            @summary: Should return LiveActivity version
+        Should return LiveActivity version
         """
         return self.data_hash['activity']['version']
 
     def metadata(self):
         """
-            @summary: Should return LiveActivity metadata
+        Should return LiveActivity metadata
         """
         return self.data_hash['metadata']
 
     def id(self):
         """
-            @summary: Should return LiveActivity id
-            @rtype: string
+        Should return LiveActivity id
+        
+        :rtype: string
         """
         return self.data_hash['id']
 
     def controller(self):
         """
-            @summary: Should return LiveActivity controller
-            @rtype: string
+        Should return LiveActivity controller data
+        
+        :rtype: string
         """
         return self.data_hash['controller']['name']
 
@@ -121,7 +130,7 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
 
     def _get_absolute_url(self):
         """
-        @rtype: string
+        :rtype: string
         """
         route = Path().get_route_for(self.class_name, 'view') % self.data_hash['id']
         url = "%s%s" % (self.uri, route)

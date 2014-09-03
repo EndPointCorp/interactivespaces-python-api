@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>interactivespaces.live_activity &mdash; interactivespaces  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="interactivespaces  documentation" href="../../index.html" />
+    <link rel="up" title="interactivespaces" href="../interactivespaces.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">interactivespaces  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../interactivespaces.html" accesskey="U">interactivespaces</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for interactivespaces.live_activity</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">mixin</span> <span class="kn">import</span> <span class="n">Fetchable</span><span class="p">,</span> <span class="n">Statusable</span><span class="p">,</span> <span class="n">Shutdownable</span><span class="p">,</span> <span class="n">Startupable</span>
+<span class="kn">from</span> <span class="nn">mixin</span> <span class="kn">import</span> <span class="n">Deletable</span><span class="p">,</span> <span class="n">Activatable</span><span class="p">,</span> <span class="n">Configurable</span><span class="p">,</span> <span class="n">Cleanable</span>
+<span class="kn">from</span> <span class="nn">mixin</span> <span class="kn">import</span> <span class="n">Metadatable</span><span class="p">,</span> <span class="n">Deployable</span>
+<span class="kn">from</span> <span class="nn">exception</span> <span class="kn">import</span> <span class="n">LiveActivityException</span>
+<span class="kn">from</span> <span class="nn">serializer</span> <span class="kn">import</span> <span class="n">LiveActivitySerializer</span>
+<span class="kn">from</span> <span class="nn">misc</span> <span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">abstract</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<div class="viewcode-block" id="LiveActivity"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity.LiveActivity">[docs]</a><span class="k">class</span> <span class="nc">LiveActivity</span><span class="p">(</span><span class="n">Fetchable</span><span class="p">,</span> <span class="n">Statusable</span><span class="p">,</span> <span class="n">Deletable</span><span class="p">,</span> <span class="n">Shutdownable</span><span class="p">,</span>
+                   <span class="n">Startupable</span><span class="p">,</span> <span class="n">Activatable</span><span class="p">,</span> <span class="n">Configurable</span><span class="p">,</span> <span class="n">Cleanable</span><span class="p">,</span>
+                   <span class="n">Metadatable</span><span class="p">,</span> <span class="n">Deployable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Should be responsible for managing single LiveActivity</span>
+<span class="sd">    </span>
+<span class="sd">    :todo: .new() should return instance of fetched live activity</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_hash</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When called with constructor_args and other vars set to None, new</span>
+<span class="sd">        LiveActivity will be created.</span>
+<span class="sd">        </span>
+<span class="sd">        :param data_hash: should be master API liveActivity json, may be blank</span>
+<span class="sd">        </span>
+<span class="sd">        :param uri: should be a link to &quot;view.json&quot; of the given live activity</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LiveActivity</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">data_hash</span><span class="o">==</span><span class="bp">None</span> <span class="ow">and</span> <span class="n">uri</span><span class="o">==</span><span class="bp">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;No data provided - assuming creation of new LiveActivity&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">data_hash</span><span class="o">!=</span><span class="bp">None</span> <span class="ow">and</span> <span class="n">uri</span><span class="o">!=</span><span class="bp">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span> <span class="o">=</span> <span class="n">data_hash</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="n">uri</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">absolute_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_absolute_url</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Instantiated LiveActivity object with url=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">absolute_url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LiveActivity.new"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity.LiveActivity.new">[docs]</a>    <span class="k">def</span> <span class="nf">new</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">new_data_hash</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used to create new live activity through API and set the &quot;uri&quot; so that we</span>
+<span class="sd">        can operate on this instance of LiveActivity right away after .new() returns True</span>
+<span class="sd">        </span>
+<span class="sd">        :param new_data_hash: dictionary of a following structure::</span>
+<span class="sd">        </span>
+<span class="sd">            {&quot;live_activity_name&quot; : &quot;&quot;,\</span>
+<span class="sd">            &quot;live_activity_description&quot; : &quot;&quot;,\</span>
+<span class="sd">            &quot;activity_id&quot; : &quot;&quot;,\</span>
+<span class="sd">            &quot;controller_id&quot; : &quot;&quot;}</span>
+<span class="sd">        </span>
+<span class="sd">        :param uri: &quot;http://some_server/prefix&quot; (passed by master)</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: new LiveActivity object or False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Creating new Live Activity with arguments: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">new_data_hash</span><span class="p">)</span>
+        <span class="n">route</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">get_route_for</span><span class="p">(</span><span class="s">&#39;LiveActivity&#39;</span><span class="p">,</span> <span class="s">&#39;new&#39;</span><span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">route</span><span class="p">)</span>
+        <span class="n">request_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_post_json</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">new_data_hash</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">request_response</span><span class="o">.</span><span class="n">url</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">absolute_url</span> <span class="o">=</span> <span class="n">request_response</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;view.html&quot;</span><span class="p">,</span> <span class="s">&quot;view.json&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Created new LiveActivity with url=</span><span class="si">%s</span><span class="s">, data_hash is now </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">absolute_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Created new LiveActivity </span><span class="si">%s</span><span class="s"> but returned False&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="LiveActivity.to_json"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity.LiveActivity.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should selected attributes in json form defined by the template</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">serializer</span> <span class="o">=</span> <span class="n">LiveActivitySerializer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="LiveActivity.name"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity.LiveActivity.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should return live activity name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="LiveActivity.status"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity.LiveActivity.status">[docs]</a>    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should return status that is currently held in the object instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">status_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;active&#39;</span><span class="p">][</span><span class="s">&#39;runtimeState&#39;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">status_data</span>
+        <span class="k">except</span> <span class="n">LiveActivityException</span><span class="p">(</span><span class="s">&quot;Activity not running or non existent&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s">&quot;UNKNOWN&quot;</span>
+</div>
+<div class="viewcode-block" id="LiveActivity.identifying_name"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity.LiveActivity.identifying_name">[docs]</a>    <span class="k">def</span> <span class="nf">identifying_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should return LiveActivity identifying name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;activity&#39;</span><span class="p">][</span><span class="s">&#39;identifyingName&#39;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="LiveActivity.version"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity.LiveActivity.version">[docs]</a>    <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should return LiveActivity version</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;activity&#39;</span><span class="p">][</span><span class="s">&#39;version&#39;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="LiveActivity.metadata"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity.LiveActivity.metadata">[docs]</a>    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should return LiveActivity metadata</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;metadata&#39;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="LiveActivity.id"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity.LiveActivity.id">[docs]</a>    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should return LiveActivity id</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="LiveActivity.controller"><a class="viewcode-back" href="../../interactivespaces.html#interactivespaces.live_activity.LiveActivity.controller">[docs]</a>    <span class="k">def</span> <span class="nf">controller</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should return LiveActivity controller data</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;controller&#39;</span><span class="p">][</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+</div>
+    <span class="sd">&quot;&quot;&quot; Private methods below this text &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">route</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">get_route_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_name</span><span class="p">,</span> <span class="s">&#39;view&#39;</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_hash</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">route</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">url</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">interactivespaces  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../interactivespaces.html" >interactivespaces</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Author.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
