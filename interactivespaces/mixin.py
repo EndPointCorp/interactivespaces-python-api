@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import urllib2
 import json
 from abstract import Path
 from misc import Logger
@@ -21,6 +20,32 @@ class Communicable(object):
         """
         self.log = Logger().get_logger()
 
+    def _call_route(self, msg):
+        route = Path().get_route_for(self.class_name, msg)
+        route.parameterize(self.data_hash['id'])
+        route.setUri(self.uri)
+        #if self._send_activatable_request(activate_route):
+        if route.call():
+            self.log.info("Successfully sent '%s' for id=%s" % (msg, self.id))
+            return True
+        else:
+            return False
+
+
+    def _get_path(self, class_name, method_name, uri):
+        """
+        Returns APICall object for a particular class and method. Deprecates
+        _compose_url when class_name and method_name are specified
+        """
+        if class_name and method_name:
+            apicall = Path().get_route_for(class_name, method_name)
+            if apicall:
+                self.log.info("Returned API call %s" % apicall)
+                apicall.setUri(uri)
+                return apicall
+        else:
+            raise Exception("Please use _compose_url instead of _get_path when class_name and method_name aren't known")
+
     def _compose_url(self, uri, class_name=None, method_name=None, context=None, action=None):
         """
         Should compose URL trying to do that in two steps:
@@ -31,6 +56,7 @@ class Communicable(object):
         :rtype: string
         """
         if class_name and method_name:
+            self.log.warn("Note: this should probably use get_path instead of compose_url. When class_name and method_name are known, _compose_url is deprecated.")
             self.log.info("Composing url for class_name '%s' and method name '%s'" % (class_name, method_name))
             static_route = Path().get_route_for(class_name, method_name)
             if static_route :
@@ -46,9 +72,9 @@ class Communicable(object):
             self.log.info("Could not compose an url.")
             raise CommunicableException
 
-    def _urlopen(self, url, data=None):
-        """Helper for opening urls."""
-        return urllib2.urlopen(url, data)
+#    def _urlopen(self, url, data=None):
+#        """Helper for opening urls."""
+#        return urllib2.urlopen(url, data)
 
     def _api_get_json(self, url):
         """
@@ -56,7 +82,8 @@ class Communicable(object):
         
         :rtype: dict or bool
         """
-        response = urllib2.urlopen(url)
+        response = url.call()
+        #response = urllib2.urlopen(url)
         data = json.loads(response.read())
 
         try:
@@ -170,26 +197,37 @@ class Fetchable(Communicable):
     def __init__(self):
         super(Fetchable, self).__init__()
 
-    def _refresh_object(self, url):
+    def _refresh_object(self):
         """
         Should retrieve fresh data from API
         
         :param url: string defining from which url to fetch the data
         """
-        self.log.info("Refreshing object for url=%s" % url)
-        data = self._api_get_json(url)
+        route = self._get_absolute_url()
+        route.setUri(self.uri)
+        data = route.call()
         if data:
-            self.log.info("Successfully refresh object for url=%s" % url)
+            self.log.info("Successfully refresh object for url=%s" % route.getUrl())
             return data
         else:
-            self.log.info("Could not refresh object for url=%s" % url)
+            self.log.info("Could not refresh object for url=%s" % route.getUrl())
             return False
+
+    def _get_absolute_url(self):
+        """
+        :rtype: string
+        """
+        return Path().get_route_for(self.class_name, 'view', self.url_id())
+
+    def url_id(self):
+        """ Returns ID for use in URL for this unique object """
+        raise Exception("You need to implement url_id in %s" % self.class_name)
 
     def fetch(self):
         """
              Should retrieve private data for an object from Master API
         """
-        self.data_hash = self._refresh_object(self.absolute_url)
+        self.data_hash = self._refresh_object()
 
 class Statusable(Communicable):
     """
@@ -208,33 +246,7 @@ class Statusable(Communicable):
         Extracts self.data_hash and self.class_name from children class
         and finds out to which route send GET request to ands sends it
         """
-        refresh_route = Path().get_route_for(self.class_name, 'status') % self.data_hash['id']
-        if self._send_status_refresh(refresh_route):
-            self.log.info("Successfully refreshed status for url=%s" % self.absolute_url)
-            return True
-        else:
-            return False
-
-    def _send_status_refresh(self, refresh_route):
-        """
-        Should tell master to retrieve status info from controller
-        so master has the most up to date info from the controller
-        
-        :param refresh_route: status.json route for specific class
-        
-        :rtype: bool
-        """
-        url = "%s%s" % (self.uri, refresh_route)
-        self.log.info("Sending status refresh to url=%s" %url)
-        try:
-            response = self._api_get_json(url)
-        except urllib2.HTTPError, e:
-            response = None
-            self.log.error("Could not send status refresh because %s" % e)
-        if response:
-            return True
-        else:
-            return False
+        return self._call_route('status')
 
 class Deletable(Communicable):
     """
@@ -248,28 +260,7 @@ class Deletable(Communicable):
         """
         Sends the "delete" GET request to a route
         """
-        delete_route = Path().get_route_for(self.class_name, 'delete') % self.data_hash['id']
-        if self._send_delete_request(delete_route):
-            self.log.info("Successfully sent 'delete' to url=%s" % self.absolute_url)
-            return True
-        else:
-            return False
-
-    def _send_delete_request(self, delete_route):
-        """
-        :rtype: bool
-        """
-        url = "%s%s" % (self.uri, delete_route)
-        self.log.info("Sending 'delete' to url=%s" %url)
-        try:
-            response = self._api_get_html(url)
-        except urllib2.HTTPError, e:
-            response = None
-            self.log.error("Could not send 'delete' because %s" % e)
-        if response:
-            return True
-        else:
-            return False
+        return self._call_route('delete')
 
 class Shutdownable(Communicable):
     """
@@ -282,30 +273,7 @@ class Shutdownable(Communicable):
         super(Shutdownable, self).__init__()
 
     def send_shutdown(self):
-        shutdown_route = Path().get_route_for(self.class_name, 'shutdown') % self.data_hash['id']
-        if self._send_shutdown_request(shutdown_route):
-            self.log.info("Successfully sent shutdown for url=%s" % self.absolute_url) 
-            return True
-        else:
-            return False
-
-    def _send_shutdown_request(self, shutdown_route):
-        """
-        Makes a shutdown request
-        """
-        url = "%s%s" % (self.uri, shutdown_route)
-        self.log.info("Sending 'shutdown' GET request to url=%s" %url)
-        try:
-            response = self._api_get_json(url)
-        except urllib2.HTTPError, e:
-            response = None
-            self.log.error("Could not send 'shutdown' GET request because %s" % e)
-            if e=='HTTP Error 500: No connection to controller in 5000 milliseconds':
-                raise CommunicableException('HTTP Error 500: No connection to controller in 5000 milliseconds')
-        if response:
-            return True
-        else:
-            return False
+        return self._call_route('shutdown')
 
 class Startupable(Communicable):
     """
@@ -318,30 +286,7 @@ class Startupable(Communicable):
         super(Startupable, self).__init__()
 
     def send_startup(self):
-        startup_route = Path().get_route_for(self.class_name, 'startup') % self.data_hash['id']
-        if self._send_startup_request(startup_route):
-            self.log.info("Successfully sent 'startup' for url=%s" % self.absolute_url)
-            return True
-        else:
-            return False
-
-    def _send_startup_request(self, startup_route):
-        """
-        Makes a startup request
-        """
-        url = "%s%s" % (self.uri, startup_route)
-        self.log.info("Sending 'startup' GET request to url=%s" %url)
-        try:
-            response = self._api_get_json(url)
-        except urllib2.HTTPError, e:
-            response = None
-            self.log.error("Could not send 'startup' GET request because %s" % e)
-            if e=='HTTP Error 500: No connection to controller in 5000 milliseconds':
-                raise CommunicableException('HTTP Error 500: No connection to controller in 5000 milliseconds')
-        if response:
-            return True
-        else:
-            return False
+        return self._call_route('startup')
 
 class Activatable(Communicable):
     """
@@ -352,36 +297,10 @@ class Activatable(Communicable):
         super(Activatable, self).__init__()
 
     def send_activate(self):
-        activate_route = Path().get_route_for(self.class_name, 'activate') % self.data_hash['id']
-        if self._send_activatable_request(activate_route):
-            self.log.info("Successfully sent 'activate' for url=%s" % self.absolute_url)
-            return True
-        else:
-            return False
+        return self._call_route('activate')
 
     def send_deactivate(self):
-        deactivate_route = Path().get_route_for(self.class_name, 'deactivate') % self.data_hash['id']
-        if self._send_activatable_request(deactivate_route):
-            self.log.info("Successfully sent 'deactivate' for url=%s" % self.absolute_url)
-            return True
-        else:
-            return False
-
-    def _send_activatable_request(self, activatable_route):
-        """
-        Makes a activate/deactivate request
-        """
-        url = "%s%s" % (self.uri, activatable_route)
-        self.log.info("Sending activatable GET request to url=%s" %url)
-        try:
-            response = self._api_get_json(url)
-        except urllib2.HTTPError, e:
-            response = None
-            self.log.error("Could not send activatable GET request because %s" % e)
-        if response:
-            return True
-        else:
-            return False
+        return self._call_route('deactivate')
 
 class Deployable(Communicable):
     """
@@ -392,28 +311,7 @@ class Deployable(Communicable):
         super(Deployable, self).__init__()
 
     def send_deploy(self):
-        deploy_route = Path().get_route_for(self.class_name, 'deploy') % self.data_hash['id']
-        if self._send_deploy_request(deploy_route):
-            self.log.info("Successfully sent 'deploy' for url=%s" % self.absolute_url) 
-            return True
-        else:
-            return False
-
-    def _send_deploy_request(self, deploy_route):
-        """
-            Makes a 'deploy' request
-        """
-        url = "%s%s" % (self.uri, deploy_route)
-        self.log.info("Sending deploy GET request to url=%s" %url)
-        try:
-            response = self._api_get_json(url)
-        except urllib2.HTTPError, e:
-            response = None
-            self.log.error("Could not send deploy GET request because %s" % e)
-        if response:
-            return True
-        else:
-            return False
+        return self._call_route('deploy')
 
 class Configurable(Communicable):
     """
@@ -424,28 +322,7 @@ class Configurable(Communicable):
         super(Configurable, self).__init__()
 
     def send_configure(self):
-        configure_route = Path().get_route_for(self.class_name, 'configure') % self.data_hash['id']
-        if self._send_configure_request(configure_route):
-            self.log.info("Successfully sent 'configure' for url=%s" % self.absolute_url)
-            return True
-        else:
-            return False
-
-    def _send_configure_request(self, configure_route):
-        """
-        Makes a 'configure' request
-        """
-        url = "%s%s" % (self.uri, configure_route)
-        self.log.info("Sending configure GET request to url=%s" %url)
-        try:
-            response = self._api_get_json(url)
-        except urllib2.HTTPError, e:
-            response = None
-            self.log.error("Could not send configure GET request because %s" % e)
-        if response:
-            return True
-        else:
-            return False
+        return self._call_route('configure')
 
 class Cleanable(Communicable):
     """
@@ -456,38 +333,10 @@ class Cleanable(Communicable):
         super(Cleanable, self).__init__()
 
     def send_clean_permanent(self):
-        configure_route = Path().get_route_for(self.class_name, 'clean_permanent') % self.data_hash['id']
-        if self._send_cleanable_request(configure_route):
-            self.log.info("Successfully sent 'clean_permanent' for url=%s" % self.absolute_url)
-            return True
-        else:
-            return False
+        return self._call_route('clean_permanent')
 
     def send_clean_tmp(self):
-        configure_route = Path().get_route_for(self.class_name, 'clean_tmp') % self.data_hash['id']
-        if self._send_cleanable_request(configure_route):
-            self.log.info("Successfully sent 'clean_tmp' for url=%s" % self.absolute_url)
-            return True
-        else:
-            return False
-
-    def _send_cleanable_request(self, cleanable_route):
-        """
-        Makes a cleanable request
-        """
-        url = "%s%s" % (self.uri, cleanable_route)
-        self.log.info("Sending cleanable GET request to url=%s" %url)
-        try:
-            response = self._api_get_json(url)
-        except urllib2.HTTPError, e:
-            response = None
-            self.log.error("Could not send cleanable GET request because %s" % e)
-            if e=='HTTP Error 500: No connection to controller in 5000 milliseconds':
-                raise CommunicableException('HTTP Error 500: No connection to controller in 5000 milliseconds')
-        if response:
-            return True
-        else:
-            return False
+        return self._call_route('clean_tmp')
 
 class Connectable(Communicable):
     """
@@ -498,36 +347,10 @@ class Connectable(Communicable):
         super(Connectable, self).__init__()
 
     def send_connect(self):
-        connect_route = Path().get_route_for(self.class_name, 'connect') % self.data_hash['id']
-        if self._send_connectable_request(connect_route):
-            self.log.info("Successfully sent 'connect' for url=%s" % self.absolute_url)
-            return True
-        else:
-            return False
+        return self._call_route('connect')
 
     def send_disconnect(self):
-        disconnect_route = Path().get_route_for(self.class_name, 'disconnect') % self.data_hash['id']
-        if self._send_connectable_request(disconnect_route):
-            self.log.info("Successfully sent 'disconnect' for url=%s" % self.absolute_url)
-            return True
-        else:
-            return False
-
-    def _send_connectable_request(self, connectable_route):
-        """
-        Makes a connectable request
-        """
-        url = "%s%s" % (self.uri, connectable_route)
-        self.log.info("Sending connectable GET request to url=%s" %url)
-        try:
-            response = self._api_get_json(url)
-        except urllib2.HTTPError, e:
-            response = None
-            self.log.error("Could not send connectable GET request because %s" % e)
-        if response:
-            return True
-        else:
-            return False
+        return self._call_route('disconnect')
 
 class Metadatable(Communicable):
     """

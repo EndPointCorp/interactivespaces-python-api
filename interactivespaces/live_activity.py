@@ -8,6 +8,7 @@ from exception import LiveActivityException
 from serializer import LiveActivitySerializer
 from misc import Logger
 from abstract import Path
+import re
 
 class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
                    Startupable, Activatable, Configurable, Cleanable,
@@ -57,13 +58,22 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
         :rtype: new LiveActivity object or False
         """
         self.log.info("Creating new Live Activity with arguments: %s" % new_data_hash)
+        self.data_hash = new_data_hash
+        self.uri = uri
         route = Path().get_route_for('LiveActivity', 'new')
-        url = "%s%s" % (uri, route)
-        request_response = self._api_post_json(url, new_data_hash)
+        route.setUri(uri)
+        request_response = route.call(new_data_hash)
+        # url = "%s%s" % (uri, route)
+        # request_response = self._api_post_json(url, new_data_hash)
         if request_response.url:
-            self.absolute_url = request_response.url.replace("view.html", "view.json")
+            #self.absolute_url = request_response.url.replace("view.html", "view.json")
+            f = re.findall(r'liveactivity/(\d+)/view.html', request_response.url)
+            if f != None:
+                self.data_hash['id'] = f[0]
+            else:
+                raise Exception("Couldn't determine live activity of new liveactivity: %s" % request_response.url)
             self.fetch()
-            self.log.info("Created new LiveActivity with url=%s, data_hash is now %s" % (self.absolute_url, self.data_hash))
+            self.log.info("Created new LiveActivity with id=%s, data_hash is now %s" % (self.id, self.data_hash))
             return self
         else:
             self.log.info("Created new LiveActivity %s but returned False" % self)
@@ -126,12 +136,6 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
         """
         return self.data_hash['controller']['name']
 
-    """ Private methods below this text """
-
-    def _get_absolute_url(self):
-        """
-        :rtype: string
-        """
-        route = Path().get_route_for(self.class_name, 'view') % self.data_hash['id']
-        url = "%s%s" % (self.uri, route)
-        return url
+    def url_id(self):
+        """ Returns ID for use in URL for this unique object """
+        return self.data_hash['id']

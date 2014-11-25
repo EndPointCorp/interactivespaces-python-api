@@ -30,6 +30,13 @@ class Master(Communicable):
         self.uri = "http://%s:%s%s" % (self.host, self.port, prefix)
         super(Master, self).__init__()
 
+    def _do_call(self, class_name, method_name):
+        apicall = self._get_path(class_name, method_name, uri=self.uri)
+        self.log.info("Trying to call %s" % apicall)
+        response = apicall.call()
+        self.log.info('Got response for "%s" %s, containing %s objects' % (method_name, str(response), str(len(response))))
+        return response
+
     def get_activities(self, search_pattern=None):
         """
         Retrieves a list of Activity objects
@@ -47,11 +54,7 @@ class Master(Communicable):
         
         every search_pattern dictionary key may be blank/null
         """
-        url = self._compose_url(class_name='Master', method_name='get_activities', uri=self.uri)
-        self.log.info("Trying to retrieve url=%s" % url)
-        response = self._api_get_json(url)
-        self.log.info('Got response for "get_activities" %s ' % str(response))
-        self.log.info('get_activities returned %s objects' % str(len(response)))
+        response = self._do_call('Master', 'get_activities')
         activities = self._filter_activities(response, search_pattern)
         return activities
 
@@ -72,11 +75,7 @@ class Master(Communicable):
             
         every search_pattern dictionary key may be blank/null
         """
-        url = self._compose_url(class_name='Master', method_name='get_activities', uri=self.uri)
-        self.log.info("Trying to retrieve url=%s" % url)
-        response = self._api_get_json(url)
-        self.log.info('Got response for "get_activities" %s ' % str(response))
-        self.log.info('get_activities returned %s objects' % str(len(response)))
+        response = self._do_call('Master', 'get_activities')
         activity = self._filter_activities(response, search_pattern)
         if len(activity) > 1:
             raise MasterException("get_activity returned more than one row (%s)" % len(activity))
@@ -106,11 +105,7 @@ class Master(Communicable):
         
         - each search_pattern dictionary key may be blank/null
         """
-        url = self._compose_url(class_name='Master', method_name='get_live_activities', uri=self.uri)
-        self.log.info("Trying to retrieve url=%s" % url)
-        response = self._api_get_json(url)
-        self.log.debug('Got response for "get_live_activities" %s ' % str(response))
-        self.log.info('get_live_activities returned %s objects' % str(len(response)))
+        response = self._do_call('Master', 'get_live_activities')
         live_activities = self._filter_live_activities(response, search_pattern)
         return live_activities
 
@@ -131,11 +126,7 @@ class Master(Communicable):
         
         each search_pattern dictionary key may be blank/null
         """
-        url = self._compose_url(class_name='Master', method_name='get_live_activities', uri=self.uri)
-        self.log.info("Trying to retrieve url=%s" % url)
-        response = self._api_get_json(url)
-        self.log.debug('Got response for "get_live_activities" %s ' % str(response))
-        self.log.info('get_live_activities returned %s objects' % str(len(response)))
+        response = self._do_call('Master', 'get_live_activities')
         live_activity = self._filter_live_activities(response, search_pattern)
         if len(live_activity) > 1:
             raise MasterException("get_live_activity returned more than one row (%s)" % len(live_activity))
@@ -164,11 +155,7 @@ class Master(Communicable):
             }
         
         """
-        url = self._compose_url(class_name='Master', method_name='get_live_activity_groups', uri=self.uri)
-        self.log.info("Trying to retrieve url=%s" % url)
-        response = self._api_get_json(url)
-        self.log.debug('Got response for "get_live_activity_groups" %s ' % str(response))
-        self.log.info('get_live_activity_groups returned %s objects' % str(len(response)))
+        response = self._do_call('Master', 'get_live_activity_groups')
         live_activity_groups = self._filter_live_activity_groups(response, search_pattern)
         return live_activity_groups
 
@@ -187,11 +174,7 @@ class Master(Communicable):
             }
         
         """
-        url = self._compose_url(class_name='Master', method_name='get_live_activity_groups', uri=self.uri)
-        self.log.info("Trying to retrieve url=%s" % url)
-        response = self._api_get_json(url)
-        self.log.debug('Got response for "get_live_activity_groups" %s ' % str(response))
-        self.log.info('get_live_activity_groups returned %s objects' % str(len(response)))
+        response = self._do_call('Master', 'get_live_activity_groups')
         live_activity_group = self._filter_live_activity_groups(response, search_pattern)
         if len(live_activity_group) > 1:
             raise MasterException("get_live_activity_group returned more than one row (%s)" % len(live_activity_group))
@@ -217,10 +200,7 @@ class Master(Communicable):
             {"space_name" : "regexp"}
         
         """
-        url = self._compose_url(class_name='Master', method_name='get_spaces', uri=self.uri)
-        self.log.info("Trying to retrieve url=%s" % url)
-        response = self._api_get_json(url)
-        self.log.debug('Got response for "get_spaces" %s ' % str(response))
+        response = self._do_call('Master', 'get_spaces')
         spaces = self._filter_spaces(response, search_pattern)
         return spaces
 
@@ -237,10 +217,7 @@ class Master(Communicable):
             {"space_name" : "regexp"}
         
         """
-        url = self._compose_url(class_name='Master', method_name='get_spaces', uri=self.uri)
-        self.log.info("Trying to retrieve url=%s" % url)
-        response = self._api_get_json(url)
-        self.log.debug('Got response for "get_spaces" %s ' % str(response))
+        response = self._do_call('Master', 'get_spaces')
         space = self._filter_spaces(response, search_pattern)
         if len(space) > 1:
             raise MasterException("get_space returned more than one row (%s)" % len(space))
@@ -269,10 +246,7 @@ class Master(Communicable):
             }
         
         """
-        url = self._compose_url(class_name='Master', method_name='get_space_controllers', uri=self.uri)
-        self.log.info("Trying to retrieve url=%s" % url)
-        response = self._api_get_json(url)
-        self.log.debug('Got response for "get_controllers" %s ' % str(response))
+        response = self._do_call('Master', 'get_space_controllers')
         space_controllers = self._filter_space_controllers(response, search_pattern)
         return space_controllers
 
@@ -294,10 +268,7 @@ class Master(Communicable):
             }
         
         """
-        url = self._compose_url(class_name='Master', method_name='get_space_controllers', uri=self.uri)
-        self.log.info("Trying to retrieve url=%s" % url)
-        response = self._api_get_json(url)
-        self.log.debug('Got response for "get_controllers" %s ' % str(response))
+        response = self._do_call('Master', 'get_space_controllers')
         space_controller = self._filter_space_controllers(response, search_pattern)
         if len(space_controller) > 1:
             raise MasterException("get_space_controller returned more than one row")
@@ -330,7 +301,7 @@ class Master(Communicable):
 
         unpacked_arguments={}
         unpacked_arguments['activityId'] = self.get_activity({"activity_name" : constructor_args['activity_name']}).id()
-        unpacked_arguments['controllerId'] = self.get_space_controller({"space_controller_name" : constructor_args['space_controller_name']}).id()
+        unpacked_arguments['controllerId'] = self.get_space_controller({"space_controller_name" : constructor_args['space_controller_name']}).url_id()
         unpacked_arguments['liveActivity.description'] = constructor_args['live_activity_description']
         unpacked_arguments['liveActivity.name'] = constructor_args['live_activity_name']
         unpacked_arguments['_eventId_save'] = 'Save'

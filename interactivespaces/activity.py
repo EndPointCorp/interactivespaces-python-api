@@ -19,6 +19,7 @@ class Activity(Fetchable, Deletable):
         elif (data_hash != None and uri != None):
             self.data_hash = data_hash
             self.uri = uri
+            self.activity_id = data_hash['id']
             self.absolute_url = self._get_absolute_url()
             self.log.info("Instantiated Activity object with url=%s" % self.absolute_url)
 
@@ -74,7 +75,7 @@ class Activity(Fetchable, Deletable):
 
     def fetch(self):
         """ Should retrieve data from Master API"""
-        self.data_hash = self._refresh_object(self.absolute_url)
+        self.data_hash = self._refresh_object()
 
     def name(self):
         """ Should return live activity name"""
@@ -96,13 +97,6 @@ class Activity(Fetchable, Deletable):
         """ Should return Activity description """
         return self.data_hash['activity']['description']
 
-    """ Private methods below"""
-
-    def _get_absolute_url(self):
-        """
-            Initial data hash without subattributes that comes
-            from the all.json method
-        """
-        activity_id = self.data_hash['id']
-        url = "%s/activity/%s/view.json" % (self.uri, activity_id)
-        return url
+    def url_id(self):
+        """ Returns ID for use in URL for this unique object """
+        return self.activity_id

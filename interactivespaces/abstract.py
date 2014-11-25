@@ -3,6 +3,93 @@
 
 from exception import PathException
 from misc import Logger
+import requests
+import urllib2
+import urlparse
+import json
+
+class APICallException(Exception):
+    pass
+
+class APICall:
+    def __init__(self, url):
+        self.url = url
+        self.log = Logger().get_logger()
+
+    def getUrl(self):
+        return "%s%s" % (self.uri, self.url)
+
+    def setUri(self,uri):
+        self.uri = uri
+
+    def canCall(self):
+        try:
+            if not self.uri:
+                raise APICallException("URI must be set (use setUri() method) before calling this APICall object")
+        except AttributeError, e:
+            raise APICallException("URI must be set (use setUri() method) before calling this APICall object")
+        return True
+
+    def call(self):
+        # Poor man's abstract class
+        raise Exception("Instantiate some APICall subclass; don't call it directly.")
+
+    def parameterize(self, params):
+        if self.url.find("%s"):
+            self.url = self.url % params
+
+    def getUrl(self):
+        return "%s%s" % (self.uri, self.url)
+
+class RESTCall(APICall):
+    def call(self, params=None, file_handler=False, cookies=False):
+        if not self.canCall():
+            return
+
+        if file_handler:
+            head, tail = os.path.split(file_handler.name)
+            file_name = tail
+            file_content_type = "application/zip"
+            files = {"activityFile" : (file_name , file_handler, file_content_type)}
+        else:
+            files = None
+
+        self.log.info("Trying url %s" % self.getUrl())
+
+        if cookies == False and params == None:
+            response = urllib2.urlopen(self.getUrl())
+            response_str = response.read()
+            data = json.loads(response_str)
+
+            try:
+                out_data = data['data']
+            except Exception:
+                out_data = None
+
+            if data['result'] != 'success':
+                self.log.info("Could not retrieve data for URL=%s" % url)
+                return False
+
+            return out_data
+        else:
+            session = requests.session()
+            get_response = session.get(self.getUrl())
+            query = urlparse.urlparse(get_response.url).query
+            cookies = {"JSESSIONID" : session.cookies['JSESSIONID']}
+            url = self.getUrl() + "?" + query
+            post_response = session.post(url=url, cookies=cookies, data=params, files=files) 
+            if post_response.status_code == 200:
+                self.log.info("_api_post_json returned 200 with post_response.url=%s" % post_response.url)
+                return post_response
+            else:
+                self.log.info("_api_post_json returned post_response.status_code %s" % post_response.status_code)
+                return False
+
+class WebSocketCall(APICall):
+    def call(self):
+        if not self.canCall():
+            return
+        raise Exception("WebSocketCall.call() isn't yet implemented")
 
 class Path(object):
     '''
@@ -70,6 +157,7 @@ class Path(object):
                             },
                        'SpaceController' :{
                             'new' : '/spacecontroller/new',
+                            'view' : '/spacecontroller/%s/view.json',
                             'status': '/spacecontroller/%s/status.json',
                             'delete': '/spacecontroller/%s/delete.html',
                             'shutdown': '/spacecontroller/%s/shutdown.json',
@@ -81,7 +169,7 @@ class Path(object):
 
         self.log = Logger().get_logger()
 
-    def get_route_for(self, class_name, method_name):
+    def get_route_for(self, class_name, method_name, param=None):
         """
         Should receive caller class name and caller method in order
         to return a proper route in the master API
@@ -89,6 +177,14 @@ class Path(object):
         :rtype: string
         """
         try:
-            return self.routes[class_name][method_name]
+            r = self.routes[class_name][method_name]
+            if not isinstance(r, APICall):
+                # Default to RESTCall, not WebSocketCall
+                r = RESTCall(r)
+
+            if param != None:
+                r.parameterize(param)
+
+            return r
         except PathException, e:
             self.log.info("Could not return route for class_name %s and method %s because %s" % (class_name, method_name, e))

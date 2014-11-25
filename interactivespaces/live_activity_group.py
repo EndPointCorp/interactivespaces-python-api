@@ -131,9 +131,6 @@ class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable,
         """ Should return Live Activity Group metadata """
         return self.data_hash['metadata']
 
-    """ Private methods below """
-
-    def _get_absolute_url(self):
-        live_activity_group_id = self.data_hash['id']
-        url = "%s/liveactivitygroup/%s/view.json" % (self.uri, live_activity_group_id)
-        return url
+    def url_id(self):
+        """ Returns ID for use in URL for this unique object """
+        return live_activity_group_id

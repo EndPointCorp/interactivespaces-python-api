@@ -60,9 +60,9 @@ class Space(Fetchable, Statusable, Deletable, Shutdownable,
         """
         return self.data_hash['description']
 
-    """ Private methods below """
-
-    def _get_absolute_url(self):
-        live_activity_group_id = self.data_hash['id']
-        url = "%s/space/%s/view.json" % (self.uri, live_activity_group_id)
-        return url
+    def url_id(self):
+        """
+        Returns ID for use in URL for this unique object
+        .todo live_activity_group_id is a proper translation of what was here before, but it's probably wrong
+        """
+        return live_activity_group_id
