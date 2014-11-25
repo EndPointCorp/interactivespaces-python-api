@@ -8,6 +8,7 @@ from exception import CommunicableException
 import requests
 import urlparse
 import os
+import re
 
 """
     :todo: aggregate mixins common for LiveActivity, LiveActivityGroup and Space into one
@@ -125,26 +126,20 @@ class Communicable(object):
         
         :param file_handler: path to local zipfile - if provided, a multi-part post will be sent to the URL
         """
-        if file_handler:
-            head, tail = os.path.split(file_handler.name)
-            file_name = tail
-            file_content_type = "application/zip"
-            files = {"activityFile" : (file_name , file_handler, file_content_type)}
-        else:
-            files = None
-        self.log.info("Doing a POST request to %s with payload %s" %(url, payload))
-        session = requests.session()
-        get_response = session.get(url)
-        query = urlparse.urlparse(get_response.url).query
-        cookies = {"JSESSIONID" : session.cookies['JSESSIONID']}
-        url = url + "?" + query
-        post_response = session.post(url=url, cookies=cookies, data=payload, files=files) 
-        if post_response.status_code == 200:
-            self.log.info("_api_post_json returned 200 with post_response.url=%s" % post_response.url)
-            return post_response
-        else:
-            self.log.info("_api_post_json returned post_response.status_code %s" % post_response.status_code)
-            return False
+        return url.call(cookies=True, params=payload, file_handler=file_handler)
+#        self.log.info("Doing a POST request to %s with payload %s" %(url, payload))
+#        session = requests.session()
+#        get_response = session.get(url)
+#        query = urlparse.urlparse(get_response.url).query
+#        cookies = {"JSESSIONID" : session.cookies['JSESSIONID']}
+#        url = url + "?" + query
+#        post_response = session.post(url=url, cookies=cookies, data=payload, files=files) 
+#        if post_response.status_code == 200:
+#            self.log.info("_api_post_json returned 200 with post_response.url=%s" % post_response.url)
+#            return post_response
+#        else:
+#            self.log.info("_api_post_json returned post_response.status_code %s" % post_response.status_code)
+#            return False
 
     def _api_post_json_no_cookies(self, url, payload, file_handler=None):
         """
@@ -212,6 +207,13 @@ class Fetchable(Communicable):
         else:
             self.log.info("Could not refresh object for url=%s" % route.getUrl())
             return False
+
+    def get_id(self, url, prefix, suffix):
+        f = re.findall(r'%s/(\d+)/%s' % (prefix, suffix), url)
+        if f != None:
+            return f[0]
+        else:
+            raise Exception("Couldn't determine id of new LiveActivity: %s" % url)
 
     def _get_absolute_url(self):
         """

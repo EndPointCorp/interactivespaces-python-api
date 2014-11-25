@@ -8,7 +8,6 @@ from exception import LiveActivityException
 from serializer import LiveActivitySerializer
 from misc import Logger
 from abstract import Path
-import re
 
 class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
                    Startupable, Activatable, Configurable, Cleanable,
@@ -67,11 +66,7 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
         # request_response = self._api_post_json(url, new_data_hash)
         if request_response.url:
             #self.absolute_url = request_response.url.replace("view.html", "view.json")
-            f = re.findall(r'liveactivity/(\d+)/view.html', request_response.url)
-            if f != None:
-                self.data_hash['id'] = f[0]
-            else:
-                raise Exception("Couldn't determine live activity of new liveactivity: %s" % request_response.url)
+            self.data_hash['id'] = self.get_id(request_response.url, 'liveactivity', 'view.html')
             self.fetch()
             self.log.info("Created new LiveActivity with id=%s, data_hash is now %s" % (self.id, self.data_hash))
             return self

@@ -7,6 +7,7 @@ import requests
 import urllib2
 import urlparse
 import json
+import os
 
 class APICallException(Exception):
     pass

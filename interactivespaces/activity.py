@@ -47,10 +47,11 @@ class Activity(Fetchable, Deletable):
         :rtype: new Activity object or False
         """
         self.log.info("Uploading new Activity from file %s" % zip_file_handler)
+        self.uri = uri
         route = Path().get_route_for('Activity', 'upload')
-        url = "%s%s" % (uri, route)
+        route.setUri(uri)
         payload = {"_eventId_save" : "Save"}
-        request_response = self._api_post_json(url, payload, zip_file_handler)
+        request_response = self._api_post_json(route, payload, zip_file_handler)
         return self.check_upload_response(request_response)
 
     def check_upload_response(self, request_response):
@@ -58,9 +59,10 @@ class Activity(Fetchable, Deletable):
             Dirty workaround for nasty html redirect
         """
         if request_response.url:
-            self.absolute_url = request_response.url.replace("view.html", "view.json")
+            #self.absolute_url = request_response.url.replace("view.html", "view.json")
+            self.activity_id = self.get_id(request_response.url, 'activity', 'view.html')
             self.fetch()
-            self.log.info("Created new Activity with url=%s, data_hash is now %s" % (self.absolute_url, self.data_hash))
+            self.log.info("Created new Activity with id=%s, data_hash is now %s" % (self.activity_id, self.data_hash))
             return self
         else:
             self.log.info("Created new Activity %s but returned False" % self)
