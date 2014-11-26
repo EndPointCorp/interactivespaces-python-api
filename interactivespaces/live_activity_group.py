@@ -22,6 +22,7 @@ class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable,
         if data_hash==None and uri==None:
             self.log.info("No data_hash and uri provided for LiveActivityGroup constructor, assuming creation")
         else:
+            self.live_activity_group_id = data_hash['id']
             self.data_hash = data_hash
             self.uri = uri
             self.absolute_url = self._get_absolute_url()
@@ -51,12 +52,13 @@ class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable,
 
         self.log.info("Creating new LiveActivityGroup with arguments: %s" % constructor_args)
         route = Path().get_route_for('LiveActivityGroup', 'new')
-        url = "%s%s" % (uri, route)
-        request_response = self._api_post_json(url, constructor_args)
+        route.setUri(uri)
+        self.uri = uri
+        request_response = self._api_post_json(route, constructor_args)
         if request_response.url:
-            self.absolute_url = request_response.url.replace("view.html", "view.json")
+            self.live_activity_group_id = self.get_id(request_response.url, 'liveactivitygroup', 'view.html')
             self.fetch()
-            self.log.info("Created new LiveActivityGroup with url=%s, data_hash is now %s" % (self.absolute_url, self.data_hash))
+            self.log.info("Created new LiveActivityGroup with id=%s, data_hash is now %s" % (self.live_activity_group_id, self.data_hash))
             return self
         else:
             self.log.info("Created new LiveActivityGroup %s but returned False" % self)
@@ -133,4 +135,4 @@ class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable,
 
     def url_id(self):
         """ Returns ID for use in URL for this unique object """
-        return live_activity_group_id
+        return self.live_activity_group_id

@@ -60,16 +60,15 @@ class RESTCall(APICall):
         if cookies == False and params == None:
             response = urllib2.urlopen(self.getUrl())
             response_str = response.read()
-            data = json.loads(response_str)
 
             try:
+                data = json.loads(response_str)
                 out_data = data['data']
+                if data['result'] != 'success':
+                    self.log.info("Could not retrieve data for URL=%s" % url)
+                    return False
             except Exception:
                 out_data = None
-
-            if data['result'] != 'success':
-                self.log.info("Could not retrieve data for URL=%s" % url)
-                return False
 
             return out_data
         else:
@@ -145,6 +144,7 @@ class Path(object):
                             'edit' : '/liveactivitygroup/%s/edit.json'
                             },
                        'Space' : {
+                            'new' : '/space/new',
                             'view' : '/space/%s/view.json',
                             'status' : '/space/%s/status.json',
                             'delete' : '/space/%s/delete.html',

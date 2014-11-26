@@ -373,7 +373,9 @@ class Metadatable(Communicable):
         """
         metadata = {"values" : self._unpack_metadata(metadata_dictionary)}
         self.log.info("Updating metadata of %s with %s" % (self.class_name, metadata))
-        metadata_route = Path().get_route_for(self.class_name, 'metadata') % self.data_hash['id']
+        metadata_route = Path().get_route_for(self.class_name, 'metadata')
+        metadata_route.parameterize(self.data_hash['id'])
+        metadata_route.setUri(self.uri)
         if self._send_metadatable_request(metadata_route, metadata):
             self.log.info("Successfully sent metadata for url=%s" % self.absolute_url)
             return True

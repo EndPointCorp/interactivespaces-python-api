@@ -221,6 +221,8 @@ class Master(Communicable):
         space = self._filter_spaces(response, search_pattern)
         if len(space) > 1:
             raise MasterException("get_space returned more than one row (%s)" % len(space))
+        elif len(space) == 0:
+            raise MasterException("Could not get specific space for search pattern '%s'" % search_pattern)
         elif isinstance(space[0], Space):
             space[0].fetch()
             self.log.info("get_space returned Space:%s" % str(space))
@@ -239,10 +241,10 @@ class Master(Communicable):
         example regexp dict::
         
             {\
-            "state" : "STRING",\
-            "mode" : "STRING",\
-            "name" : "regexp",\
-            "uuid" : "STRING"\
+            "space_controller_state" : "STRING",\
+            "space_controller_mode" : "STRING",\
+            "space_controller_name" : "regexp",\
+            "space_controller_uuid" : "STRING"\
             }
         
         """

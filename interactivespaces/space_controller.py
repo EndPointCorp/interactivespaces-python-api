@@ -51,14 +51,16 @@ class SpaceController(Fetchable, Statusable, Deletable, Shutdownable,
         unpacked_arguments['_eventId_save'] = 'Save'
 
         self.log.info("Creating new SpaceController with arguments: %s" % unpacked_arguments)
+        self.uri = uri
         route = Path().get_route_for('SpaceController', 'new')
-        url = "%s%s" % (uri, route)
-        request_response = self._api_post_json(url, unpacked_arguments)
+        route.setUri(uri)
+        request_response = self._api_post_json(route, unpacked_arguments)
 
         if request_response.url:
-            self.absolute_url = request_response.url.replace("view.html", "view.json")
+            #self.absolute_url = request_response.url.replace("view.html", "view.json")
+            self.id = self.get_id(request_response.url, 'spacecontroller', 'view.html')
             self.fetch()
-            self.log.info("Created new SpaceController with url=%s, data_hash is now %s" % (self.absolute_url, self.data_hash))
+            self.log.info("Created new SpaceController with id=%s, data_hash is now %s" % (self.id, self.data_hash))
             return self
         else:
             self.log.info("Created new SpaceController %s but returned False" % self)

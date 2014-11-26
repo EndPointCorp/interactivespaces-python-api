@@ -14,11 +14,11 @@ class Space(Fetchable, Statusable, Deletable, Shutdownable,
     Space is a LiveActivityGroup aggregator
     """
     def __init__(self, data_hash, uri, name=None, ):
+        self.class_name = self.__class__.__name__
         self.log = Logger().get_logger()
         self.data_hash = data_hash
         self.uri = uri
         self.absolute_url = self._get_absolute_url()
-        self.class_name = self.__class__.__name__
         super(Space, self).__init__()
         self.log.info("Instantiated Activity object with url=%s" % self.absolute_url)
 
@@ -65,4 +65,4 @@ class Space(Fetchable, Statusable, Deletable, Shutdownable,
         Returns ID for use in URL for this unique object
         .todo live_activity_group_id is a proper translation of what was here before, but it's probably wrong
         """
-        return live_activity_group_id
+        return self.data_hash['id']
