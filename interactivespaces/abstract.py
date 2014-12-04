@@ -8,6 +8,8 @@ import urllib2
 import urlparse
 import json
 import os
+import websocket
+import re
 
 class APICallException(Exception):
     pass
@@ -18,7 +20,7 @@ class APICall:
         self.log = Logger().get_logger()
 
     def getUrl(self):
-        return "%s%s" % (self.uri, self.url)
+        raise Exception("Instantiate some APICall subclass; don't call it directly")
 
     def setUri(self,uri):
         self.uri = uri
@@ -43,6 +45,9 @@ class APICall:
         return "%s%s" % (self.uri, self.url)
 
 class RESTCall(APICall):
+    def getUrl(self):
+        return "%s%s" % (self.uri["http"], self.url)
+
     def call(self, params=None, file_handler=False, cookies=False):
         if not self.canCall():
             return
@@ -86,10 +91,46 @@ class RESTCall(APICall):
                 return False
 
 class WebSocketCall(APICall):
+    requestId = 0
+
+    def getUrl(self):
+        return self.uri["ws"]
+
+    def getCommandJson(self):
+#{"type":"/liveactivity/all","requestId":"1","data":{"filter":"name.equals('LG Browser Service')"}}
+        WebSocketCall.requestId += 1
+        return json.dumps({
+            "type" : self.url,
+            "requestId" : str(WebSocketCall.requestId),
+            "data" : {}
+        })
+
     def call(self):
         if not self.canCall():
             return
-        raise Exception("WebSocketCall.call() isn't yet implemented")
+
+        iterations = 0
+
+        while iterations < 10:
+            iterations += 1
+            ws = websocket.create_connection(self.getUrl())
+            ws.send(self.getCommandJson())
+            print "Sent data %s" % self.getCommandJson()
+            result = ws.recv()
+            print "received response %s" % result
+            try:
+                data = json.loads(result)
+                out_data = data['data']
+                if data['result'] != 'success':
+                    self.log.info("Could not retrieve data for URL=%s" % url)
+                    return False
+            except Exception as e:
+                print "Exception: %s" % e
+                out_data = None
+                print "Trying again"
+                continue
+
+            return out_data
 
 class Path(object):
     '''
@@ -99,7 +140,9 @@ class Path(object):
         self.routes = {
                        'Master': {
                             'get_activities' : '/activity/all.json',
-                            'get_live_activities' : '/liveactivity/all.json',
+                            #'get_live_activities' : '/liveactivity/all.json',
+                                # XXX Pass a handler in cases where I don't want the commandresponse packet from teh websocket API
+                            'get_live_activities' : WebSocketCall('/liveactivity/all'),
                             'get_live_activity_groups' : '/liveactivitygroup/all.json',
                             'get_spaces' : '/space/all.json',
                             'get_space_controllers' : '/spacecontroller/all.json',
@@ -115,7 +158,8 @@ class Path(object):
                             'delete' : '/activity/%s/delete.html'
                             },
                        'LiveActivity' : {
-                            'status' : '/liveactivity/%s/status.json',
+                            #'status' : '/liveactivity/%s/status.json',
+                            'status' : WebSocketCall('/liveactivity/status'),
                             'view' : '/liveactivity/%s/view.json',
                             'new' : '/liveactivity/new',
                             'delete' : '/liveactivity/%s/delete.html',

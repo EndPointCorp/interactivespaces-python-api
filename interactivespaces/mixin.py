@@ -5,6 +5,7 @@ import json
 from abstract import Path
 from misc import Logger
 from exception import CommunicableException
+import urllib2
 import requests
 import urlparse
 import os

@@ -18,16 +18,19 @@ class Master(Communicable):
     high level stuff. You will typically use instance of
     Master for all your scripts.
     """
-    def __init__(self, host='lg-head', port='8080', prefix='/interactivespaces', logfile_path='ispaces-client.log'):
+    def __init__(self, host='lg-head', port='8080', ws_port=8090, prefix='/interactivespaces', ws_prefix='', logfile_path='ispaces-client.log'):
         """
         :param host: default value is lg-head
         :param port: default value is 8080
         :param prefix: default value is /interactivespaces
         :todo: refactor filter_* methods because they're not DRY
         """
-        self.host, self.port, self.prefix = host, port, prefix
+        self.host, self.port, self.ws_port, self.prefix = host, port, ws_port, prefix
         self.log = Logger(logfile_path=logfile_path).get_logger()
-        self.uri = "http://%s:%s%s" % (self.host, self.port, prefix)
+        self.uri = {
+            "http" : "http://%s:%s%s" % (self.host, self.port, prefix),
+            "ws"   : "ws://%s:%s/%s" % (self.host, self.ws_port, ws_prefix)
+        }
         super(Master, self).__init__()
 
     def _do_call(self, class_name, method_name):
