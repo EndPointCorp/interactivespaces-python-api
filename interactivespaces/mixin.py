@@ -22,12 +22,12 @@ class Communicable(object):
         """
         self.log = Logger().get_logger()
 
-    def _call_route(self, msg):
+    def _call_route(self, msg, extra_data={}):
         route = Path().get_route_for(self.class_name, msg)
         route.parameterize(self.data_hash['id'])
         route.setUri(self.uri)
         #if self._send_activatable_request(activate_route):
-        if route.call():
+        if route.call(extra_data=extra_data):
             self.log.info("Successfully sent '%s' for id=%s" % (msg, self.id))
             return True
         else:
@@ -326,6 +326,9 @@ class Configurable(Communicable):
 
     def send_configure(self):
         return self._call_route('configure')
+
+    def set_config(self, data):
+        return self._call_route('set_config', { 'config' : data })
 
 class Cleanable(Communicable):
     """

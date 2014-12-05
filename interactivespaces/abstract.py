@@ -3,6 +3,8 @@
 
 from exception import PathException
 from misc import Logger
+from contextlib import contextmanager
+import signal
 import requests
 import urllib2
 import urlparse
@@ -38,17 +40,21 @@ class APICall:
         raise Exception("Instantiate some APICall subclass; don't call it directly.")
 
     def parameterize(self, params):
-        if self.url.find("%s"):
-            self.url = self.url % params
+        # Poor man's abstract class
+        raise Exception("Instantiate some APICall subclass; don't call it directly.")
 
     def getUrl(self):
         return "%s%s" % (self.uri, self.url)
 
 class RESTCall(APICall):
+    def parameterize(self, params):
+        if self.url.find("%s"):
+            self.url = self.url % params
+
     def getUrl(self):
         return "%s%s" % (self.uri["http"], self.url)
 
-    def call(self, params=None, file_handler=False, cookies=False):
+    def call(self, params=None, file_handler=False, cookies=False, extra_data={}):
         if not self.canCall():
             return
 
@@ -90,22 +96,42 @@ class RESTCall(APICall):
                 self.log.info("_api_post_json returned post_response.status_code %s" % post_response.status_code)
                 return False
 
+@contextmanager
+def time_limit(seconds):
+    def signal_handler(signum, frame):
+        raise TimeoutException, "Timed out!"
+    signal.signal(signal.SIGALRM, signal_handler)
+    signal.alarm(seconds)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
+
 class WebSocketCall(APICall):
     requestId = 0
+
+    def parameterize(self, params):
+        self.id = params
 
     def getUrl(self):
         return self.uri["ws"]
 
-    def getCommandJson(self):
+    def getCommandJson(self, extra_data):
 #{"type":"/liveactivity/all","requestId":"1","data":{"filter":"name.equals('LG Browser Service')"}}
         WebSocketCall.requestId += 1
-        return json.dumps({
+        obj = {
             "type" : self.url,
             "requestId" : str(WebSocketCall.requestId),
-            "data" : {}
-        })
+            "data" : extra_data
+        }
+        try:
+            obj['data']['id'] = self.id
+        except:
+            # Don't complain if I haven't parameterized this
+            pass
+        return json.dumps(obj)
 
-    def call(self):
+    def call(self, extra_data={}):
         if not self.canCall():
             return
 
@@ -114,16 +140,28 @@ class WebSocketCall(APICall):
         while iterations < 10:
             iterations += 1
             ws = websocket.create_connection(self.getUrl())
-            ws.send(self.getCommandJson())
-            print "Sent data %s" % self.getCommandJson()
-            result = ws.recv()
+            c = self.getCommandJson(extra_data)
+            ws.send(c)
+            print "Sent data %s" % c
+            try:
+                with time_limit(5):
+                    result = ws.recv()
+            except TimeoutException, msg:
+                print "Timed out! %s" % msg
             print "received response %s" % result
             try:
                 data = json.loads(result)
-                out_data = data['data']
+                out_data = None
+
                 if data['result'] != 'success':
                     self.log.info("Could not retrieve data for URL=%s" % url)
                     return False
+
+                try:
+                    out_data = data['data']
+                except Exception as e:
+                    pass
+
             except Exception as e:
                 print "Exception: %s" % e
                 out_data = None
@@ -168,7 +206,8 @@ class Path(object):
                             'activate' : '/liveactivity/%s/activate.json',
                             'deactivate' : '/liveactivity/%s/deactivate.json',
                             'deploy' : '/liveactivity/%s/deploy.json',
-                            'configure' : '/liveactivity/%s/configure.json',
+                            'configure' : WebSocketCall('/liveactivity/configure'),
+                            'set_config' : WebSocketCall('/liveactivity/configuration/set'),
                             'clean_tmp' : '/liveactivity/%s/cleantmpdata.json',
                             'clean_permanent' : '/liveactivity/%s/cleanpermanentdata.json',
                             'metadata' : '/liveactivity/%s/metadata/edit'
