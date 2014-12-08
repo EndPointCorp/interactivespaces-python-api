@@ -3,8 +3,6 @@
 
 from exception import PathException
 from misc import Logger
-from contextlib import contextmanager
-import signal
 import requests
 import urllib2
 import urlparse
@@ -12,6 +10,10 @@ import json
 import os
 import websocket
 import re
+from timeout_wrapper import time_limit
+
+class TimeoutException(Exception):
+    pass
 
 class APICallException(Exception):
     pass
@@ -35,9 +37,8 @@ class APICall:
             raise APICallException("URI must be set (use setUri() method) before calling this APICall object")
         return True
 
-    def call(self):
-        # Poor man's abstract class
-        raise Exception("Instantiate some APICall subclass; don't call it directly.")
+    def call(self, params=None, file_handler=False, cookies=False, extra_data={}):
+        self._call(params, file_handler, cookies, extra_data)
 
     def parameterize(self, params):
         # Poor man's abstract class
@@ -54,7 +55,7 @@ class RESTCall(APICall):
     def getUrl(self):
         return "%s%s" % (self.uri["http"], self.url)
 
-    def call(self, params=None, file_handler=False, cookies=False, extra_data={}):
+    def _call(self, params=None, file_handler=False, cookies=False, extra_data={}):
         if not self.canCall():
             return
 
@@ -96,17 +97,6 @@ class RESTCall(APICall):
                 self.log.info("_api_post_json returned post_response.status_code %s" % post_response.status_code)
                 return False
 
-@contextmanager
-def time_limit(seconds):
-    def signal_handler(signum, frame):
-        raise TimeoutException, "Timed out!"
-    signal.signal(signal.SIGALRM, signal_handler)
-    signal.alarm(seconds)
-    try:
-        yield
-    finally:
-        signal.alarm(0)
-
 class WebSocketCall(APICall):
     requestId = 0
 
@@ -131,7 +121,7 @@ class WebSocketCall(APICall):
             pass
         return json.dumps(obj)
 
-    def call(self, extra_data={}):
+    def _call(self, params=None, file_handler=None, cookies=None, extra_data={}):
         if not self.canCall():
             return
 

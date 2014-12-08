@@ -37,7 +37,11 @@ class Master(Communicable):
         apicall = self._get_path(class_name, method_name, uri=self.uri)
         self.log.info("Trying to call %s" % apicall)
         response = apicall.call()
-        self.log.info('Got response for "%s" %s, containing %s objects' % (method_name, str(response), str(len(response))))
+        self.log.info('Got response for "%s" %s' % (method_name, str(response)))
+        try:
+            self.log.info('  response contains %s objects' % str(len(response)))
+        except:
+            print "Can't get length of response object"
         return response
 
     def get_activities(self, search_pattern=None):
