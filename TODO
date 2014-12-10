@@ -5,3 +5,4 @@
 * make queries more strict e.g. get_controller_name with controller_name=ISCTL will work both for ISCTX and ISCTY which is wrong
 * when more than one object is returned for singular methods like .get_space_controller or .get_live_activity, a proper exception should be thrown
 * make master.get_live_activity_group() accept "live_activities" list as a param and parse it. Currently it's being ignored.
+* move migrate install-cms.py to chef

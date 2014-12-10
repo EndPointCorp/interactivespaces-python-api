@@ -1,66 +1,78 @@
-#!/usr/bin/env python
+#!/usr/bin/envthon
 # -*- coding: utf-8 -*-
 
-from abstract import Path
-from activity import Activity
-from exception import MasterException, PathException, CommunicableException
-from exception import LiveActivityException, StatusableException, ActivityException
-from exception import SerializerException, ControllerNotFoundException
-from exception import ControllerNotFoundException, LiveActivityGroupNotFoundException
-from exception import LiveActivityNotFoundException, ActivityNotFoundException
-from helper import SearchPattern, Searcher
-from live_activity_group import LiveActivityGroup
-from live_activity import LiveActivity
-from master import Master
-from misc import Logger
-from mixin import Communicable, Fetchable, Statusable, Deletable, Shutdownable
-from mixin import Startupable, Activatable, Deployable, Configurable, Cleanable
-from mixin import Connectable, Metadatable, Updatable
-from named_script import NamedScript
-from serializer import Serializer, StringSerializer, JsonSerializer, ActivitySerializer
-from serializer import LiveActivitySerializer, LiveActivityGroupSerializer
-from serializer import SpaceControllerSerializer, SpaceSerializer
-from space_controller import SpaceController
-from space import Space
+VERSION='1.7.0'
+
+# to generate list:
+# for file in `ls *` ; do echo "from $file import *" ; done | grep -v '__init__'
+
+from abstract import *
+from activity import *
+from cli import *
+from exception import *
+from helper import *
+from live_activity_group import *
+from live_activity import *
+from master import *
+from misc import *
+from mixin import *
+from named_script import *
+from serializer import *
+from space_controller import *
+from space import *
+from timeout_wrapper import *
+
+# to generate below list execute following command under interactivespaces dir
+# for class in `grep 'class ' * | grep ':' | awk {'print $2'} | awk -F '(' {'print $1'} | sort | grep -v ':'` ; do grep "class $class(" * ; done | awk {'print $2'} | awk -F '(' {'print $1'} | sed s/^/"'"/ | sed s/$/"',"/g 
 
 __all__ = [
-           'Path',
-           'Activity',
-           'MasterException',
-           'PathException',
-           'CommunicableException',
-           'ControllerNotFoundException',
-           'LiveActivityException',
-           'StatusableException',
-           'ActivityException',
-           'SerializerException',
-           'SearchPattern',
-           'Searcher',
-           'LiveActivityGroup',
-           'LiveActivity',
-           'Master',
-           'Logger',
-           'Communicable',
-           'Fetchable',
-           'Statusable',
-           'Deletable',
-           'Shutdownable',
-           'Startupable',
-           'Activatable',
-           'Deployable',
-           'Configurable',
-           'Cleanable',
-           'Connectable',
-           'Metadatable',
-           'Updatable',
-           'NamedScript',
-           'Serializer',
-           'StringSerializer',
-           'JsonSerializer',
-           'ActivitySerializer',
-           'SpaceControllerSerializer',
-           'LiveActivitySerializer',
-           'LiveActivityGroupSerializer',
-           'SpaceController',
-           'Space'
-        ]
+            'Activatable',
+            'Activity',
+            'ActivityException',
+            'ActivityNotFoundException',
+            'ActivitySerializer',
+            'APICallException',
+            'Cleanable',
+            'Communicable',
+            'CommunicableException',
+            'Configurable',
+            'Connectable',
+            'ControllerNotFoundException',
+            'Deletable',
+            'Deployable',
+            'Fetchable',
+            'JsonSerializer',
+            'LiveActivity',
+            'LiveActivityException',
+            'LiveActivityGroup',
+            'LiveActivityGroupNotFoundException',
+            'LiveActivityGroupSerializer',
+            'LiveActivityNotFoundException',
+            'LiveActivitySerializer',
+            'Logger',
+            'Master',
+            'MasterException',
+            'Metadatable',
+            'NamedScript',
+            'Path',
+            'PathException',
+            'RESTCall',
+            'Returns',
+            'Searcher',
+            'SearchPattern',
+            'Serializer',
+            'SerializerException',
+            'Should',
+            'Shutdownable',
+            'Space',
+            'SpaceController',
+            'SpaceControllerSerializer',
+            'SpaceSerializer',
+            'Startupable',
+            'Statusable',
+            'StatusableException',
+            'StringSerializer',
+            'TimeoutException',
+            'Updatable',
+            'WebSocketCall'
+            ]

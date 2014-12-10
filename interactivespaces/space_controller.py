@@ -53,7 +53,7 @@ class SpaceController(Fetchable, Statusable, Deletable, Shutdownable,
         self.log.info("Creating new SpaceController with arguments: %s" % unpacked_arguments)
         self.uri = uri
         route = Path().get_route_for('SpaceController', 'new')
-        route.setUri(uri)
+        route.set_uri(uri)
         request_response = self._api_post_json(route, unpacked_arguments)
 
         if request_response.url:

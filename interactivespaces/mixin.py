@@ -25,14 +25,13 @@ class Communicable(object):
     def _call_route(self, msg, extra_data={}):
         route = Path().get_route_for(self.class_name, msg)
         route.parameterize(self.data_hash['id'])
-        route.setUri(self.uri)
-        #if self._send_activatable_request(activate_route):
+        route.set_uri(self.uri)
+        # if self._send_activatable_request(activate_route):
         if route.call(extra_data=extra_data):
             self.log.info("Successfully sent '%s' for id=%s" % (msg, self.id))
             return True
         else:
             return False
-
 
     def _get_path(self, class_name, method_name, uri):
         """
@@ -43,7 +42,7 @@ class Communicable(object):
             apicall = Path().get_route_for(class_name, method_name)
             if apicall:
                 self.log.info("Returned API call %s" % apicall)
-                apicall.setUri(uri)
+                apicall.set_uri(uri)
                 return apicall
         else:
             raise Exception("Please use _compose_url instead of _get_path when class_name and method_name aren't known")
@@ -200,13 +199,13 @@ class Fetchable(Communicable):
         :param url: string defining from which url to fetch the data
         """
         route = self._get_absolute_url()
-        route.setUri(self.uri)
+        route.set_uri(self.uri)
         data = route.call()
         if data:
-            self.log.info("Successfully refresh object for url=%s" % route.getUrl())
+            self.log.info("Successfully refresh object for url=%s" % route.get_url())
             return data
         else:
-            self.log.info("Could not refresh object for url=%s" % route.getUrl())
+            self.log.info("Could not refresh object for url=%s" % route.get_url())
             return False
 
     def get_id(self, url, prefix, suffix):
@@ -379,7 +378,7 @@ class Metadatable(Communicable):
         self.log.info("Updating metadata of %s with %s" % (self.class_name, metadata))
         metadata_route = Path().get_route_for(self.class_name, 'metadata')
         metadata_route.parameterize(self.data_hash['id'])
-        metadata_route.setUri(self.uri)
+        metadata_route.set_uri(self.uri)
         if self._send_metadatable_request(metadata_route, metadata):
             self.log.info("Successfully sent metadata for url=%s" % self.absolute_url)
             return True

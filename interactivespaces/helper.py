@@ -1,25 +1,31 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import re
+from misc import Logger
+
 
 class SearchPattern(dict):
     """
     Class that holds dictionary with default values for safe search patterns
     """
-    def __missing__(self,key):
+    def __missing__(self, key):
         return None
 
     def __setitem__(self, key, value):
-        if value==None:
+        if value == None:
             if key in self:  # returns zero anyway, so no need to store it
                 del self[key]
         else:
             dict.__setitem__(self, key, value)
 
+
 class Searcher(dict):
     """
          Class responsible for search methods on strings
     """
+    def __init__(self):
+        self.log = Logger().get_logger()
+
     def wrap(self, regular_expression):
         """
         Turns windows/search type of regexp into python re regexp.
@@ -29,7 +35,7 @@ class Searcher(dict):
         :rtype: str
         :param string: regular_expression
         """
-        return '^' + regular_expression.replace('*','(.*)') + '$'
+        return '^' + regular_expression.replace('*', '(.*)') + '$'
 
     def match(self, string, regular_expression):
         """
@@ -42,6 +48,8 @@ class Searcher(dict):
         :param regular_expression: expression to be run against the given string
         """
         regular_expression = self.wrap(regular_expression)
+
+        self.log.info("Trying to match regexp: %s against string: %s" % (regular_expression, string))
 
         regex = re.compile(regular_expression)
         if re.match(regex, string):

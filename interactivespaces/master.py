@@ -22,7 +22,9 @@ class Master(Communicable):
         """
         :param host: default value is lg-head
         :param port: default value is 8080
+        :param ws_port: default value is 8090
         :param prefix: default value is /interactivespaces
+        :param ws_prefix: default value is /
         :todo: refactor filter_* methods because they're not DRY
         """
         self.host, self.port, self.ws_port, self.prefix = host, port, ws_port, prefix
@@ -47,18 +49,18 @@ class Master(Communicable):
     def get_activities(self, search_pattern=None):
         """
         Retrieves a list of Activity objects
-        
+
         :rtype: list
-        
+
         :param search_pattern: dictionary of regexps used for searching through Activities
-        
+
         example regexp dict::
-        
+
             {\
             "activity_name" : "regexp"\
             "activity_version" : "regexp"\
             }
-        
+
         every search_pattern dictionary key may be blank/null
         """
         response = self._do_call('Master', 'get_activities')
@@ -68,18 +70,17 @@ class Master(Communicable):
     def get_activity(self, search_pattern=None):
         """
         Retrieves a list of Activity objects
-        
+
         :rtype: list
-        
+
         :param search_pattern: dictionary of regexps used for searching through Activities
-        
+
         example regexp dict:: 
-        
             {\
             "activity_name" : "regexp",\
             "activity_version" : "regexp"\
             }
-            
+
         every search_pattern dictionary key may be blank/null
         """
         response = self._do_call('Master', 'get_activities')
@@ -98,18 +99,18 @@ class Master(Communicable):
     def get_live_activities(self, search_pattern=None):
         """
         Retrieves a list of LiveActivity objects
-        
+
         :rtype: list
-        
+
         :param search_pattern: dictionary of regexps used for searching through LiveActivity names
-        
+
         example regexp dict::
-        
+
             {\
             "live_activity_name" : "regexp",\
             "space_controller_name" : "regexp"\
             }
-        
+
         - each search_pattern dictionary key may be blank/null
         """
         response = self._do_call('Master', 'get_live_activities')
@@ -119,18 +120,18 @@ class Master(Communicable):
     def get_live_activity(self, search_pattern=None):
         """
         Retrieves a list of LiveActivity objects
-        
+
         :rtype: LiveActivity or False
-        
+
         :param search_pattern: dictionary of regexps used for searching through LiveActivity names
-        
+
         example regexp dict:: 
-        
+
             {\
             "live_activity_name" : "GE ViewSync Master on Node A",\
             "space_controller_name" : "ISCtlDispAScreen00"\
             }
-        
+
         each search_pattern dictionary key may be blank/null
         """
         response = self._do_call('Master', 'get_live_activities')
@@ -150,17 +151,17 @@ class Master(Communicable):
     def get_live_activity_groups(self, search_pattern=None):
         """
         Retrieves a list of live activity groups.
-        
+
         :rtype: list
-        
+
         :param search_pattern: dictionary of regexps used for searching through LiveActivity names
-        
+
         example regexp dict:: 
-        
+
             {\
             "live_activity_group_name" : "regexp"\
             }
-        
+
         """
         response = self._do_call('Master', 'get_live_activity_groups')
         live_activity_groups = self._filter_live_activity_groups(response, search_pattern)
@@ -365,7 +366,7 @@ class Master(Communicable):
             {"live_activity_name" : "SV Slave 01 on Node A",\
             "space_controller_name" : "ISCtlDispAScreen00"}]\
             }
-        
+
         """
         live_activity_ids = self.translate_live_activities_names_to_ids(constructor_args['live_activities'])
         unpacked_arguments = {}
@@ -391,14 +392,14 @@ class Master(Communicable):
     def translate_live_activities_names_to_ids(self, live_activities):
         """
         Converts live activities dicts to list of ids
-        
+
         :param live_activities: list of dictionaries containing following keys::
-        
+
             {\
             "live_activity_name" : "some_name",\
             "space_controller_name" : "some controller name"\
             }
-        
+
         :rtype: list
         """
         live_activity_ids = []
@@ -461,12 +462,12 @@ class Master(Communicable):
     def _filter_activities(self, response, search_pattern):
         """
         Should iterate over response from Master API and filter
-        live activites with regards to their name
-        
+        live activites with regards to their name 
+
         :param response: response['data'] from master API
-        
+
         :param search_pattern: dictionary where values may be regexps
-        
+
         :rtype: list of Activity objects
         """
         activities = []
@@ -479,7 +480,7 @@ class Master(Communicable):
         activity_name = search_pattern['activity_name']
         activity_version = search_pattern['activity_version']
 
-        self.log.debug("Filtering activities with pattern=%s" % search_pattern)
+        self.log.info("Filtering activities with pattern = %s" % search_pattern)
 
         for activity_data in response:
             do_filter = True
@@ -496,7 +497,7 @@ class Master(Communicable):
                     pass
                 else:
                     do_filter = False
-            if do_filter==True:
+            if do_filter == True:
                 activities.append(Activity(activity_data, self.uri))
         self.log.info("Filtered activities and returned %s object(s) : %s" % (str(len(activities)), activities))
         return activities
@@ -505,11 +506,11 @@ class Master(Communicable):
         """
         Should iterate over response from Master API and filter
         live activity groups with regards to their name
-        
+
         :param response: response['data'] from master API
-        
+
         :param search_pattern: dictionary where values may be regexps
-        
+
         :rtype: list of LiveActivityGroup objects
         """
         live_activity_groups = []
@@ -538,11 +539,11 @@ class Master(Communicable):
         """
         Should iterate over response from Master API and filter
         live activity groups with regards to their name
-        
+
         :param response: response['data'] from master API
-        
+
         :param search_pattern: dictionary where values may be regexps
-        
+
         :rtype: list of Space objects
         """
         spaces = []
@@ -576,11 +577,11 @@ class Master(Communicable):
         space controllers with regards to the given search dictionary
         consisting of name, uuid, mode and state (none of them are
         mandatory)
-            
+
         :param response: response['data'] from master API
-        
+
         :param search_pattern: dictionary where values may be regexps
-        
+
         :rtype: list of Space objects
 
         """

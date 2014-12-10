@@ -40,7 +40,7 @@ class Activity(Fetchable, Deletable):
             - upload it to the API
             - save
             - set instance variables for the object
-            
+
         :return: False or URL to a new Activity
         :param uri: stirng
         :param zip_file_handler: 'file' class instance
@@ -49,7 +49,7 @@ class Activity(Fetchable, Deletable):
         self.log.info("Uploading new Activity from file %s" % zip_file_handler)
         self.uri = uri
         route = Path().get_route_for('Activity', 'upload')
-        route.setUri(uri)
+        route.set_uri(uri)
         payload = {"_eventId_save" : "Save"}
         request_response = self._api_post_json(route, payload, zip_file_handler)
         return self.check_upload_response(request_response)

@@ -12,29 +12,35 @@ import websocket
 import re
 from timeout_wrapper import time_limit
 
+
 class TimeoutException(Exception):
     pass
 
+
 class APICallException(Exception):
     pass
+
 
 class APICall:
     def __init__(self, url):
         self.url = url
         self.log = Logger().get_logger()
 
-    def getUrl(self):
+    def __repr__(self):
+        return str("APICall to %s" % self.url)
+
+    def get_url(self):
         raise Exception("Instantiate some APICall subclass; don't call it directly")
 
-    def setUri(self,uri):
+    def set_uri(self,uri):
         self.uri = uri
 
-    def canCall(self):
+    def can_call(self):
         try:
             if not self.uri:
-                raise APICallException("URI must be set (use setUri() method) before calling this APICall object")
+                raise APICallException("URI must be set (use set_uri() method) before calling this APICall object")
         except AttributeError, e:
-            raise APICallException("URI must be set (use setUri() method) before calling this APICall object")
+            raise APICallException("URI must be set (use set_uri() method) before calling this APICall object")
         return True
 
     def call(self, params=None, file_handler=False, cookies=False, extra_data={}):
@@ -44,7 +50,7 @@ class APICall:
         # Poor man's abstract class
         raise Exception("Instantiate some APICall subclass; don't call it directly.")
 
-    def getUrl(self):
+    def get_url(self):
         return "%s%s" % (self.uri, self.url)
 
 class RESTCall(APICall):
@@ -52,11 +58,11 @@ class RESTCall(APICall):
         if self.url.find("%s"):
             self.url = self.url % params
 
-    def getUrl(self):
+    def get_url(self):
         return "%s%s" % (self.uri["http"], self.url)
 
     def _call(self, params=None, file_handler=False, cookies=False, extra_data={}):
-        if not self.canCall():
+        if not self.can_call():
             return
 
         if file_handler:
@@ -67,10 +73,10 @@ class RESTCall(APICall):
         else:
             files = None
 
-        self.log.info("Trying url %s" % self.getUrl())
+        self.log.info("Trying url %s" % self.get_url())
 
         if cookies == False and params == None:
-            response = urllib2.urlopen(self.getUrl())
+            response = urllib2.urlopen(self.get_url())
             response_str = response.read()
 
             try:
@@ -85,10 +91,10 @@ class RESTCall(APICall):
             return out_data
         else:
             session = requests.session()
-            get_response = session.get(self.getUrl())
+            get_response = session.get(self.get_url())
             query = urlparse.urlparse(get_response.url).query
             cookies = {"JSESSIONID" : session.cookies['JSESSIONID']}
-            url = self.getUrl() + "?" + query
+            url = self.get_url() + "?" + query
             post_response = session.post(url=url, cookies=cookies, data=params, files=files) 
             if post_response.status_code == 200:
                 self.log.info("_api_post_json returned 200 with post_response.url=%s" % post_response.url)
@@ -103,16 +109,16 @@ class WebSocketCall(APICall):
     def parameterize(self, params):
         self.id = params
 
-    def getUrl(self):
+    def get_url(self):
         return self.uri["ws"]
 
     def getCommandJson(self, extra_data):
-#{"type":"/liveactivity/all","requestId":"1","data":{"filter":"name.equals('LG Browser Service')"}}
+        # {"type":"/liveactivity/all","requestId":"1","data":{"filter":"name.equals('LG Browser Service')"}}
         WebSocketCall.requestId += 1
         obj = {
-            "type" : self.url,
-            "requestId" : str(WebSocketCall.requestId),
-            "data" : extra_data
+            "type": self.url,
+            "requestId": str(WebSocketCall.requestId),
+            "data": extra_data
         }
         try:
             obj['data']['id'] = self.id
@@ -122,14 +128,14 @@ class WebSocketCall(APICall):
         return json.dumps(obj)
 
     def _call(self, params=None, file_handler=None, cookies=None, extra_data={}):
-        if not self.canCall():
+        if not self.can_call():
             return
 
         iterations = 0
 
         while iterations < 10:
             iterations += 1
-            ws = websocket.create_connection(self.getUrl())
+            ws = websocket.create_connection(self.get_url())
             c = self.getCommandJson(extra_data)
             ws.send(c)
             print "Sent data %s" % c
@@ -159,6 +165,7 @@ class WebSocketCall(APICall):
                 continue
 
             return out_data
+
 
 class Path(object):
     '''
@@ -247,7 +254,7 @@ class Path(object):
         """
         Should receive caller class name and caller method in order
         to return a proper route in the master API
-            
+
         :rtype: string
         """
         try:

@@ -14,16 +14,16 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
                    Metadatable, Deployable):
     """
     Should be responsible for managing single LiveActivity
-    
+
     :todo: .new() should return instance of fetched live activity
     """
     def __init__(self, data_hash=None, uri=None):
         """
         When called with constructor_args and other vars set to None, new
         LiveActivity will be created.
-        
+
         :param data_hash: should be master API liveActivity json, may be blank
-        
+
         :param uri: should be a link to "view.json" of the given live activity
         """
         self.log = Logger().get_logger()
@@ -60,7 +60,7 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
         self.data_hash = new_data_hash
         self.uri = uri
         route = Path().get_route_for('LiveActivity', 'new')
-        route.setUri(uri)
+        route.set_uri(uri)
         request_response = route.call(new_data_hash)
         # url = "%s%s" % (uri, route)
         # request_response = self._api_post_json(url, new_data_hash)

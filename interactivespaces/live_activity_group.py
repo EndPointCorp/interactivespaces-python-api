@@ -52,7 +52,7 @@ class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable,
 
         self.log.info("Creating new LiveActivityGroup with arguments: %s" % constructor_args)
         route = Path().get_route_for('LiveActivityGroup', 'new')
-        route.setUri(uri)
+        route.set_uri(uri)
         self.uri = uri
         request_response = self._api_post_json(route, constructor_args)
         if request_response.url:
