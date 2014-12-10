@@ -44,16 +44,16 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
         """
         Used to create new live activity through API and set the "uri" so that we
         can operate on this instance of LiveActivity right away after .new() returns True
-        
+
         :param new_data_hash: dictionary of a following structure::
-        
+
             {"live_activity_name" : "",\
             "live_activity_description" : "",\
             "activity_id" : "",\
             "controller_id" : ""}
-        
+
         :param uri: "http://some_server/prefix" (passed by master)
-        
+
         :rtype: new LiveActivity object or False
         """
         self.log.info("Creating new Live Activity with arguments: %s" % new_data_hash)
@@ -118,7 +118,7 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
     def id(self):
         """
         Should return LiveActivity id
-        
+
         :rtype: string
         """
         return self.data_hash['id']
@@ -126,7 +126,7 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
     def controller(self):
         """
         Should return LiveActivity controller data
-        
+
         :rtype: string
         """
         return self.data_hash['controller']['name']

@@ -414,11 +414,11 @@ class Master(Communicable):
         """
         Should iterate over response from Master API and filter live activites 
         with regard to their name
-            
+
         :param response: response['data'] from master API
-        
+
         :param search_pattern: dictionary where values may be regexps
-        
+
         :todo: refactor filtering because it looks ugly and make it global for all classes
         """
         live_activities = []
@@ -453,7 +453,7 @@ class Master(Communicable):
                     pass
                 else:
                     do_filter = False
-            if do_filter==True:
+            if do_filter == True:
                 live_activities.append(LiveActivity(live_activity_data, self.uri))
         self.log.info("Filtered live_activities and returned %s object(s)" % str(len(live_activities)))
         return live_activities
