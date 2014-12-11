@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import re
+from misc import Logger
 
 class SearchPattern(dict):
     """
