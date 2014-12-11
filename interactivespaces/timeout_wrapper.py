@@ -1,6 +1,9 @@
 from contextlib import contextmanager
 import signal
 
+class TimeoutException(Exception):
+    pass
+
 @contextmanager
 def time_limit(seconds):
     def signal_handler(signum, frame):
