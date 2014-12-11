@@ -9,7 +9,6 @@ import urlparse
 import json
 import os
 import websocket
-import re
 from timeout_wrapper import time_limit
 
 
