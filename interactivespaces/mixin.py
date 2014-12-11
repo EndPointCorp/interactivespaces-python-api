@@ -24,9 +24,9 @@ class Communicable(object):
 
     def _call_route(self, msg, extra_data={}):
         route = Path().get_route_for(self.class_name, msg)
-        route.parameterize(self.data_hash['id'])
-        route.set_uri(self.uri)
-        # if self._send_activatable_request(activate_route):
+        route.parameterize(self.id())
+        route.setUri(self.uri)
+        #if self._send_activatable_request(activate_route):
         if route.call(extra_data=extra_data):
             self.log.info("Successfully sent '%s' for id=%s" % (msg, self.id))
             return True
