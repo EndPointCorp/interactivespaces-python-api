@@ -9,11 +9,8 @@ import urlparse
 import json
 import os
 import websocket
-from timeout_wrapper import time_limit
-
-
-class TimeoutException(Exception):
-    pass
+import re
+from timeout_wrapper import time_limit, TimeoutException
 
 
 class APICallException(Exception):
@@ -43,7 +40,9 @@ class APICall:
         return True
 
     def call(self, params=None, file_handler=False, cookies=False, extra_data={}):
-        self._call(params, file_handler, cookies, extra_data)
+        r = self._call(params, file_handler, cookies, extra_data)
+        self.log.info("Response: %s" % r.__repr__())
+        return r
 
     def parameterize(self, params):
         # Poor man's abstract class
@@ -61,7 +60,8 @@ class RESTCall(APICall):
         return "%s%s" % (self.uri["http"], self.url)
 
     def _call(self, params=None, file_handler=False, cookies=False, extra_data={}):
-        if not self.can_call():
+        self.log.info("Calling url \"%s\"" % self.url)
+        if not self.canCall():
             return
 
         if file_handler:
@@ -127,43 +127,39 @@ class WebSocketCall(APICall):
         return json.dumps(obj)
 
     def _call(self, params=None, file_handler=None, cookies=None, extra_data={}):
-        if not self.can_call():
+        self.log.info("Calling WS url \"%s\"" % self.getUrl())
+        if not self.canCall():
             return
 
-        iterations = 0
+        ws = websocket.create_connection(self.getUrl())
+        c = self.getCommandJson(extra_data)
+        ws.send(c)
 
-        while iterations < 10:
-            iterations += 1
-            ws = websocket.create_connection(self.get_url())
-            c = self.getCommandJson(extra_data)
-            ws.send(c)
-            print "Sent data %s" % c
+        try:
+            with time_limit(5):
+                result = ws.recv()
+        except TimeoutException, msg:
+            print "Timed out! %s" % msg
+            return
+
+        try:
+            data = json.loads(result)
+            out_data = None
+
+            if data['result'] != 'success':
+                self.log.info("Could not retrieve data for URL=%s" % url)
+                return False
+
             try:
-                with time_limit(5):
-                    result = ws.recv()
-            except TimeoutException, msg:
-                print "Timed out! %s" % msg
-            print "received response %s" % result
-            try:
-                data = json.loads(result)
-                out_data = None
-
-                if data['result'] != 'success':
-                    self.log.info("Could not retrieve data for URL=%s" % url)
-                    return False
-
-                try:
-                    out_data = data['data']
-                except Exception as e:
-                    pass
-
+                out_data = data['data']
             except Exception as e:
-                print "Exception: %s" % e
-                out_data = None
-                print "Trying again"
-                continue
+                pass
 
-            return out_data
+        except Exception as e:
+            print "Exception: %s" % e
+            out_data = None
+
+        return out_data
 
 
 class Path(object):
