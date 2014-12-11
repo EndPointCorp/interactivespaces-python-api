@@ -2,6 +2,8 @@
 * Test get_ methods with lambda patterns in Master
 * Separate .fetch(), _get_absoslute_url() and part of .new() methods from API classes to Communicable to make everything more DRY
 * get_live_activity_groups() returns 2 objects instead of 3
-* make queries more strict e.g. get_controller_name with controller_name=ISCTL will work both for ISCTX and ISCTY which is wrong
 * when more than one object is returned for singular methods like .get_space_controller or .get_live_activity, a proper exception should be thrown
 * make master.get_live_activity_group() accept "live_activities" list as a param and parse it. Currently it's being ignored.
+
+Fixed:
+* make queries more strict e.g. get_controller_name with controller_name=ISCTL will work both for ISCTX and ISCTY which is wrong
