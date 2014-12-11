@@ -61,7 +61,7 @@ class RESTCall(APICall):
 
     def _call(self, params=None, file_handler=False, cookies=False, extra_data={}):
         self.log.info("Calling url \"%s\"" % self.url)
-        if not self.canCall():
+        if not self.can_call():
             return
 
         if file_handler:
@@ -128,7 +128,7 @@ class WebSocketCall(APICall):
 
     def _call(self, params=None, file_handler=None, cookies=None, extra_data={}):
         self.log.info("Calling WS url \"%s\"" % self.getUrl())
-        if not self.canCall():
+        if not self.can_call():
             return
 
         ws = websocket.create_connection(self.getUrl())
