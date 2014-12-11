@@ -19,7 +19,6 @@ class SpaceController(Fetchable, Statusable, Deletable, Shutdownable,
             self.log.info("No data provided - assuming creation of new LiveActivity")
         else:
             self.data_hash = data_hash
-            self.id = data_hash['id']
             self.uri = uri
             self.absolute_url = self._get_absolute_url()
             self.log.info("Instantiated Activity object with url=%s" % self.absolute_url)
@@ -74,6 +73,7 @@ class SpaceController(Fetchable, Statusable, Deletable, Shutdownable,
         return self.serializer.to_json()
 
     def id(self):
+        """ Should return space controller id"""
         return self.data_hash['id']
 
     def name(self):
@@ -90,4 +90,4 @@ class SpaceController(Fetchable, Statusable, Deletable, Shutdownable,
 
     def url_id(self):
         """ Returns ID for use in URL for this unique object """
-        return self.id
+        return self.data_hash['id']
