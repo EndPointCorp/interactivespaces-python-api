@@ -45,8 +45,9 @@ class Searcher(dict):
 
         :param string: given string for matching
 
-        :param regular_expression: expression to be run against the given string
+        :param regular_expression: expression to be matched against the given string
         """
+
         regular_expression = self.wrap(regular_expression)
 
         self.log.info("Trying to match regexp: %s against string: %s" % (regular_expression, string))
