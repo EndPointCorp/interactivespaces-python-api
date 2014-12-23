@@ -127,11 +127,11 @@ class WebSocketCall(APICall):
         return json.dumps(obj)
 
     def _call(self, params=None, file_handler=None, cookies=None, extra_data={}):
-        self.log.info("Calling WS url \"%s\"" % self.getUrl())
+        self.log.info("Calling WS url \"%s\"" % self.get_url())
         if not self.can_call():
             return
 
-        ws = websocket.create_connection(self.getUrl())
+        ws = websocket.create_connection(self.get_url())
         c = self.getCommandJson(extra_data)
         ws.send(c)
 
