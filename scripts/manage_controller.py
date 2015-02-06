@@ -91,11 +91,31 @@ class ManageController:
         else:
             raise Exception("Could not create controller")
 
+    def get_uuid(self):
+        controller = ''
+        if self.options.name or self.options.hostid:
+            pass
+        else:
+            raise Exception("You must provide controller's name and hostid")
+        try:
+            controller = self.master.get_space_controller(self.query)
+        except interactivespaces.ControllerNotFoundException:
+            print 'False'
+            exit(0)
+        if type(controller) == interactivespaces.SpaceController:
+            print controller.uuid()
+            exit(0)
+        else:
+            print 'False'
+            exit(0)
+
     def run(self):
         if self.options.action == 'create':
             self.create()
         elif self.options.action == 'exists':
             self.exists()
+        elif self.options.action == 'get_uuid':
+            self.get_uuid()
         else:
             self.parser.print_help()
 

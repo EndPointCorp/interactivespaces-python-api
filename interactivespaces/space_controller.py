@@ -73,6 +73,9 @@ class SpaceController(Fetchable, Statusable, Deletable, Shutdownable,
     def id(self):
         return self.data_hash['id']
 
+    def uuid(self):
+        return self.data_hash['uuid']
+
     def name(self):
         """  Should return space controller name"""
         return self.data_hash['name']
