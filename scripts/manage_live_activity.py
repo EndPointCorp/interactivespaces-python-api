@@ -163,10 +163,10 @@ class ManageLiveActivity:
             exit(0)
 
     def update_config(self):
-        if self.options.config == None:
+        if self.options.configuration == None:
             self.parser.print_help()
             exit(0)
-        supplied_config = json.loads(self.options.config)
+        supplied_config = json.loads(self.options.configuration)
         live_activity = self.master.get_live_activity(self.query)
         if live_activity.set_config(supplied_config):
             print 'True'
@@ -184,6 +184,10 @@ class ManageLiveActivity:
         elif self.options.action == 'update_metadata':
             self.update_metadata()
         elif self.options.action == 'metadata_up_to_date':
+            self.metadata_up_to_date()
+        elif self.options.action == 'update_config':
+            self.update_metadata()
+        elif self.options.action == 'config_up_to_date':
             self.metadata_up_to_date()
         else:
             self.parser.print_help()
