@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import urllib2
@@ -529,6 +528,62 @@ class Connectable(Communicable):
         else:
             return False
 
+class Configable(Communicable):
+    """
+    Should be responsible for setting the 'Edit config' section.
+    Name of thix mixin is such because there's already "configure" action for live activities
+    """
+    def __init__(self):
+        self.log = Logger().get_logger()
+        super(Configable, self).__init__()
+
+    def set_config(self, config_dictionary):
+        """
+        Accepts dictionary of keys that will be unpacked to "key=value" strings and
+        makes a request overwriting any previous config
+        :rtype: bool
+        :param config_dictionary: Dictionary with keys and values
+        """
+        config = {"values" : self._unpack_config(config_dictionary)}
+        self.log.info("Updating config of %s with %s" % (self.class_name, config))
+        config_route = Path().get_route_for(self.class_name, 'config') % self.data_hash['id']
+        if self._send_configable_request(config_route, config):
+            self.log.info("Successfully sent config for url=%s" % self.absolute_url)
+            return True
+        else:
+            return False
+
+    def _unpack_config(self, config_dictionary):
+        """
+        Accepts dictionary and converts it to string
+        :rtype: string
+        :param config_dictionary: dict containing config
+        """
+        config_text = ""
+        try:
+            for key, value in config_dictionary.iteritems():
+                config_text = config_text + ("\r\n") + key + "=" + value
+            return config_text
+        except Exception, e:
+            self.log.error("Could not unpack supplied config dictionary because %s" % e)
+            raise
+
+    def _send_configable_request(self, config_route, config):
+        """
+        Makes a configable request
+        """
+        url = "%s%s" % (self.uri, config_route)
+        self.log.info("Sending configable POST request to url=%s" %url)
+        try:
+            response = self._api_post_json_no_cookies(url, config)
+        except urllib2.HTTPError, e:
+            response = None
+            self.log.error("Could not send configable GET request because %s" % e)
+        if response:
+            return True
+        else:
+            return False
+
 class Metadatable(Communicable):
     """
     Should be responsible for setting metadata
@@ -541,9 +596,7 @@ class Metadatable(Communicable):
         """
         Accepts dictionary of keys that will be unpacked to "key=value" strings and
         makes a request overwriting any previous metadata
-        
         :rtype: bool
-        
         :param metadata_args: Dictionary with keys and values
         """
         metadata = {"values" : self._unpack_metadata(metadata_dictionary)}
@@ -558,9 +611,7 @@ class Metadatable(Communicable):
     def _unpack_metadata(self, metadata_dictionary):
         """
         Accepts dictionary and converts it to string
-        
         :rtype: string
-        
         :param metadata_dictionary: dict containing metadata
         """
         metadata_text = ""

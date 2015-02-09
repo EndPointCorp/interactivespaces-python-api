@@ -3,7 +3,7 @@
 
 from mixin import Fetchable, Statusable, Shutdownable, Startupable
 from mixin import Deletable, Activatable, Configurable, Cleanable
-from mixin import Metadatable, Deployable
+from mixin import Metadatable, Deployable, Configable
 from exception import LiveActivityException
 from serializer import LiveActivitySerializer
 from misc import Logger
@@ -11,19 +11,16 @@ from abstract import Path
 
 class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
                    Startupable, Activatable, Configurable, Cleanable,
-                   Metadatable, Deployable):
+                   Metadatable, Deployable, Configable):
     """
     Should be responsible for managing single LiveActivity
-    
     :todo: .new() should return instance of fetched live activity
     """
     def __init__(self, data_hash=None, uri=None):
         """
         When called with constructor_args and other vars set to None, new
         LiveActivity will be created.
-        
         :param data_hash: should be master API liveActivity json, may be blank
-        
         :param uri: should be a link to "view.json" of the given live activity
         """
         self.log = Logger().get_logger()
@@ -44,16 +41,16 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
         """
         Used to create new live activity through API and set the "uri" so that we
         can operate on this instance of LiveActivity right away after .new() returns True
-        
+
         :param new_data_hash: dictionary of a following structure::
-        
+
             {"live_activity_name" : "",\
             "live_activity_description" : "",\
             "activity_id" : "",\
             "controller_id" : ""}
-        
+
         :param uri: "http://some_server/prefix" (passed by master)
-        
+
         :rtype: new LiveActivity object or False
         """
         self.log.info("Creating new Live Activity with arguments: %s" % new_data_hash)
@@ -110,10 +107,16 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
         """
         return self.data_hash['metadata']
 
+    def config(self):
+        """
+        Should return LiveActivity config
+        """
+        return self.data_hash['config']
+
     def id(self):
         """
         Should return LiveActivity id
-        
+
         :rtype: string
         """
         return self.data_hash['id']
@@ -121,7 +124,7 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
     def controller(self):
         """
         Should return LiveActivity controller data
-        
+
         :rtype: string
         """
         return self.data_hash['controller']['name']

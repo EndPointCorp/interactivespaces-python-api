@@ -39,7 +39,7 @@ class Activity(Fetchable, Deletable):
             - upload it to the API
             - save
             - set instance variables for the object
-            
+
         :return: False or URL to a new Activity
         :param uri: stirng
         :param zip_file_handler: 'file' class instance

@@ -41,6 +41,7 @@ class Path(object):
                             'clean_tmp' : '/liveactivity/%s/cleantmpdata.json',
                             'clean_permanent' : '/liveactivity/%s/cleanpermanentdata.json',
                             'metadata' : '/liveactivity/%s/metadata/edit'
+                            'config' : '/liveactivity/%s/config/edit'
                             },
                        'LiveActivityGroup' : {
                             'view' : '/liveactivitygroup/%s/view.json',

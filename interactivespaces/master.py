@@ -279,20 +279,20 @@ class Master(Communicable):
     def get_space_controller(self, search_pattern=None):
         """
         Retrieves a list of live space controllers.
-        
+
         :rtype: SpaceController
-        
+
         :param search_pattern: dictionary containing regexps and strings
-        
+
         example regexp dict::
-        
+
             {\
             "space_controller_state" : "STRING",\
             "space_controller_mode" : "STRING",\
             "space_controller_name" : "regexp",\
             "space_controller_uuid" : "STRING"\
             }
-        
+
         """
         url = self._compose_url(class_name='Master', method_name='get_space_controllers', uri=self.uri)
         self.log.info("Trying to retrieve url=%s" % url)
@@ -317,7 +317,6 @@ class Master(Communicable):
     def new_live_activity(self, constructor_args):
         """
         Creates a new live activity and returns it
-        
         :param constructor_args: dictionary containing all of below keys::
 
             {"live_activity_name": "string containing name of a new live activity (mandatory)",\
@@ -342,13 +341,10 @@ class Master(Communicable):
     def new_activity(self, constructor_args):
         """
         Creates a new activity and returns it
-        
         :param constructor_args: dictionary containing all of below keys::
-            
             {\
             "zip_file_handler": "zipfile object (mandatory)"\
             }
-        
         :rtype: Activity or False
         """
         activity = Activity().new(self.uri, constructor_args)
@@ -358,15 +354,12 @@ class Master(Communicable):
     def new_space_controller(self, constructor_args):
         """
         Creates new controller
-        
         :param constructor_args: dictionary containing all of below keys::
-        
             {\
             "space_controller_name" : "mandatory string",\
             "space_controller_description" : "non mandatory string",\
             "space_controller_host_id" : "mandatory string"\
             }
-        
         """
         space_controller = SpaceController().new(self.uri, constructor_args)
         return space_controller
@@ -374,9 +367,7 @@ class Master(Communicable):
     def new_live_activity_group(self, constructor_args):
         """
         Creates a new live activity group.
-        
         :param constructor_args: dictionary with following structure::
-        
             {\
             "live_activity_group_name" : "example.py live_activity_group_name",\
             "live_activity_group_description" : "created by example.py",\
@@ -385,7 +376,6 @@ class Master(Communicable):
             {"live_activity_name" : "SV Slave 01 on Node A",\
             "space_controller_name" : "ISCtlDispAScreen00"}]\
             }
-        
         """
         live_activity_ids = self.translate_live_activities_names_to_ids(constructor_args['live_activities'])
         unpacked_arguments = {}
