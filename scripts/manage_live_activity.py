@@ -186,9 +186,9 @@ class ManageLiveActivity:
         elif self.options.action == 'metadata_up_to_date':
             self.metadata_up_to_date()
         elif self.options.action == 'update_config':
-            self.update_metadata()
+            self.update_config()
         elif self.options.action == 'config_up_to_date':
-            self.metadata_up_to_date()
+            self.config_up_to_date()
         else:
             self.parser.print_help()
 
