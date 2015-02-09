@@ -40,7 +40,7 @@ class Path(object):
                             'configure' : '/liveactivity/%s/configure.json',
                             'clean_tmp' : '/liveactivity/%s/cleantmpdata.json',
                             'clean_permanent' : '/liveactivity/%s/cleanpermanentdata.json',
-                            'metadata' : '/liveactivity/%s/metadata/edit'
+                            'metadata' : '/liveactivity/%s/metadata/edit',
                             'config' : '/liveactivity/%s/config/edit'
                             },
                        'LiveActivityGroup' : {

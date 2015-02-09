@@ -43,6 +43,11 @@ class Options:
                                default=None,
                                help="Metadata of the live activity in format '{\"asd\" : \"value\"}' ",
                                metavar="METADATA")
+        self.parser.add_option("--configuration",
+                               dest="configuration",
+                               default=None,
+                               help="Configuration of the live activity in format '{\"asd\" : \"value\"}' ",
+                               metavar="CONFIGURATION")
         self.parser.add_option("--config",
                                dest="config",
                                default="etc/ispaces-client.cfg",
@@ -67,12 +72,14 @@ class ManageLiveActivity:
         self.config_path = self.options.config
         self._init_config()
         self.master = interactivespaces.Master(self.host, self.port)
-        self.query = {'activity_name': self.options.activity_name,
+        self.query = {
+                      'activity_name': self.options.activity_name,
                       'live_activity_name': self.options.name,
-                      'metadata' : self.options.metadata,
-                      'space_controller_name' : self.options.controller_name,
-                      'live_activity_description' : self.options.description
-                     }
+                      'metadata': self.options.metadata,
+                      'config': self.options.config,
+                      'space_controller_name': self.options.controller_name,
+                      'live_activity_description': self.options.description
+                      }
 
     def exists(self):
         if self.options.name and self.options.controller_name:
@@ -82,7 +89,7 @@ class ManageLiveActivity:
             exit(1)
         try:
             live_activity = self.master.get_live_activity(self.query)
-        except interactivespaces.LiveActivityNotFoundException, e:
+        except interactivespaces.LiveActivityNotFoundException:
             print 'False'
             exit(0)
         if type(live_activity) == interactivespaces.LiveActivity:
@@ -135,6 +142,39 @@ class ManageLiveActivity:
         else:
             print 'False'
             exit(1)
+
+    def config_up_to_date(self):
+        if self.options.config == None:
+            self.parser.print_help()
+            exit(0)
+        supplied_config = json.loads(self.options.config)
+        try:
+            live_activity = self.master.get_live_activity(self.query)
+            config = live_activity.config()
+        except interactivespaces.LiveActivityNotFoundException, e:
+            print 'False'
+            exit(0)
+
+        if supplied_config == config:
+            print 'True'
+            exit(0)
+        else:
+            print 'False'
+            exit(0)
+
+    def update_config(self):
+        if self.options.config == None:
+            self.parser.print_help()
+            exit(0)
+        supplied_config = json.loads(self.options.config)
+        live_activity = self.master.get_live_activity(self.query)
+        if live_activity.set_config(supplied_config):
+            print 'True'
+            exit(0)
+        else:
+            print 'False'
+            exit(1)
+
 
     def run(self):
         if self.options.action == 'create':

@@ -72,7 +72,7 @@ class Communicable(object):
         else:
             return True
 
-    def _api_get_html(self, url):
+    def _api_get_html(self, url, content=False):
         """
         Sends a request to the master, returns True if 200, False if anything else.
         
@@ -81,7 +81,10 @@ class Communicable(object):
         response = urllib2.urlopen(url)
         data = response.read()
         if response.getcode() == 200:
-            return True
+            if content == True:
+                return data
+            else:
+                return True
         else:
             return False
 
@@ -537,6 +540,16 @@ class Configable(Communicable):
         self.log = Logger().get_logger()
         super(Configable, self).__init__()
 
+    def get_config(self):
+        config_route = Path().get_route_for(self.class_name, 'config') % self.data_hash['id']
+        self.log.info("Getting config of %s" % (self.class_name))
+        response = self._send_configable_get_request(config_route)
+        if response:
+            self.log.info("Successfully got config from url=%s" % self.absolute_url)
+            return self._scrap_config(response)
+        else:
+            return False
+
     def set_config(self, config_dictionary):
         """
         Accepts dictionary of keys that will be unpacked to "key=value" strings and
@@ -547,11 +560,34 @@ class Configable(Communicable):
         config = {"values" : self._unpack_config(config_dictionary)}
         self.log.info("Updating config of %s with %s" % (self.class_name, config))
         config_route = Path().get_route_for(self.class_name, 'config') % self.data_hash['id']
-        if self._send_configable_request(config_route, config):
+        if self._send_configable_set_request(config_route, config):
             self.log.info("Successfully sent config for url=%s" % self.absolute_url)
             return True
         else:
             return False
+
+    def _scrap_config(self, html):
+        import BeautifulSoup
+        soup = BeautifulSoup.BeautifulSoup(html)
+        self.log.info("Received config response: %s" % soup)
+        textarea = soup.findAll('textarea')[0].text.split('\n')
+        config_dict = self._pack_config(textarea)
+        self.log.info("Scrapped config: %s" % config_dict)
+        return config_dict
+
+    def _pack_config(self, config_list):
+        """
+        Accepts list of strings and converts it into dictionary
+        :rtype: dict
+        :param config_string: string containing scraped config
+        """
+        config_dict = {}
+        self.log.info("Textarea: %s" % config_list)
+        for config_item in config_list:
+            key, value = config_item.split('=')
+            self.log.info("Assigning %s to %s" % (key,value))
+            config_dict[key] = value
+        return config_dict
 
     def _unpack_config(self, config_dictionary):
         """
@@ -568,9 +604,26 @@ class Configable(Communicable):
             self.log.error("Could not unpack supplied config dictionary because %s" % e)
             raise
 
-    def _send_configable_request(self, config_route, config):
+
+    def _send_configable_get_request(self, config_route):
         """
-        Makes a configable request
+        Makes a configable get request
+        """
+        url = "%s%s" % (self.uri, config_route)
+        self.log.info("Sending configable GET request to url=%s" %url)
+        try:
+            response = self._api_get_html(url, content=True)
+        except urllib2.HTTPError, e:
+            response = None
+            self.log.error("Could not send configable GET request because %s" % e)
+        if response:
+            return response
+        else:
+            return False
+
+    def _send_configable_set_request(self, config_route, config):
+        """
+        Makes a configable set request
         """
         url = "%s%s" % (self.uri, config_route)
         self.log.info("Sending configable POST request to url=%s" %url)

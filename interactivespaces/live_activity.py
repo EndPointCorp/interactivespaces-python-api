@@ -111,7 +111,7 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
         """
         Should return LiveActivity config
         """
-        return self.data_hash['config']
+        return self.get_config()
 
     def id(self):
         """
