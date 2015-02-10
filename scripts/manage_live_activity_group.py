@@ -6,6 +6,9 @@ from optparse import OptionParser
 import ConfigParser
 import json
 
+# TODO (wz): make support for checking not only if the LAG exists but also if it has proper members
+
+
 class Options:
     def __init__(self, args):
         self.parser = OptionParser()
@@ -62,7 +65,7 @@ class ManageLiveActivityGroup:
         self.options = options
         self.config_path = self.options.config
         self._init_config()
-        
+
         self.master = interactivespaces.Master(self.host, self.port)
         self.query = {'live_activity_group_name': self.options.name,
                       'live_activity_group_description' : '' if self.options.description == None else self.options.description,
