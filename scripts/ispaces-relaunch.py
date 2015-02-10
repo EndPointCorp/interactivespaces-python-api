@@ -15,13 +15,15 @@ from subprocess import CalledProcessError
 from interactivespaces.exception import ControllerNotFoundException
 
 '''
-TODO: 
+TODO:
 - refactor connect_all_controllers()
 - manage sys.path in the appropriate way without hardcoded paths and .append()
 - make config file steer the debug level for the @debug decorator
+- make support for restarting one controller
 '''
 
 __report_indent = [0]
+
 
 def debug(fn):
     def wrap(*params, **kwargs):
@@ -45,7 +47,7 @@ def debug(fn):
 
 class InteractiveSpacesRelaunch(object):
     @debug
-    def __init__(self, config_path, full_relaunch=False):
+    def __init__(self, config_path, relaunch_options):
         self.config_path = config_path
         self.init_config()
         self.master = Master(host=self.host,
@@ -54,10 +56,26 @@ class InteractiveSpacesRelaunch(object):
         self.relaunch_container = []
         self.stopped = False
         self.activated = False
-        if full_relaunch:
+
+        # Parsing arguments takes precedence over config file options
+        if relaunch_options['full_relaunch']:
             print "Performing full relaunch."
             self.relaunch_controllers = True
             self.relaunch_master = True
+        if relaunch_options['master_only']:
+            print "Performing relaunch of master"
+            self.relaunch_controllers = False
+            self.relaunch_master = True
+        if relaunch_options['controllers_only']:
+            print "Performing relaunch of master"
+            self.relaunch_controllers = True
+            self.relaunch_master = False
+        if relaunch_options['no_live_activities']:
+            print "Performing relaunch without relaunching live activities"
+            self.relaunch_live_activities = False
+        else:
+            self.relaunch_live_activities = True
+
 
     @debug
     def init_config(self):
@@ -124,30 +142,30 @@ class InteractiveSpacesRelaunch(object):
         cmd_process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
         output = cmd_process.communicate()[0].replace('\n', '').split(' ')
         return output
-    
-    @debug 
+
+    @debug
     def destroy_tmux_session(self, controller_name):
         command = "%s %s '%s'" % (self.ssh_command, controller_name, self.controllers_data[controller_name]['destroy_tmux_command'])
         cmd_process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
         output = cmd_process.communicate()[0].replace('\n', '').split(' ')
         return output
-        
+
     @debug
     def start_controller(self, controller_name):
         command = "%s %s '%s'" % (self.ssh_command, controller_name, self.controllers_data[controller_name]['launch_command'])
         cmd_process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
         output = cmd_process.communicate()[0].replace('\n', '').split(' ')
         return output
-    
+
     @debug
     def connect_controller(self, controller_name):
-        controller = self.master.get_space_controller({'space_controller_name' : controller_name})
+        controller = self.master.get_space_controller({'space_controller_name': controller_name})
         controller.send_connect()
         self.wait('connect_controller', 3)
         controller.send_status_refresh()
         pass
-    
-    @debug 
+
+    @debug
     def controller_tmux_session_exists(self, controller_name):
         try:
             cmd = 'ssh %s -t "tmux ls | grep ISController"' % controller_name
@@ -156,8 +174,8 @@ class InteractiveSpacesRelaunch(object):
         except CalledProcessError, e:
             print "tmux session ISController does not exist on %s" % controller_name
             return False
-    
-    @debug 
+
+    @debug
     def relaunch_master_process(self):
         print "Killing master process"
         cmd_process = subprocess.Popen(self.master_stop_command, shell=True, stdout=subprocess.PIPE)
@@ -169,7 +187,7 @@ class InteractiveSpacesRelaunch(object):
         cmd_process = subprocess.Popen(self.master_launch_command, shell=True, stdout=subprocess.PIPE)
         self.wait('relaunch_master', 20)
         pass
-    
+
     @debug
     def connect_all_controllers(self):
         '''
@@ -177,9 +195,9 @@ class InteractiveSpacesRelaunch(object):
         relaunch and reconnect the controllers and take appropriate action
         @rtype: bool
         '''
-        
+
         ''' Check whether tmux sessions are up'''
-        for controller_name, controller_data in self.controllers_data.iteritems():        
+        for controller_name, controller_data in self.controllers_data.iteritems():
             if self.controller_tmux_session_exists(controller_name):
                 print "Tmux session ISController on %s exists" % controller_name
             else:
@@ -189,27 +207,26 @@ class InteractiveSpacesRelaunch(object):
                 print "Connecting controller %s on %s" % (controller_data['name'], controller_name)
                 self.connect_controller(controller_data['name'])
                 self.controllers_data[controller_name]['connected'] = self.controller_connected(controller_data['name'])
-        
+
         ''' Now let's blindly connect all the controllers'''
-        for controller_name, controller_data in self.controllers_data.iteritems():        
+        for controller_name, controller_data in self.controllers_data.iteritems():
             self.connect_controller(controller_data['name'])
-            
+
         ''' Let's only check whether controllers are connected and ready'''
-        for controller_name, controller_data in self.controllers_data.iteritems():        
+        for controller_name, controller_data in self.controllers_data.iteritems():
             if self.controller_connected(controller_data['name']):
                 print "Controller %s is connected" % controller_data['name']
                 self.controllers_data[controller_name]['connected'] = True
             else:
                 print "Controller %s is not connected." % controller_name
-        
+
         '''If any controller failed to connect, we return False, otherwise True'''
         for controller_name, controller_data in self.controllers_data.iteritems():
             if controller_data['connected'] == False:
                 return False
-        
+
         return True
-            
-    
+
     @debug
     def all_controllers_connected(self):
         """
@@ -222,7 +239,7 @@ class InteractiveSpacesRelaunch(object):
             help = self.produce_controllers_tmux_help()
             print "Could not connect all controllers - you should do it manually. Start and stop commands are here: %s" % help
             return False
-        
+
     @debug
     def produce_controllers_tmux_help(self):
         help = {}
@@ -232,7 +249,7 @@ class InteractiveSpacesRelaunch(object):
             help[controller_name]['stop_command'] = self.config.get(controller_name, 'stop_command')
             help[controller_name]['launch_command'] = self.config.get(controller_name, 'launch_command')
         return help
-    
+
     @debug
     def prepare_container(self):
         for live_activity_group_name in self.relaunch_sequence:
@@ -245,7 +262,7 @@ class InteractiveSpacesRelaunch(object):
     def wait(self, info, interval=None,):
         if interval:
             print "Waiting for %s seconds (%s)" % (interval, info)
-            
+
             time.sleep(interval)
         else:
             print "Waiting for %s seconds (%s)" % (self.interval_between_attempts, info)
@@ -278,7 +295,7 @@ class InteractiveSpacesRelaunch(object):
                 print "Startup attempts left %s" % self.startup_attempts
                 self.startup_attempts -= 1
                 self.wait('activate_all_live_activity_groups')
-              
+
     @debug
     def loop_till_finished(self):
         '''
@@ -288,7 +305,7 @@ class InteractiveSpacesRelaunch(object):
             return True
         else:
             return False
-        
+
     @debug
     def get_statuses(self):
         statuses = {}
@@ -312,7 +329,7 @@ class InteractiveSpacesRelaunch(object):
         else:
             print "All activities have been succesfully shutdown"
             return True
-    
+
     @debug
     def check_if_activated(self):
         statuses = self.get_statuses()
@@ -349,48 +366,61 @@ class InteractiveSpacesRelaunch(object):
             live_activity_group.send_activate()
 
     @debug
+    def relaunch_controllers_processes(self):
+        ''' let's blindly relaunch and reconnect controllers'''
+        for controller_name, controller_data in self.controllers_data.iteritems():
+                print "Stopping tmux session on %s" % controller_name
+                self.stop_controller(controller_name)
+                self.wait('relaunch_controllers:stop controller', 3)
+                self.destroy_tmux_session(controller_name)
+                self.wait('destroy tmux session', 2)
+                print "Starting tmux session on %s" % controller_name
+                self.start_controller(controller_name)
+                self.wait('start controller', 10)
+                print "Connecting controller %s on %s" % (controller_data['name'], controller_name)
+                self.connect_controller(controller_data['name'])
+                self.controllers_data[controller_name]['connected'] = self.controller_connected(controller_data['name'])
+
+
+    @debug
     def relaunch(self):
         if self.relaunch_master:
             self.relaunch_master_process()
-            
+
         if self.relaunch_controllers:
-            ''' let's blindly relaunch and reconnect controllers'''
-            for controller_name, controller_data in self.controllers_data.iteritems():
-                    print "Stopping tmux session on %s" % controller_name
-                    self.stop_controller(controller_name)
-                    self.wait('relaunch_controllers:stop controller', 3)
-                    self.destroy_tmux_session(controller_name)
-                    self.wait('destroy tmux session', 2)
-                    print "Starting tmux session on %s" % controller_name
-                    self.start_controller(controller_name)
-                    self.wait('start controller', 10)
-                    print "Connecting controller %s on %s" % (controller_data['name'], controller_name)
-                    self.connect_controller(controller_data['name'])
-                    self.controllers_data[controller_name]['connected'] = self.controller_connected(controller_data['name'])
-        
-        self.prepare_container()
-        if self.loop_till_finished() == True:
-            print "Successully relaunched ispaces"
-        else:
-            print "Exiting: could not relaunch ispaces - look for errors in %s" % self.log_path
+            self.relaunch_controllers_processes()
+
+        if self.relaunch_live_activities:
+            self.prepare_container()
+            if self.loop_till_finished() == True:
+                print "Successully relaunched ispaces"
+            else:
+                print "Exiting: could not relaunch ispaces - look for errors in %s" % self.log_path
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Relaunch interactivespaces')
     parser.add_argument("--full-relaunch", help="Additionally relaunch controllers and master process", action="store_true")
+    parser.add_argument("--master-only", help="Relaunch the master process only", action="store_true")
+    parser.add_argument("--controllers-only", help="Relaunch the controllers only", action="store_true")
+    parser.add_argument("--no-live-activities", help="Don't relaunch live activities", action="store_true")
     parser.add_argument("--config", help="Provide path to config file - /home/galadmin/etc/ispaces-client.conf by default")
+
     args = parser.parse_args()
-    if args.full_relaunch:
-        print "Performing full relaunch"
-        full_relaunch = True
-    else:
-        full_relaunch = False
-        
+
+    relaunch_options = { 'full_relaunch': args.full_relaunch,
+                         'master_only': args.master_only,
+                         'controllers_only': args.controllers_only,
+                         'no_live_activities': args.no_live_activities
+                         }
+
+    print 'Relaunch options: %s' % relaunch_options
+
     if args.config:
         config_path = args.config
     else:
         config_path = '/home/galadmin/etc/ispaces-client.conf'
     if os.path.isfile(config_path):
-        ir = InteractiveSpacesRelaunch(config_path, full_relaunch)
+        ir = InteractiveSpacesRelaunch(config_path, relaunch_options)
         relaunched = ir.relaunch()
     else:
         print "Could not open config file %s" % config_path
