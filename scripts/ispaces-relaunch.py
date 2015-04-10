@@ -398,6 +398,7 @@ class InteractiveSpacesRelaunch(object):
                 print "Exiting: could not relaunch ispaces - look for errors in %s" % self.log_path
 
 if __name__ == '__main__':
+    os.unsetenv('TMUX')
     parser = argparse.ArgumentParser(description='Relaunch interactivespaces')
     parser.add_argument("--full-relaunch", help="Additionally relaunch controllers and master process", action="store_true")
     parser.add_argument("--master-only", help="Relaunch the master process only", action="store_true")
