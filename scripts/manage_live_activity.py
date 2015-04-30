@@ -76,7 +76,7 @@ class ManageLiveActivity:
                       'activity_name': self.options.activity_name,
                       'live_activity_name': self.options.name,
                       'metadata': self.options.metadata,
-                      'config': self.options.config,
+                      'config': self.options.configuration,
                       'space_controller_name': self.options.controller_name,
                       'live_activity_description': self.options.description
                       }
@@ -144,18 +144,18 @@ class ManageLiveActivity:
             exit(1)
 
     def config_up_to_date(self):
-        if self.options.config == None:
+        if self.options.configuration == None:
             self.parser.print_help()
             exit(0)
-        supplied_config = json.loads(self.options.config)
+        supplied_configuration = json.loads(self.options.configuration)
         try:
             live_activity = self.master.get_live_activity(self.query)
-            config = live_activity.config()
+            configuration = live_activity.config()
         except interactivespaces.LiveActivityNotFoundException, e:
             print 'False'
             exit(0)
 
-        if supplied_config == config:
+        if supplied_configuration == configuration:
             print 'True'
             exit(0)
         else:
@@ -166,9 +166,9 @@ class ManageLiveActivity:
         if self.options.configuration == None:
             self.parser.print_help()
             exit(0)
-        supplied_config = json.loads(self.options.configuration)
+        supplied_configuration = json.loads(self.options.configuration)
         live_activity = self.master.get_live_activity(self.query)
-        if live_activity.set_config(supplied_config):
+        if live_activity.set_config(supplied_configuration):
             print 'True'
             exit(0)
         else:

@@ -583,10 +583,14 @@ class Configable(Communicable):
         """
         config_dict = {}
         self.log.info("Textarea: %s" % config_list)
-        for config_item in config_list:
-            key, value = config_item.split('=')
-            self.log.info("Assigning %s to %s" % (key,value))
-            config_dict[key] = value
+        try:
+            for config_item in config_list:
+                key, value = config_item.split('=')
+                self.log.info("Assigning %s to %s" % (key,value))
+                config_dict[key] = value
+        except:
+            self.log.info("Could not do a _pack_config for scraped config on item: %s for config_list %s" % (config_item, config_list))
+            config_dict = {}
         return config_dict
 
     def _unpack_config(self, config_dictionary):
