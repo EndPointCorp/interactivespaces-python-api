@@ -66,27 +66,34 @@ class InteractiveSpacesRelaunch(object):
             self.relaunch_live_activities = False
         else:
             self.relaunch_live_activities = True
+
         if relaunch_options['full_relaunch']:
-            print "Performing full relaunch."
+            print colored("Performing full relaunch.", 'white', attrs=['bold'])
             self.relaunch_controllers = True
             self.relaunch_master = True
+
         if relaunch_options['master_only']:
-            print "Performing relaunch of master"
+            print colored("Performing relaunch of master only", 'white', attrs=['bold'])
             self.relaunch_controllers = False
             self.relaunch_master = True
             self.relaunch_live_activities = False
+
         if relaunch_options['controllers_only']:
-            print "Performing relaunch of master"
+            print colored("Performing relaunch of controllers only", 'white', attrs=['bold'])
             self.relaunch_controllers = True
             self.relaunch_master = False
             self.relaunch_live_activities = False
 
-        print colored("This is what's going to be launched:", 'white')
-        print colored("Controllers => %s" % self.relaunch_controllers, 'green')
-        print colored("Master => %s" % self.relaunch_master, 'green')
-        print colored("Live activities => %s" % self.relaunch_live_activities, 'green')
+        if relaunch_options['live_activity_groups']:
+            self.relaunch_sequence = relaunch_options['live_activity_groups'].split(',')
+            print colored("Live activity groups to be relaunched: %s" % self.relaunch_sequence, 'white', attrs=['bold'])
 
-
+        print colored("This is what's going to be launched:", 'white', attrs=['bold'])
+        print "Controllers: %s" % self.relaunch_controllers
+        print "Master: %s" % self.relaunch_master
+        print "Live activities: %s" % self.relaunch_live_activities
+        if self.relaunch_live_activities:
+            print "Live activity groups: " + colored("%s" % (',').join(self.relaunch_sequence), 'magenta')
 
     @debug
     def init_config(self):
@@ -139,7 +146,7 @@ class InteractiveSpacesRelaunch(object):
                                                            'space_controller_state': 'RUNNING'})
             return True
         except ControllerNotFoundException, e :
-            print "Controller '%s' not connected" % controller_name
+            print colored("Controller '%s' not connected" % controller_name, 'red')
             return False
 
     @debug
@@ -195,7 +202,7 @@ class InteractiveSpacesRelaunch(object):
         """
         try:
             cmd = 'ssh %s -t "tmux ls | grep ISController"' % controller_name
-            out = subprocess.check_call(cmd, shell=True)
+            out = subprocess.check_call(cmd, shell=True, stdout=subprocess.PIPE)
             return True
         except CalledProcessError, e:
             print "tmux session ISController does not exist on %s" % controller_name
@@ -227,9 +234,9 @@ class InteractiveSpacesRelaunch(object):
         """
         for controller_name, controller_data in self.controllers_data.iteritems():
             if self.controller_tmux_session_exists(controller_name):
-                print "Tmux session ISController on %s exists" % controller_name
+                print colored("Tmux session ISController on %s exists" % controller_name, 'green')
             else:
-                print "Tmux session ISController on %s does not exist - reviving" % controller_name
+                print colored("Tmux session ISController on %s does not exist - reviving" % controller_name, 'red')
                 self.start_controller(controller_name)
                 print "Connecting controller %s on %s" % (controller_data['name'], controller_name)
                 self.connect_controller(controller_data['name'])
@@ -260,14 +267,12 @@ class InteractiveSpacesRelaunch(object):
         return True
 
     @debug
-    def verify_controllers_connected(self, info):
+    def verify_controllers_connected(self):
         print "Waiting for all controllers to come up with status: " + colored('RUNNING', 'green')
         timeout = self.config.get('relaunch', 'controllers_timeout')
 
-        for blah in xrange(0, timeout):
+        for blah in xrange(0, int(timeout)):
             if self.assert_controllers_api_statuses():
-                print colored("All controllers connected!", 'green')
-                sys.stdout.flush()
                 return True
             else:
                 sys.stdout.write('.')
@@ -293,7 +298,7 @@ class InteractiveSpacesRelaunch(object):
         @summary: Iterates over all controllers and makes sure they're connected
         """
         if self.connect_controllers():
-            print "All controllers connected"
+            print colored("All controllers connected!", 'green')
             return True
         else:
             help = self.produce_controllers_tmux_help()
@@ -316,11 +321,15 @@ class InteractiveSpacesRelaunch(object):
         @summary: prepares a list of live activity API objects to relaunch
         @rtype: bool
         """
+        print "Adding live activity groups to relaunch queue: "
         for live_activity_group_name in self.relaunch_sequence:
-            print "Adding live activity group: %s to relaunch queue" % live_activity_group_name
+            print colored(" %s " % live_activity_group_name, 'magenta'),
+            sys.stdout.flush()
             live_activity_group = self.master.get_live_activity_group(
 				{'live_activity_group_name' : live_activity_group_name})
             self.relaunch_container.append(live_activity_group)
+
+        print ""
 
         return True
 
@@ -355,14 +364,14 @@ class InteractiveSpacesRelaunch(object):
             return False
 
     @debug
-    def simple_wait(self, info, timeout)
+    def simple_wait(self, info, timeout):
         """
         @summary: wait function with an info used for short sync'like sleep for freeing file descriptors:
         - destroying tmuxes
         - killing java process
         - ???
         """
-        print "Waiting for " + colored(self.interval_between_attempts, 'green') + " seconds for " + colored(info, 'green')
+        print "Waiting for " + colored(self.interval_between_attempts, 'green') + " second(s) for " + colored(info, 'green')
         time.sleep(self.interval_between_attempts)
 
     @debug
@@ -384,28 +393,29 @@ class InteractiveSpacesRelaunch(object):
     def shutdown_all_activities(self):
         while self.stopped == False and self.shutdown_attempts >= 0:
             self.shutdown()
-            self.simple_wait('shutdown_all_activities')
+            self.simple_wait('shutdown_all_activities', 1)
             self.status_refresh()
             self.shutdown_attempts -= 1
             self.stopped = self.check_if_stopped()
             if self.stopped:
                 return True
             else:
-                self.simple_wait('shutdown_all_activities')
-                print "Shutdown attempts left %s" % self.shutdown_attempts
+                self.simple_wait('shutdown_all_activities', 1)
+                print colored("Shutdown attempts left %s" % self.shutdown_attempts, 'red')
+                sys.stdout.flush()
     @debug
     def activate_all_live_activity_groups(self):
         while self.startup_attempts >= 0:
             self.activate()
-            self.simple_wait('activate_all_live_activity_groups')
+            self.simple_wait('activate_all_live_activity_groups', 1)
             self.status_refresh()
             self.relaunched = self.check_if_activated()
             if self.relaunched:
                 return True
             else:
-                print "Startup attempts left %s" % self.startup_attempts
+                print colored("Startup attempts left %s" % self.startup_attempts, 'red')
                 self.startup_attempts -= 1
-                self.simple_wait('activate_all_live_activity_groups')
+                self.simple_wait('activate_all_live_activity_groups', 1)
 
     @debug
     def loop_till_finished(self):
@@ -424,14 +434,17 @@ class InteractiveSpacesRelaunch(object):
         @rtype: dict
         """
         statuses = {}
+        print "Checking if following groups were successfully managed:"
         for live_activity_group_name in self.relaunch_sequence:
-            print "Checking if '%s' group was successfully deactivated" % live_activity_group_name
+            print colored(" %s " % live_activity_group_name, 'magenta'),
+            sys.stdout.flush()
             live_activity_group = self.master.get_live_activity_group(
                 {'live_activity_group_name' : live_activity_group_name})
             for live_activity in live_activity_group.live_activities():
                 statuses[live_activity.name()] = live_activity.status()
-        print "Live activity statuses:"
-        self.pp.pprint(statuses)
+        print ""
+        #print "Live activity statuses:"
+        #self.pp.pprint(statuses)
         return statuses
 
     @debug
@@ -443,10 +456,11 @@ class InteractiveSpacesRelaunch(object):
         statuses = self.get_statuses()
         statuses = {k: v for k, v in statuses.iteritems() if v != 'READY' }
         if statuses:
-            print "Some activities could not get shut down %s" % statuses
+            print colored("Some activities could not get shut down", 'red')
+            self.pp.pprint(statuses)
             return False
         else:
-            print "All activities have been succesfully shutdown"
+            print colored("All activities have been succesfully shutdown", 'green')
             return True
 
     @debug
@@ -462,25 +476,28 @@ class InteractiveSpacesRelaunch(object):
             statuses.pop(live_activity)
 
         if statuses:
-            print "Some activities could not get activated %s" % statuses
+            print colored("Some activities could not get activated:", 'red')
+            self.pp.pprint(statuses)
             return False
         else:
-            print "All activities activated"
+            print colored("All activities activated", 'green')
             return True
 
     @debug
     def shutdown(self):
         """
-        @summary: shuts down all activities from teh .relaunch_container
+        @summary: shuts down all activities from teh .relaunch_container - in addition it will clean la's tmp
         @rtype: bool
         """
-
+        print "Attempting shutdown of live activities:"
         for live_activity_group in self.relaunch_container:
             live_activities = live_activity_group.live_activities()
             for live_activity in live_activities:
-                print "Attempting shutdown of live activity: %s " % live_activity.name()
+                print colored(" %s " % live_activity.name(), 'magenta'),
+                sys.stdout.flush()
                 live_activity.send_shutdown()
                 live_activity.send_clean_tmp()
+        print ""
         return True
 
     @debug
@@ -494,9 +511,23 @@ class InteractiveSpacesRelaunch(object):
 
     @debug
     def activate(self):
+        """
+        @summary: activates all live activity groups by deploying, configuring and activating them
+        """
+        print "Attempting (D)eploy/(C)onfigure/(A)ctivate of live activity groups:"
         for live_activity_group in self.relaunch_container:
-            print "Attempting startup of live activity group %s" % live_activity_group.name()
+            print colored(" %s " % live_activity_group.name(), 'magenta'),
+            sys.stdout.flush()
+            print colored("D", 'blue'),
+            sys.stdout.flush()
+            live_activity_group.send_deploy()
+            print colored("C", 'blue'),
+            sys.stdout.flush()
+            live_activity_group.send_configure()
+            print colored("A", 'blue'),
+            sys.stdout.flush()
             live_activity_group.send_activate()
+        print ""
 
     @debug
     def relaunch_controllers_processes(self):
@@ -527,9 +558,9 @@ class InteractiveSpacesRelaunch(object):
         if self.relaunch_live_activities:
             self.prepare_container()
             if self.loop_till_finished() == True:
-                print "Successully relaunched ispaces"
+                print colored("Successully relaunched ispaces", 'green', attrs=['bold'])
             else:
-                print "Exiting: could not relaunch ispaces - look for errors in %s" % self.log_path
+                print colored("Exiting: could not relaunch ispaces - look for errors in %s and 'ugly' interface" % self.log_path, 'red')
 
 if __name__ == '__main__':
     os.unsetenv('TMUX')
@@ -539,13 +570,15 @@ if __name__ == '__main__':
     parser.add_argument("--controllers-only", help="Relaunch the controllers only", action="store_true")
     parser.add_argument("--no-live-activities", help="Don't relaunch live activities", action="store_true")
     parser.add_argument("--config", help="Provide path to config file - /home/galadmin/etc/ispaces-client.conf by default")
+    parser.add_argument("--live-activity-groups", help="Provide quoted, comma-delimited names of live activity groups to manage e.g. --live-activity-groups='Touchscreen Browser','Media Services' ")
 
     args = parser.parse_args()
 
     relaunch_options = { 'full_relaunch': args.full_relaunch,
                          'master_only': args.master_only,
                          'controllers_only': args.controllers_only,
-                         'no_live_activities': args.no_live_activities
+                         'no_live_activities': args.no_live_activities,
+                         'live_activity_groups': args.live_activity_groups
                          }
 
     if args.config:

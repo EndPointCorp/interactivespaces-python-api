@@ -34,18 +34,18 @@ class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable,
         """
         Used to create new live activity group through API and set the "uri" so that we
         can operate on this instance of LiveActivityGroup right away after .new() returns True
-        
+
         :param constructor_args: dictionary with following structure::
-        
+
             {\
             'liveActivityGroup.name' : 'live_activity_group_name',\
             'liveActivityGroup.description' : 'live_activity_group_description',\
             '_eventId_save' : 'Save',\
             'liveActivityIds' : [1,2,666]\
             }
-        
+
         :param uri: "http://some_server/prefix" (passed by master)
-        
+
         :rtype: new LiveActivityGroup object or False
         """
 
@@ -65,16 +65,16 @@ class LiveActivityGroup(Fetchable, Statusable, Deletable, Shutdownable,
     def set_live_activities(self, live_activities_list):
         """
         Used to set new live activities list
-        
+
         :param: dictionary with following structure::
-    
+
             {\
             'liveActivityGroup.name' : 'live_activity_group_name',\
             'liveActivityIds' : [1,2,666]\
             }
-            
+
         :param uri: "http://some_server/prefix" (passed by master)
-        
+
         :rtype: new LiveActivityGroup object or False
         """
         params = { 'liveActivityGroup.name' : self.name(),
