@@ -30,7 +30,7 @@ class SpaceController(Fetchable, Statusable, Deletable, Shutdownable,
         """
         Used to create new space controller through API and set the "uri" so that we
         can operate on this instance of SpaceController right away after .new() returns True
-        
+
         :param constructor_args: dictionary with following structure::
 
             {"space_controller_name" : "mandatory string",\
@@ -38,7 +38,7 @@ class SpaceController(Fetchable, Statusable, Deletable, Shutdownable,
             "space_controller_host_id" : "mandatory string"}
 
         :param uri: "http://some_server/prefix" (passed by master)
-        
+
         :rtype: new SpaceController object or False
 
         """
@@ -88,9 +88,13 @@ class SpaceController(Fetchable, Statusable, Deletable, Shutdownable,
         """  Should return status of the controller  """
         return self.data_hash['mode']
 
+    def state(self):
+        """ Should return state of the controller """
+        return self.data_hash['state']
+
     """ Private methods below """
 
     def _get_absolute_url(self):
         live_activity_group_id = self.data_hash['id']
         url = "%s/spacecontroller/%s/view.json" % (self.uri, live_activity_group_id)
-        return url      
+        return url
