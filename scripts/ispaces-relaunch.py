@@ -88,12 +88,15 @@ class InteractiveSpacesRelaunch(object):
             self.relaunch_sequence = relaunch_options['live_activity_groups'].split(',')
             print colored("Live activity groups to be relaunched: %s" % self.relaunch_sequence, 'white', attrs=['bold'])
 
-        print colored("This is what's going to be launched:", 'white', attrs=['bold'])
-        print "Controllers: %s" % self.relaunch_controllers
-        print "Master: %s" % self.relaunch_master
-        print "Live activities: %s" % self.relaunch_live_activities
-        if self.relaunch_live_activities:
-            print "Live activity groups: " + colored("%s" % (',').join(self.relaunch_sequence), 'magenta')
+        if relaunch_options['status']:
+            print colored("Getting status of IS stack", 'white', attrs=['bold'])
+        else:
+            print colored("This is what's going to be launched:", 'white', attrs=['bold'])
+            print "Controllers: %s" % self.relaunch_controllers
+            print "Master: %s" % self.relaunch_master
+            print "Live activities: %s" % self.relaunch_live_activities
+            if self.relaunch_live_activities:
+                print "Live activity groups: " + colored("%s" % (',').join(self.relaunch_sequence), 'magenta')
 
     @debug
     def init_config(self):
@@ -116,6 +119,7 @@ class InteractiveSpacesRelaunch(object):
         self.pp = pprint.PrettyPrinter(indent=4)
 
         self.controllers_data = self.init_controllers_config()
+
 
     @debug
     def create_uri_for(self, location):
@@ -434,7 +438,6 @@ class InteractiveSpacesRelaunch(object):
         @rtype: dict
         """
         statuses = {}
-        print "Checking if following groups were successfully managed:"
         for live_activity_group_name in self.relaunch_sequence:
             print colored(" %s " % live_activity_group_name, 'magenta'),
             sys.stdout.flush()
@@ -548,6 +551,16 @@ class InteractiveSpacesRelaunch(object):
         return True
 
     @debug
+    def get_status(self):
+        """
+        @summary: gets live activities statuses
+        """
+        print colored('Live activities', 'green')
+        self.pp.pprint(self.get_statuses())
+        print colored('Space controllers state', 'green')
+        self.assert_controllers_api_statuses()
+
+    @debug
     def relaunch(self):
         if self.relaunch_master:
             self.relaunch_master_process()
@@ -565,6 +578,10 @@ class InteractiveSpacesRelaunch(object):
                 sys.exit(1)
 
 if __name__ == '__main__':
+    """
+    @summary: parse all arguments, unset TMUX variable to be able to use this tool from a tmux session and
+    also check whether user is asking for a status or a relaunch
+    """
     os.unsetenv('TMUX')
     parser = argparse.ArgumentParser(description='Relaunch interactivespaces')
     parser.add_argument("--full-relaunch", help="Additionally relaunch controllers and master process", action="store_true")
@@ -573,6 +590,7 @@ if __name__ == '__main__':
     parser.add_argument("--no-live-activities", help="Don't relaunch live activities", action="store_true")
     parser.add_argument("--config", help="Provide path to config file - /home/galadmin/etc/ispaces-client.conf by default")
     parser.add_argument("--live-activity-groups", help="Provide quoted, comma-delimited names of live activity groups to manage e.g. --live-activity-groups='Touchscreen Browser','Media Services' ")
+    parser.add_argument("--status", help="Print current status of managed live activities.", action="store_true")
 
     args = parser.parse_args()
 
@@ -580,7 +598,8 @@ if __name__ == '__main__':
                          'master_only': args.master_only,
                          'controllers_only': args.controllers_only,
                          'no_live_activities': args.no_live_activities,
-                         'live_activity_groups': args.live_activity_groups
+                         'live_activity_groups': args.live_activity_groups,
+                         'status': args.status
                          }
 
     if args.config:
@@ -589,6 +608,9 @@ if __name__ == '__main__':
         config_path = '/home/galadmin/etc/ispaces-client.conf'
     if os.path.isfile(config_path):
         ir = InteractiveSpacesRelaunch(config_path, relaunch_options)
-        relaunched = ir.relaunch()
+        if relaunch_options['status']:
+            ir.get_status()
+        else:
+            ir.relaunch()
     else:
         print "Could not open config file %s" % config_path
