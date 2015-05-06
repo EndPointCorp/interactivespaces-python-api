@@ -1,6 +1,4 @@
 requests==2.3.0
 nosy==1.1.2
-commands
-pprint
 termcolor
 mock
