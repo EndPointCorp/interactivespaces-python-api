@@ -558,9 +558,11 @@ class InteractiveSpacesRelaunch(object):
         if self.relaunch_live_activities:
             self.prepare_container()
             if self.loop_till_finished() == True:
-                print colored("Successully relaunched ispaces", 'green', attrs=['bold'])
+                print colored("Successfully relaunched ispaces", 'green', attrs=['bold'])
+                sys.exit(0)
             else:
                 print colored("Exiting: could not relaunch ispaces - look for errors in %s and 'ugly' interface" % self.log_path, 'red')
+                sys.exit(1)
 
 if __name__ == '__main__':
     os.unsetenv('TMUX')
