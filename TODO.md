@@ -1,9 +1,8 @@
 # TODO
 
-* add support for relaunching single live activity group
+* refactor .get methods to return exception or empty list if no record
+  or too many records were found
 * add configuration parameter for "autodeploy" and "autoconfigure"
-* make support for polling during waiting - sometimes master gets
-  spawned earlier than you think so amend the .wait() method to poll for some URL or watch exit status of a command executed to check whether process is started
 * user filters
 * use metadata to relaunch
 * Test the rest of the new_ methods in Master
