@@ -186,6 +186,8 @@ class InteractiveSpacesRelaunch(object):
             return False
         except MasterException, e:
             return False
+        except urllib2.HTTPError,e :
+            print colored("Failed to communicate with master (%s) - is it running?" % e, 'red')
 
 
     @debug
@@ -197,7 +199,12 @@ class InteractiveSpacesRelaunch(object):
         @rtype: bool
         """
         timeout = self.config.getint('relaunch', 'controllers_timeout')
-        controller = self.master.get_space_controller({'space_controller_name': controller_name})
+        try:
+            controller = self.master.get_space_controller({'space_controller_name': controller_name})
+        except urllib2.HTTPError, e:
+            print colored("Failed to connect to master (%s) - is it running?" % e, 'red')
+            sys.exit(1)
+
         controller.send_connect()
         controller.send_status_refresh()
 
@@ -233,9 +240,9 @@ class InteractiveSpacesRelaunch(object):
         @summary: relaunches master process and returns True as soon as the Master API is reachable
         @rtype: bool
         """
-        self.simple_wait('kill_master_process', 1)
         cmd_process = subprocess.Popen(self.master_stop_command, shell=True, stdout=subprocess.PIPE)
         cmd_process = subprocess.Popen(self.master_destroy_tmux_command, shell=True, stdout=subprocess.PIPE)
+        self.simple_wait('kill_master_process', 3)
         cmd_process = subprocess.Popen(self.master_launch_command, shell=True, stdout=subprocess.PIPE)
         if self.api_wait('start_master',
                           timeout=60,
@@ -340,8 +347,13 @@ class InteractiveSpacesRelaunch(object):
         for live_activity_group_name in self.relaunch_sequence:
             print colored(" %s " % live_activity_group_name, 'magenta'),
             sys.stdout.flush()
-            live_activity_group = self.master.get_live_activity_group(
+            try:
+                live_activity_group = self.master.get_live_activity_group(
 				{'live_activity_group_name' : live_activity_group_name})
+            except urllib2.HTTPError, e:
+                print colored("Failed to communicate with master (%s)- is it running?" % e, 'red')
+                sys.exit(1)
+
             self.relaunch_container.append(live_activity_group)
 
         print ""
