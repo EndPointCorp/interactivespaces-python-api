@@ -185,10 +185,8 @@ class InteractiveSpacesRelaunch(object):
                                                            'space_controller_state': 'RUNNING'})
             return True
         except ControllerNotFoundException, e :
-            raise
             return False
         except MasterException, e:
-            raise
             return False
 
 
