@@ -572,8 +572,16 @@ class InteractiveSpacesRelaunch(object):
         for controller_name, controller_data in self.controllers_data.iteritems():
                 self.stop_controller(controller_name)
                 self.destroy_tmux_session(controller_name)
-                self.start_controller(controller_name)
                 print "Connecting controller %s on %s" % (controller_data['name'], controller_name)
+
+        self.simple_wait("Waiting for controllers to free file descriptors", 3)
+
+        print colored("Launching controllers", 'green')
+        for controller_name, controller_data in self.controllers_data.iteritems():
+                self.start_controller(controller_name)
+
+        self.simple_wait("Waiting for controllers to come up", 3)
+        for controller_name, controller_data in self.controllers_data.iteritems():
                 self.connect_controller(controller_data['name'])
                 self.controllers_data[controller_name]['connected'] = self.controller_connected(controller_data['name'])
         return True
