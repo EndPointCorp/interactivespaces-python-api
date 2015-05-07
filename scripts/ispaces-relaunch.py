@@ -170,8 +170,6 @@ class InteractiveSpacesRelaunch(object):
         command = "%s %s '%s'" % (self.ssh_command, controller_name, self.controllers_data[controller_name]['launch_command'])
         cmd_process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
         output = cmd_process.communicate()[0].replace('\n', '').split(' ')
-        self.simple_wait('start_controller',
-                         timeout=1)
         return output
 
     @debug
@@ -237,7 +235,6 @@ class InteractiveSpacesRelaunch(object):
         """
         self.simple_wait('kill_master_process', 1)
         cmd_process = subprocess.Popen(self.master_stop_command, shell=True, stdout=subprocess.PIPE)
-        self.simple_wait('destroy_master_tmux', 1)
         cmd_process = subprocess.Popen(self.master_destroy_tmux_command, shell=True, stdout=subprocess.PIPE)
         cmd_process = subprocess.Popen(self.master_launch_command, shell=True, stdout=subprocess.PIPE)
         if self.api_wait('start_master',
@@ -562,9 +559,7 @@ class InteractiveSpacesRelaunch(object):
         """
         for controller_name, controller_data in self.controllers_data.iteritems():
                 self.stop_controller(controller_name)
-                self.simple_wait('stop_controller', 1)
                 self.destroy_tmux_session(controller_name)
-                self.simple_wait('destroy tmux session', 1)
                 self.start_controller(controller_name)
                 print "Connecting controller %s on %s" % (controller_data['name'], controller_name)
                 self.connect_controller(controller_data['name'])
