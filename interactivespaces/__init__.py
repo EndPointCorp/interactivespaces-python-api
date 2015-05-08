@@ -30,6 +30,7 @@ __all__ = [
            'PathException',
            'CommunicableException',
            'ControllerNotFoundException',
+           'SpaceNotFoundException',
            'LiveActivityException',
            'StatusableException',
            'ActivityException',

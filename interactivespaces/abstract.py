@@ -61,6 +61,7 @@ class Path(object):
                             'view' : '/space/%s/view.json',
                             'status' : '/space/%s/status.json',
                             'delete' : '/space/%s/delete.html',
+                            'new' : '/space/%s/new.json',
                             'shutdown' : '/space/%s/shutdown.json',
                             'startup' : '/space/%s/startup.json',
                             'activate' : '/space/%s/activate.json',

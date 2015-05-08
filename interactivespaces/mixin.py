@@ -53,7 +53,7 @@ class Communicable(object):
         """
         Sends a json request to the master. Returns only ['data'] part of the json response 
         
-        :rtype: dict or bool
+        :rtype: dict
         """
         response = urllib2.urlopen(url)
         data = json.loads(response.read())
@@ -65,18 +65,18 @@ class Communicable(object):
 
         if data['result'] != 'success':
             self.log.info("Could not retrieve data for URL=%s" % url)
-            return False
+            return {}
 
         if out_data:
             return out_data
         else:
-            return True
+            return {}
 
     def _api_get_html(self, url, content=False):
         """
         Sends a request to the master, returns True if 200, False if anything else.
         
-        :rtype: bool
+        :rtype: str
         """
         response = urllib2.urlopen(url)
         data = response.read()
@@ -84,9 +84,11 @@ class Communicable(object):
             if content == True:
                 return data
             else:
-                return True
+                self.log.info("No data returned for URL=%s" % url)
+                return ''
         else:
-            return False
+            self.log.info("Could not retrieve data for URL=%s - returned HTTP code %s" % (url,response.getcode()))
+            return ''
 
     def _api_post_json(self, url, payload, file_handler=None):
         """

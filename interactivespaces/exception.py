@@ -33,3 +33,6 @@ class LiveActivityNotFoundException(Exception):
 
 class ActivityNotFoundException(Exception):
     pass
+
+class SpaceNotFoundException(Exception):
+    pass
