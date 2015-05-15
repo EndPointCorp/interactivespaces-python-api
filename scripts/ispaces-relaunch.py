@@ -8,6 +8,7 @@ sys.path.append("/home/galadmin/src/interactivespaces-python-api/")
 import time
 import json
 import pprint
+import urllib2
 import argparse
 import requests
 import commands
