@@ -415,7 +415,7 @@ class Master(Communicable):
         raise NotImplementedError
 
     """ Private methods below """
-    
+
     def _translate_live_activity_groups_names_to_ids(self, live_activity_groups):
         """
         Converts live activity groups dicts to list of ids
