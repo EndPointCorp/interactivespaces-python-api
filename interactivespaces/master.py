@@ -397,7 +397,7 @@ class Master(Communicable):
     def _api_object_exists(object_type, constructor_args, getter_method):
         rospy.loginfo("Checking whether object %s with following attributes %s exists in the API" % (object_type, constructor_args, getter_method))
 
-        api_object = self.getter_method(constructor_args):
+        api_object = self.getter_method(constructor_args)
 
         if api_object:
             rospy.logwarn("Object already exists: %s" % api_object)
