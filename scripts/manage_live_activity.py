@@ -71,7 +71,7 @@ class ManageLiveActivity:
         self.options = options
         self.config_path = self.options.config
         self._init_config()
-        self.master = interactivespaces.Master(self.host, self.port)
+        self.master = interactivespaces.Master(self.host, self.port, logfile_path=self.log_path)
         self.query = {
                       'activity_name': self.options.activity_name,
                       'live_activity_name': self.options.name,
@@ -199,6 +199,7 @@ class ManageLiveActivity:
         self.config.read(self.config_path)
         self.host = self.config.get('master', 'host')
         self.port = self.config.get('master', 'port')
+        self.log_path = self.config.get('global', 'logfile_path')
 
 if __name__ == "__main__":
     options = Options(sys.argv).get_options()

@@ -56,7 +56,7 @@ class ManageController:
         self.options = options
         self.config_path = self.options.config
         self._init_config()
-        self.master = interactivespaces.Master(self.host, self.port)
+        self.master = interactivespaces.Master(self.host, self.port, logfile_path=self.log_path)
         self.query = {'space_controller_name': self.options.name,
                      'space_controller_host_id': self.options.hostid,
                      'space_controller_description': self.options.description
@@ -126,6 +126,7 @@ class ManageController:
         self.config.read(self.config_path)
         self.host = self.config.get('master', 'host')
         self.port = self.config.get('master', 'port')
+        self.log_path = self.config.get('global', 'logfile_path')
 
 if __name__ == "__main__":
     options = Options(sys.argv).get_options()
