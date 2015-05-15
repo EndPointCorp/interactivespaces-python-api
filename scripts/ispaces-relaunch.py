@@ -86,6 +86,9 @@ class InteractiveSpacesRelaunch(object):
 
         if relaunch_options['live_activity_groups']:
             self.relaunch_sequence = relaunch_options['live_activity_groups'].split(',')
+            if len(self.relaunch_sequence) == 0:
+                print colored("Relaunch sequence is empty")
+                sys.exit(1)
             print colored("Live activity groups to be relaunched: %s" % self.relaunch_sequence, 'white', attrs=['bold'])
 
         if relaunch_options['status']:
