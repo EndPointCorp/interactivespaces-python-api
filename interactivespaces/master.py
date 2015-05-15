@@ -300,9 +300,12 @@ class Master(Communicable):
         unpacked_arguments['liveActivity.name'] = constructor_args['live_activity_name']
         unpacked_arguments['_eventId_save'] = 'Save'
 
-        activity = LiveActivity().new(self.uri, unpacked_arguments)
-        self.log.info("Master:new_live_activity returned activity:%s" % activity)
-        return activity
+        if not self._api_object_exists(LiveActivity, constructor_args, get_live_activity):
+            activity = LiveActivity().new(self.uri, unpacked_arguments)
+            self.log.info("Master:new_live_activity returned activity:%s" % activity)
+            return activity
+        else:
+            return []
 
     def new_activity(self, constructor_args):
         """
@@ -327,8 +330,12 @@ class Master(Communicable):
             "space_controller_host_id" : "mandatory string"\
             }
         """
-        space_controller = SpaceController().new(self.uri, constructor_args)
-        return space_controller
+        if not self._api_object_exists(SpaceController, constructor_args, get_space_controller):
+            space_controller = SpaceController().new(self.uri, constructor_args)
+            self.log.info("Master:new_space_controller:%s" % space_controller)
+            return space_controller
+        else:
+            return []
 
     def new_live_activity_group(self, constructor_args):
         """
@@ -349,15 +356,16 @@ class Master(Communicable):
         unpacked_arguments['liveActivityGroup.description'] = constructor_args['live_activity_group_description']
         unpacked_arguments['_eventId_save'] = 'Save'
         unpacked_arguments['liveActivityIds'] = live_activity_ids
-        live_activity_group = LiveActivityGroup().new(self.uri, unpacked_arguments)
-        return live_activity_group
+
+        if not self._api_object_exists(LiveActivityGroup, constructor_args, get_live_activity_group):
+            live_activity_group = LiveActivityGroup().new(self.uri, unpacked_arguments)
+            self.log.info("Master:new_live_activity_group:%s" % live_activity_group)
+            return live_activity_group
+        else:
+            return []
 
     def new_space(self, name, description, live_activity_groups, spaces):
         """Creates a new space."""
-        raise NotImplementedError
-
-    def new_controller(self, name, description, host_id):
-        """Creates a new controller."""
         raise NotImplementedError
 
     def new_named_script(self, name, description, language, content, scheduled=None):
@@ -386,6 +394,20 @@ class Master(Communicable):
 
     """ Private methods below """
 
+    def _api_object_exists(object_type, constructor_args, getter_method):
+        rospy.loginfo("Checking whether object %s with following attributes %s exists in the API" % (object_type, constructor_args, getter_method))
+
+        api_object = self.getter_method(constructor_args):
+
+        if api_object:
+            rospy.logwarn("Object already exists: %s" % api_object)
+            return True
+        else:
+            rospy.loginfo("Object does not exist yet")
+            return False
+
+
+
     def _validate_single_getter_results(self, response, expected_type, exception):
         """
         Validates response from the API. Runs type and other simple checks.
@@ -400,15 +422,15 @@ class Master(Communicable):
         """
 
         if len(response) > 1:
-            raise MasterException("API query returned more than one row")
+            raise exception("API query returned more than one row")
         elif len(response) == 0:
-            raise exception("Could not get specific object for given search pattern")
+            return []
         elif isinstance(response[0], expected_type):
             api_object = response[0].fetch()
             self.log.info("Getter method returned Object:%s" % str(api_object))
             return api_object
         else:
-            raise MasterException("General Master result error")
+            raise MasterException("General Master result error for response: %s" % response)
 
     def _filter_live_activities(self, response, search_pattern):
         """
