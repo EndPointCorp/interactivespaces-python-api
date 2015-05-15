@@ -26,7 +26,7 @@ class Communicable(object):
             1. return if object that tries to retrieve the url
             has route that is already staticaly defined
             2. try to compose the custom route on the basis of URL data
-            
+
         :rtype: string
         """
         if class_name and method_name:
@@ -80,7 +80,7 @@ class Communicable(object):
     def _api_get_html(self, url, content=False):
         """
         Sends a request to the master, returns True if 200, False if anything else.
-        
+
         :rtype: bool
         """
         response = urllib2.urlopen(url)
@@ -96,13 +96,13 @@ class Communicable(object):
     def _api_post_json(self, url, payload, file_handler=None):
         """
         Sends data to the master.
-        
+
         :rtype: string or False
-        
+
         :param payload: dictionary containing data to send
-        
+
         :param url: string containing url that we talk to
-        
+
         :param file_handler: path to local zipfile - if provided, a multi-part post will be sent to the URL
         """
         if file_handler:
