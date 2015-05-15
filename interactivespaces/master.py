@@ -3,7 +3,7 @@
 
 from mixin import Communicable
 from exception import MasterException, ControllerNotFoundException, ActivityNotFoundException
-from exception import LiveActivityNotFoundException, LiveActivityGroupNotFoundException
+from exception import LiveActivityNotFoundException, LiveActivityGroupNotFoundException, SpaceNotFoundException
 from misc import Logger
 from live_activity import LiveActivity
 from activity import Activity
@@ -33,7 +33,7 @@ class Master(Communicable):
     def get_activities(self, search_pattern=None):
         """
         Retrieves a list of Activity objects
-        
+
         :rtype: list
 
         :param search_pattern: dictionary of regexps used for searching through Activities
@@ -78,16 +78,8 @@ class Master(Communicable):
         self.log.info('Got response for "get_activities" %s ' % str(response))
         self.log.info('get_activities returned %s objects' % str(len(response)))
         activity = self._filter_activities(response, search_pattern)
-        if len(activity) > 1:
-            raise MasterException("get_activity returned more than one row (%s)" % len(activity))
-        elif len(activity) == 0:
-            raise ActivityNotFoundException("get_activity returned zero rows")
-        elif isinstance(activity[0], Activity):
-            activity[0].fetch()
-            self.log.info("get_activity returned Activity:%s" % str(activity))
-            return activity[0]
-        else:
-            raise MasterException("Could not get specific activity for given search pattern")
+
+        return self._validate_single_getter_results(activity, Activity, ActivityNotFoundException)
 
     def get_live_activities(self, search_pattern=None):
         """
@@ -137,17 +129,8 @@ class Master(Communicable):
         self.log.debug('Got response for "get_live_activities" %s ' % str(response))
         self.log.info('get_live_activities returned %s objects' % str(len(response)))
         live_activity = self._filter_live_activities(response, search_pattern)
-        if len(live_activity) > 1:
-            raise MasterException("get_live_activity returned more than one row (%s)" % len(live_activity))
-        elif len(live_activity) == 0:
-            raise LiveActivityNotFoundException("Search returned zero LiveActivities")
-        elif isinstance(live_activity[0], LiveActivity):
-            live_activity[0].fetch()
-            self.log.info("get_live_activity returned LiveActivity:%s" % live_activity)
-            return live_activity[0]
-        else:
-            raise MasterException("Could not get specific live activity for given search pattern")
 
+        return self._validate_single_getter_results(live_activity, LiveActivity, LiveActivityNotFoundException)
 
     def get_live_activity_groups(self, search_pattern=None):
         """
@@ -193,16 +176,10 @@ class Master(Communicable):
         self.log.debug('Got response for "get_live_activity_groups" %s ' % str(response))
         self.log.info('get_live_activity_groups returned %s objects' % str(len(response)))
         live_activity_group = self._filter_live_activity_groups(response, search_pattern)
-        if len(live_activity_group) > 1:
-            raise MasterException("get_live_activity_group returned more than one row (%s)" % len(live_activity_group))
-        elif len(live_activity_group) == 0:
-            raise LiveActivityGroupNotFoundException("get_live_activity_group returned zero rows")
-        elif isinstance(live_activity_group[0], LiveActivityGroup):
-            live_activity_group[0].fetch()
-            self.log.info("get_live_activity_group returned LiveActivityGroup:%s" % str(live_activity_group))
-            return live_activity_group[0]
-        else:
-            raise MasterException("Could not get specific live activity group for given search pattern")
+
+        return self._validate_single_getter_results(live_activity_group,
+                                                    LiveActivityGroup,
+                                                    LiveActivityGroupNotFoundException)
 
     def get_spaces(self, search_pattern=None):
         """
@@ -242,14 +219,10 @@ class Master(Communicable):
         response = self._api_get_json(url)
         self.log.debug('Got response for "get_spaces" %s ' % str(response))
         space = self._filter_spaces(response, search_pattern)
-        if len(space) > 1:
-            raise MasterException("get_space returned more than one row (%s)" % len(space))
-        elif isinstance(space[0], Space):
-            space[0].fetch()
-            self.log.info("get_space returned Space:%s" % str(space))
-            return space[0]
-        else:
-            raise MasterException("Could not get specific space for given search pattern")
+
+        return self._validate_single_getter_results(space,
+                                                    Space,
+                                                    SpaceNotFoundException)
 
     def get_space_controllers(self, search_pattern=None):
         """
@@ -299,16 +272,9 @@ class Master(Communicable):
         response = self._api_get_json(url)
         self.log.debug('Got response for "get_controllers" %s ' % str(response))
         space_controller = self._filter_space_controllers(response, search_pattern)
-        if len(space_controller) > 1:
-            raise MasterException("get_space_controller returned more than one row")
-        elif len(space_controller) == 0:
-            raise ControllerNotFoundException("Could not get specific space controller for given search pattern")
-        elif isinstance(space_controller[0], SpaceController):
-            space_controller[0].fetch()
-            self.log.info("get_space_controller returned SpaceController:%s" % str(space_controller))
-            return space_controller[0]
-        else:
-            raise MasterException("Exception")
+        return self._validate_single_getter_results(space_controller,
+                                                    SpaceController,
+                                                    ControllerNotFoundException)
 
     def get_named_scripts(self, pattern=None):
         """Retrieves a list of named scripts."""
@@ -334,9 +300,12 @@ class Master(Communicable):
         unpacked_arguments['liveActivity.name'] = constructor_args['live_activity_name']
         unpacked_arguments['_eventId_save'] = 'Save'
 
-        activity = LiveActivity().new(self.uri, unpacked_arguments)
-        self.log.info("Master:new_live_activity returned activity:%s" % activity)
-        return activity
+        if not self._api_object_exists(LiveActivity, constructor_args, get_live_activity):
+            activity = LiveActivity().new(self.uri, unpacked_arguments)
+            self.log.info("Master:new_live_activity returned activity:%s" % activity)
+            return activity
+        else:
+            return []
 
     def new_activity(self, constructor_args):
         """
@@ -361,8 +330,12 @@ class Master(Communicable):
             "space_controller_host_id" : "mandatory string"\
             }
         """
-        space_controller = SpaceController().new(self.uri, constructor_args)
-        return space_controller
+        if not self._api_object_exists(SpaceController, constructor_args, get_space_controller):
+            space_controller = SpaceController().new(self.uri, constructor_args)
+            self.log.info("Master:new_space_controller:%s" % space_controller)
+            return space_controller
+        else:
+            return []
 
     def new_live_activity_group(self, constructor_args):
         """
@@ -383,15 +356,16 @@ class Master(Communicable):
         unpacked_arguments['liveActivityGroup.description'] = constructor_args['live_activity_group_description']
         unpacked_arguments['_eventId_save'] = 'Save'
         unpacked_arguments['liveActivityIds'] = live_activity_ids
-        live_activity_group = LiveActivityGroup().new(self.uri, unpacked_arguments)
-        return live_activity_group
+
+        if not self._api_object_exists(LiveActivityGroup, constructor_args, get_live_activity_group):
+            live_activity_group = LiveActivityGroup().new(self.uri, unpacked_arguments)
+            self.log.info("Master:new_live_activity_group:%s" % live_activity_group)
+            return live_activity_group
+        else:
+            return []
 
     def new_space(self, name, description, live_activity_groups, spaces):
         """Creates a new space."""
-        raise NotImplementedError
-
-    def new_controller(self, name, description, host_id):
-        """Creates a new controller."""
         raise NotImplementedError
 
     def new_named_script(self, name, description, language, content, scheduled=None):
@@ -420,15 +394,53 @@ class Master(Communicable):
 
     """ Private methods below """
 
+    def _api_object_exists(object_type, constructor_args, getter_method):
+        rospy.loginfo("Checking whether object %s with following attributes %s exists in the API" % (object_type, constructor_args, getter_method))
+
+        api_object = self.getter_method(constructor_args)
+
+        if api_object:
+            rospy.logwarn("Object already exists: %s" % api_object)
+            return True
+        else:
+            rospy.loginfo("Object does not exist yet")
+            return False
+
+
+
+    def _validate_single_getter_results(self, response, expected_type, exception):
+        """
+        Validates response from the API. Runs type and other simple checks.
+
+        :param response: list of objects returned from api
+
+        :param expected_type: expected type of the object
+
+        :param exception: exception to throw if response is invalid
+
+        :rtype: interactivespaces object
+        """
+
+        if len(response) > 1:
+            raise exception("API query returned more than one row")
+        elif len(response) == 0:
+            return []
+        elif isinstance(response[0], expected_type):
+            api_object = response[0].fetch()
+            self.log.info("Getter method returned Object:%s" % str(api_object))
+            return api_object
+        else:
+            raise MasterException("General Master result error for response: %s" % response)
+
     def _filter_live_activities(self, response, search_pattern):
         """
-        Should iterate over response from Master API and filter live activites 
+        Should iterate over response from Master API and filter live activites
         with regard to their name
-            
+
         :param response: response['data'] from master API
-        
+
         :param search_pattern: dictionary where values may be regexps
-        
+
         :todo: refactor filtering because it looks ugly and make it global for all classes
         """
         live_activities = []
