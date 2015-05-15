@@ -33,7 +33,7 @@ class Master(Communicable):
     def get_activities(self, search_pattern=None):
         """
         Retrieves a list of Activity objects
-        
+
         :rtype: list
 
         :param search_pattern: dictionary of regexps used for searching through Activities

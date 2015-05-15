@@ -51,12 +51,17 @@ class Communicable(object):
 
     def _api_get_json(self, url):
         """
-        Sends a json request to the master. Returns only ['data'] part of the json response 
-        
+        Sends a json request to the master. Returns only ['data'] part of the json response
+
         :rtype: dict or bool
         """
-        response = urllib2.urlopen(url)
-        data = json.loads(response.read())
+        try:
+            response = urllib2.urlopen(url)
+            data = json.loads(response.read())
+        except urllib2.URLError, e:
+            self.log.error("Could not communicate with Master API becasue: %s" % e)
+            print "Could not communicate with Master API because %s" % e
+            sys.exit(1)
 
         try:
             out_data = data['data']
