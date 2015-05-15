@@ -180,7 +180,7 @@ class Fetchable(Communicable):
     def _refresh_object(self, url):
         """
         Should retrieve fresh data from API
-        
+
         :param url: string defining from which url to fetch the data
         """
         self.log.info("Refreshing object for url=%s" % url)
@@ -197,6 +197,7 @@ class Fetchable(Communicable):
              Should retrieve private data for an object from Master API
         """
         self.data_hash = self._refresh_object(self.absolute_url)
+        return self
 
 class Statusable(Communicable):
     """
