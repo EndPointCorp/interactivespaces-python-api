@@ -478,6 +478,7 @@ class InteractiveSpacesRelaunch(object):
         timeout = self.config.getint('relaunch', 'live_activities_timeout')
         print colored("Waiting for live activities to stop", "green")
         for wait in xrange(0, timeout):
+            time.sleep(1)
             statuses = self.get_statuses()
             statuses = {k: v for k, v in statuses.iteritems() if v != 'READY' }
             if statuses:
