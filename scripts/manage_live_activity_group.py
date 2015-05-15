@@ -66,7 +66,7 @@ class ManageLiveActivityGroup:
         self.config_path = self.options.config
         self._init_config()
 
-        self.master = interactivespaces.Master(self.host, self.port)
+        self.master = interactivespaces.Master(self.host, self.port, logfile_path=self.log_path)
         self.query = {'live_activity_group_name': self.options.name,
                       'live_activity_group_description' : '' if self.options.description == None else self.options.description,
                       'live_activities' : json.loads(self.options.live_activities) if self.options.live_activities else None,
@@ -212,6 +212,7 @@ class ManageLiveActivityGroup:
         self.config.read(self.config_path)
         self.host = self.config.get('master', 'host')
         self.port = self.config.get('master', 'port')
+        self.log_path = self.config.get('global', 'logfile_path')
 
 if __name__ == "__main__":
     options = Options(sys.argv).get_options()
