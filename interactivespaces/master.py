@@ -353,7 +353,7 @@ class Master(Communicable):
             "space_controller_name" : "ISCtlDispAScreen00"}]\
             }
         """
-        live_activity_ids = self.translate_live_activities_names_to_ids(constructor_args['live_activities'])
+        live_activity_ids = self._translate_live_activities_names_to_ids(constructor_args['live_activities'])
         unpacked_arguments = {}
         unpacked_arguments['liveActivityGroup.name'] = constructor_args['live_activity_group_name']
         unpacked_arguments['liveActivityGroup.description'] = constructor_args['live_activity_group_description']
