@@ -3,3 +3,6 @@ python:
   - "2.7"
 before_install: "pip install -r requirements.txt"
 script: nosetests
+notifications:
+  flowdock:
+    secure: ZtMdsgQ4A73dUbLwA4UHn8wO4st+8bJ96xNuYYCd9hgKlbNdQ8zFYTY1urQOJpUnYYTdPapIy3kIX03nsQP2Zkpg8P1eIaJfLIJ/TEg8ZhzieMCk9LVINbu3gI+RkIDqAyQ+Y5vkyVKPK6EA6GX3cqjhiOslXvCCCEHA1yWT2BU=

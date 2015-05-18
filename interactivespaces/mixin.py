@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 
-import urllib2
+import os
+import sys
 import json
-from abstract import Path
-from misc import Logger
-from exception import CommunicableException
+import urllib2
 import requests
 import urlparse
-import os
+from misc import Logger
+from abstract import Path
+from exception import CommunicableException
 
 """
     :todo: aggregate mixins common for LiveActivity, LiveActivityGroup and Space into one
 """
+
 
 class Communicable(object):
     def __init__(self):
@@ -70,18 +72,18 @@ class Communicable(object):
 
         if data['result'] != 'success':
             self.log.info("Could not retrieve data for URL=%s" % url)
-            return False
+            return {}
 
         if out_data:
             return out_data
         else:
-            return True
+            return {}
 
     def _api_get_html(self, url, content=False):
         """
         Sends a request to the master, returns True if 200, False if anything else.
 
-        :rtype: bool
+        :rtype: str
         """
         response = urllib2.urlopen(url)
         data = response.read()
@@ -89,9 +91,11 @@ class Communicable(object):
             if content == True:
                 return data
             else:
-                return True
+                self.log.info("No data returned for URL=%s" % url)
+                return ''
         else:
-            return False
+            self.log.info("Could not retrieve data for URL=%s - returned HTTP code %s" % (url,response.getcode()))
+            return ''
 
     def _api_post_json(self, url, payload, file_handler=None):
         """

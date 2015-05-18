@@ -316,9 +316,12 @@ class Master(Communicable):
             }
         :rtype: Activity or False
         """
-        activity = Activity().new(self.uri, constructor_args)
-        self.log.info("Master:new_activity returned activity:%s" % activity)
-        return activity
+        if not self._api_object_exists(Activity, constructor_args, get_activity):
+            activity = Activity().new(self.uri, constructor_args)
+            self.log.info("Master:new_activity returned activity:%s" % activity)
+            return activity
+        else:
+            return []
 
     def new_space_controller(self, constructor_args):
         """
@@ -364,15 +367,52 @@ class Master(Communicable):
         else:
             return []
 
-    def new_space(self, name, description, live_activity_groups, spaces):
-        """Creates a new space."""
-        raise NotImplementedError
+    def new_space(self, constructor_args):
+        """
+        Creates a new Space.
+        :param constructor_args: dictionary with following structure::
+            {\
+            "space_name" : "example.py live_activity_group_name",\
+            "space_description" : "created by example.py",\
+            "live_activity_groups" : [{"live_activity_group_name" : "Media Services"}]\
+            }
+
+        """
+        live_activity_group_ids = self._translate_live_activity_groups_names_to_ids(constructor_args['live_activity_groups'])
+        unpacked_arguments = {}
+        unpacked_arguments['space.name'] = constructor_args['space_name']
+        unpacked_arguments['space.description'] = constructor_args['space_description']
+        unpacked_arguments['_eventId_save'] = 'Save'
+        unpacked_arguments['liveActivityGroupIds'] = live_activity_group_ids
+        space = Space().new(self.uri, unpacked_arguments)
+        return space
 
     def new_named_script(self, name, description, language, content, scheduled=None):
         """Creates a new named script."""
         raise NotImplementedError
 
-    def translate_live_activities_names_to_ids(self, live_activities):
+    """ Private methods below """
+
+    def _translate_live_activity_groups_names_to_ids(self, live_activity_groups):
+        """
+        Converts live activity groups dicts to list of ids
+
+        :param live_activities: list of dictionaries containing following keys::
+
+            {\
+            "live_activity_group_name" : "some_name",\
+            }
+
+        :rtype: list
+        """
+        live_activity_groups_ids = []
+        for lag_data in live_activity_groups:
+            live_activity_group = self.get_live_activity_group(lag_data)
+            live_activity_groups_ids.append(live_activity_group.id())
+        self.log.info("Translated %s live_activity_groups_names to ids with a result of %s" % (len(live_activity_groups_ids), live_activity_groups_ids) )
+        return live_activity_groups_ids
+
+    def _translate_live_activities_names_to_ids(self, live_activities):
         """
         Converts live activities dicts to list of ids
 
@@ -428,7 +468,7 @@ class Master(Communicable):
         elif isinstance(response[0], expected_type):
             try:
                 api_object = response[0].fetch()
-                self.log.info("Getter method returned Object:%s" % api_object)
+                self.log.info("Getter method returned Object:%s" % str(api_object))
                 return api_object
             except Exception, e:
                 raise
