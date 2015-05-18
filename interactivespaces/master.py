@@ -300,7 +300,7 @@ class Master(Communicable):
         unpacked_arguments['liveActivity.name'] = constructor_args['live_activity_name']
         unpacked_arguments['_eventId_save'] = 'Save'
 
-        if not self._api_object_exists(LiveActivity, constructor_args, get_live_activity):
+        if not self._api_object_exists(LiveActivity, constructor_args, self.get_live_activity):
             activity = LiveActivity().new(self.uri, unpacked_arguments)
             self.log.info("Master:new_live_activity returned activity:%s" % activity)
             return activity
@@ -316,7 +316,7 @@ class Master(Communicable):
             }
         :rtype: Activity or False
         """
-        if not self._api_object_exists(Activity, constructor_args, get_activity):
+        if not self._api_object_exists(Activity, constructor_args, self.get_activity):
             activity = Activity().new(self.uri, constructor_args)
             self.log.info("Master:new_activity returned activity:%s" % activity)
             return activity
@@ -333,7 +333,7 @@ class Master(Communicable):
             "space_controller_host_id" : "mandatory string"\
             }
         """
-        if not self._api_object_exists(SpaceController, constructor_args, get_space_controller):
+        if not self._api_object_exists(SpaceController, constructor_args, self.get_space_controller):
             space_controller = SpaceController().new(self.uri, constructor_args)
             self.log.info("Master:new_space_controller:%s" % space_controller)
             return space_controller
@@ -360,7 +360,7 @@ class Master(Communicable):
         unpacked_arguments['_eventId_save'] = 'Save'
         unpacked_arguments['liveActivityIds'] = live_activity_ids
 
-        if not self._api_object_exists(LiveActivityGroup, constructor_args, get_live_activity_group):
+        if not self._api_object_exists(LiveActivityGroup, constructor_args, self.get_live_activity_group):
             live_activity_group = LiveActivityGroup().new(self.uri, unpacked_arguments)
             self.log.info("Master:new_live_activity_group:%s" % live_activity_group)
             return live_activity_group
@@ -434,16 +434,16 @@ class Master(Communicable):
 
     """ Private methods below """
 
-    def _api_object_exists(object_type, constructor_args, getter_method):
-        rospy.loginfo("Checking whether object %s with following attributes %s exists in the API" % (object_type, constructor_args, getter_method))
+    def _api_object_exists(self, object_type, constructor_args, getter_method):
+        self.log.info("Checking whether object %s with following attributes %s exists in the API" % (object_type, constructor_args))
 
-        api_object = self.getter_method(constructor_args)
+        api_object = getter_method(constructor_args)
 
         if api_object:
-            rospy.logwarn("Object already exists: %s" % api_object)
+            self.log.warn("Object already exists: %s" % api_object)
             return True
         else:
-            rospy.loginfo("Object does not exist yet")
+            self.log.info("Object does not exist yet")
             return False
 
 
@@ -503,25 +503,28 @@ class Master(Communicable):
 
         self.log.debug("Filtering activities with pattern=%s" % search_pattern)
 
-        for live_activity_data in response:
-            do_filter = True
-            """ Var for holding the state of filtering """
-            current_live_activity_name = live_activity_data['name']
-            current_space_controller_name = live_activity_data['controller']['name']
-            if space_controller_name and do_filter:
-                if Searcher().match(current_space_controller_name, space_controller_name):
-                    pass
-                else:
-                    do_filter = False
-            if live_activity_name and do_filter:
-                if Searcher().match(current_live_activity_name, live_activity_name):
-                    pass
-                else:
-                    do_filter = False
-            if do_filter==True:
-                live_activities.append(LiveActivity(live_activity_data, self.uri))
-        self.log.info("Filtered live_activities and returned %s object(s)" % str(len(live_activities)))
-        return live_activities
+        if type(response) == list:
+            for live_activity_data in response:
+                do_filter = True
+                """ Var for holding the state of filtering """
+                current_live_activity_name = live_activity_data['name']
+                current_space_controller_name = live_activity_data['controller']['name']
+                if space_controller_name and do_filter:
+                    if Searcher().match(current_space_controller_name, space_controller_name):
+                        pass
+                    else:
+                        do_filter = False
+                if live_activity_name and do_filter:
+                    if Searcher().match(current_live_activity_name, live_activity_name):
+                        pass
+                    else:
+                        do_filter = False
+                if do_filter==True:
+                    live_activities.append(LiveActivity(live_activity_data, self.uri))
+            self.log.info("Filtered live_activities and returned %s object(s)" % str(len(live_activities)))
+            return live_activities
+        else:
+            return []
 
     def _filter_activities(self, response, search_pattern):
         """
@@ -546,25 +549,28 @@ class Master(Communicable):
 
         self.log.debug("Filtering activities with pattern=%s" % search_pattern)
 
-        for activity_data in response:
-            do_filter = True
-            """ Var for holding the state of filtering """
-            current_activity_name = activity_data['name']
-            current_activity_version = activity_data['version']
-            if activity_version and do_filter:
-                if Searcher().match(current_activity_version, activity_version):
-                    pass
-                else:
-                    do_filter = False
-            if activity_name and do_filter:
-                if Searcher().match(current_activity_name, activity_name):
-                    pass
-                else:
-                    do_filter = False
-            if do_filter==True:
-                activities.append(Activity(activity_data, self.uri))
-        self.log.info("Filtered activities and returned %s object(s) : %s" % (str(len(activities)), activities))
-        return activities
+        if type(response) == list:
+            for activity_data in response:
+                do_filter = True
+                """ Var for holding the state of filtering """
+                current_activity_name = activity_data['name']
+                current_activity_version = activity_data['version']
+                if activity_version and do_filter:
+                    if Searcher().match(current_activity_version, activity_version):
+                        pass
+                    else:
+                        do_filter = False
+                if activity_name and do_filter:
+                    if Searcher().match(current_activity_name, activity_name):
+                        pass
+                    else:
+                        do_filter = False
+                if do_filter==True:
+                    activities.append(Activity(activity_data, self.uri))
+            self.log.info("Filtered activities and returned %s object(s) : %s" % (str(len(activities)), activities))
+            return activities
+        else:
+            return []
 
     def _filter_live_activity_groups(self, response, search_pattern):
         """
@@ -585,19 +591,22 @@ class Master(Communicable):
             search_pattern = SearchPattern()
         live_activity_group_name = search_pattern['live_activity_group_name']
         self.log.debug("Filtering activities with pattern=%s" % search_pattern)
-        for live_activity_group_data in response:
-            do_filter = True
-            """ Var for holding the state of filtering """
-            current_live_activity_group_name = live_activity_group_data['name']
-            if live_activity_group_name and do_filter:
-                if Searcher().match(current_live_activity_group_name, live_activity_group_name):
-                    pass
-                else:
-                    do_filter = False
-            if do_filter==True:
-                live_activity_groups.append(LiveActivityGroup(live_activity_group_data, self.uri))
-        self.log.info("Filtered live_activity_groups and returned %s object(s)" % str(len(live_activity_groups)))
-        return live_activity_groups
+        if type(response) == list:
+            for live_activity_group_data in response:
+                do_filter = True
+                """ Var for holding the state of filtering """
+                current_live_activity_group_name = live_activity_group_data['name']
+                if live_activity_group_name and do_filter:
+                    if Searcher().match(current_live_activity_group_name, live_activity_group_name):
+                        pass
+                    else:
+                        do_filter = False
+                if do_filter==True:
+                    live_activity_groups.append(LiveActivityGroup(live_activity_group_data, self.uri))
+            self.log.info("Filtered live_activity_groups and returned %s object(s)" % str(len(live_activity_groups)))
+            return live_activity_groups
+        else:
+            return []
 
     def _filter_spaces(self, response, search_pattern):
         """
@@ -621,19 +630,22 @@ class Master(Communicable):
 
         self.log.debug("Filtering spaces with pattern=%s" % search_pattern)
 
-        for space_data in response:
-            do_filter = True
-            """ Var for holding the state of filtering """
-            current_space_name = space_data['name']
-            if space_name and do_filter:
-                if Searcher().match(current_space_name, space_name):
-                    pass
-                else:
-                    do_filter = False
-            if do_filter==True:
-                spaces.append(Space(space_data, self.uri))
-        self.log.info("Filtered spaces and returned %s object(s)" % str(len(spaces)))
-        return spaces
+        if type(response) == list:
+            for space_data in response:
+                do_filter = True
+                """ Var for holding the state of filtering """
+                current_space_name = space_data['name']
+                if space_name and do_filter:
+                    if Searcher().match(current_space_name, space_name):
+                        pass
+                    else:
+                        do_filter = False
+                if do_filter==True:
+                    spaces.append(Space(space_data, self.uri))
+            self.log.info("Filtered spaces and returned %s object(s)" % str(len(spaces)))
+            return spaces
+        else:
+            return []
 
     def _filter_space_controllers(self, response, search_pattern):
         """
@@ -663,33 +675,36 @@ class Master(Communicable):
 
         self.log.debug("Filtering space controllers with pattern=%s" % search_pattern)
 
-        for space_controller_data in response:
-            do_filter = True
-            current_space_controller_name = space_controller_data['name']
-            current_space_controller_uuid = space_controller_data['uuid']
-            current_space_controller_mode = space_controller_data['mode']
-            current_space_controller_state = space_controller_data['state']
-            if space_controller_name and do_filter:
-                if Searcher().match(current_space_controller_name, space_controller_name):
-                    pass
-                else:
-                    do_filter = False
-            if space_controller_uuid and do_filter:
-                if current_space_controller_uuid == space_controller_uuid:
-                    pass
-                else:
-                    do_filter = False
-            if space_controller_mode and do_filter:
-                if current_space_controller_mode == space_controller_mode:
-                    pass
-                else:
-                    do_filter = False
-            if space_controller_state and do_filter:
-                if current_space_controller_state == space_controller_state:
-                    pass
-                else:
-                    do_filter = False
-            if do_filter==True:
-                space_controllers.append(SpaceController(space_controller_data, self.uri))
-        self.log.info("Filtered space_controllers and returned %s object(s)" % str(len(space_controllers)))
-        return space_controllers
+        if type(response) == list:
+            for space_controller_data in response:
+                do_filter = True
+                current_space_controller_name = space_controller_data['name']
+                current_space_controller_uuid = space_controller_data['uuid']
+                current_space_controller_mode = space_controller_data['mode']
+                current_space_controller_state = space_controller_data['state']
+                if space_controller_name and do_filter:
+                    if Searcher().match(current_space_controller_name, space_controller_name):
+                        pass
+                    else:
+                        do_filter = False
+                if space_controller_uuid and do_filter:
+                    if current_space_controller_uuid == space_controller_uuid:
+                        pass
+                    else:
+                        do_filter = False
+                if space_controller_mode and do_filter:
+                    if current_space_controller_mode == space_controller_mode:
+                        pass
+                    else:
+                        do_filter = False
+                if space_controller_state and do_filter:
+                    if current_space_controller_state == space_controller_state:
+                        pass
+                    else:
+                        do_filter = False
+                if do_filter==True:
+                    space_controllers.append(SpaceController(space_controller_data, self.uri))
+            self.log.info("Filtered space_controllers and returned %s object(s)" % str(len(space_controllers)))
+            return space_controllers
+        else:
+            return []
