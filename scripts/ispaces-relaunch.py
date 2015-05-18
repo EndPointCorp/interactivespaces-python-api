@@ -8,6 +8,7 @@ sys.path.append("/home/galadmin/src/interactivespaces-python-api/")
 import time
 import json
 import pprint
+import urllib2
 import argparse
 import requests
 import commands
@@ -86,6 +87,9 @@ class InteractiveSpacesRelaunch(object):
 
         if relaunch_options['live_activity_groups']:
             self.relaunch_sequence = relaunch_options['live_activity_groups'].split(',')
+            if len(self.relaunch_sequence) == 0:
+                print colored("Relaunch sequence is empty")
+                sys.exit(1)
             print colored("Live activity groups to be relaunched: %s" % self.relaunch_sequence, 'white', attrs=['bold'])
 
         if relaunch_options['status']:
@@ -474,6 +478,7 @@ class InteractiveSpacesRelaunch(object):
         timeout = self.config.getint('relaunch', 'live_activities_timeout')
         print colored("Waiting for live activities to stop", "green")
         for wait in xrange(0, timeout):
+            time.sleep(1)
             statuses = self.get_statuses()
             statuses = {k: v for k, v in statuses.iteritems() if v != 'READY' }
             if statuses:
