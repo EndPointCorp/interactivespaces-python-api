@@ -8,6 +8,7 @@ from exception import LiveActivityException, StatusableException, ActivityExcept
 from exception import SerializerException, ControllerNotFoundException
 from exception import ControllerNotFoundException, LiveActivityGroupNotFoundException
 from exception import LiveActivityNotFoundException, ActivityNotFoundException
+from exception import SpaceNotFoundException
 from helper import SearchPattern, Searcher
 from live_activity_group import LiveActivityGroup
 from live_activity import LiveActivity

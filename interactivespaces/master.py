@@ -378,7 +378,7 @@ class Master(Communicable):
             }
 
         """
-        live_activity_group_ids = self.translate_live_activity_groups_names_to_ids(constructor_args['live_activity_groups'])
+        live_activity_group_ids = self._translate_live_activity_groups_names_to_ids(constructor_args['live_activity_groups'])
         unpacked_arguments = {}
         unpacked_arguments['space.name'] = constructor_args['space_name']
         unpacked_arguments['space.description'] = constructor_args['space_description']
@@ -468,7 +468,7 @@ class Master(Communicable):
         elif isinstance(response[0], expected_type):
             try:
                 api_object = response[0].fetch()
-                self.log.info("Getter method returned Object:%s" % api_object)
+                self.log.info("Getter method returned Object:%s" % str(api_object))
                 return api_object
             except Exception, e:
                 raise

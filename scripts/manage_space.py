@@ -1,10 +1,11 @@
 import sys
+import json
 sys.path.append("../")
+sys.path.append("./")
 sys.path.append("/home/galadmin/src/interactivespaces-python-api/")
 import interactivespaces
-from optparse import OptionParser
 import ConfigParser
-import json
+from optparse import OptionParser
 
 # TODO (wz): make support for checking not only if the LAG exists but also if it has proper members
 
@@ -41,6 +42,11 @@ class Options:
                                help="Metadata of the space in json firmat enclosed in single quotes:\
                                '[{\"key\" : \"value\"}]'",
                                metavar="METADATA")
+        self.parser.add_option("--config",
+                               dest="config",
+                               default="etc/ispaces-client.cfg",
+                               help="Path to ispaces-client.cfg",
+                               metavar="CONFIG")
 
         (self.options, self.args) = self.parser.parse_args()
 
@@ -51,7 +57,7 @@ class Options:
         return self.parser
 
 
-class ManageLiveActivityGroup:
+class ManageSpace:
     def __init__(self, options, parser):
         if not options:
             exit(1)
@@ -101,12 +107,12 @@ class ManageLiveActivityGroup:
     def metadata_up_to_date(self):
         if self.options.metadata == None or self.options.name == None:
             self.parser.print_help()
-            exit(0)
+            exit(1)
         supplied_metadata = json.loads(self.options.metadata)
         try:
-            live_activity_group = self.master.get_live_activity_group(self.query)
-            metadata = live_activity_group.metadata()
-        except interactivespaces.LiveActivityGroupNotFoundException, e:
+            space = self.master.get_space(self.query)
+            metadata = space.metadata()
+        except interactivespaces.SpaceNotFoundException, e:
             print 'False'
             exit(1)
         if supplied_metadata == metadata:
@@ -119,10 +125,10 @@ class ManageLiveActivityGroup:
     def update_metadata(self):
         if self.options.metadata == None or self.options.name == None:
             self.parser.print_help()
-            exit(0)
+            exit(1)
         supplied_metadata = json.loads(self.options.metadata)
-        live_activity_group = self.master.get_live_activity_group(self.query)
-        if live_activity_group.set_metadata(supplied_metadata):
+        space = self.master.get_space(self.query)
+        if space.set_metadata(supplied_metadata):
             print 'True'
             exit(0)
         else:
@@ -130,29 +136,34 @@ class ManageLiveActivityGroup:
             exit(1)
 
     def live_activity_groups_up_to_date(self):
-        if (not self.options.live_activities) or (not self.options.name):
+        if (not self.options.live_activity_groups) or (not self.options.name):
             self.parser.print_help()
-            exit(0)
-        supplied_live_activities = json.loads(self.options.live_activities)
+            exit(1)
+        supplied_live_activity_groups = json.loads(self.options.live_activity_groups)
         try:
-            live_activity_group = self.master.get_live_activity_group(self.query)
-            live_activity_group_live_activities = live_activity_group.live_activities()
-        except interactivespaces.LiveActivityGroupNotFoundException, e:
+            space = self.master.get_space(self.query)
+            space_live_activity_groups = space.live_activity_groups()
+        except interactivespaces.SpaceNotFoundException, e:
             print 'False'
             exit(1)
-        live_activity_group_live_activities = self._build_live_activities_list(live_activity_group_live_activities)
-        if self._compare_activities_lists(supplied_live_activities, live_activity_group_live_activities):
+
+        space_live_activity_groups = self._build_live_activity_groups_list(space_live_activity_groups)
+
+        if self._compare_live_activity_groups_lists(supplied_live_activity_groups, space_live_activity_groups):
             print 'True'
             exit(0)
         else:
             print 'False'
             exit(0)
 
-    def _compare_activity_group_lists(self, supplied_live_activities, live_activity_group_live_activities):
+    def _compare_live_activity_groups_lists(self, supplied_live_activity_groups, space_live_activity_groups):
         try:
-            map(lambda x: live_activity_group_live_activities.pop(
-                    live_activity_group_live_activities.index(x)), supplied_live_activities)
-            if len(live_activity_group_live_activities) == 0:
+            print "Supplied LAG: %s" % supplied_live_activity_groups
+            print "Space LAGs: %s" % space_live_activity_groups
+
+            map(lambda x: space_live_activity_groups.pop(
+                    space_live_activity_groups.index(x)), supplied_live_activity_groups)
+            if len(space_live_activity_groups) == 0:
                 print 'True'
                 exit(0)
             else:
@@ -162,21 +173,20 @@ class ManageLiveActivityGroup:
             print 'False'
             exit(0)
 
-    def _build_live_activity_groups_list(self, live_activities):
-        live_activities_list = []
-        for la in live_activities:
-            live_activities_list.append({"live_activity_name" : la.name(),
-                                         "space_controller_name" : la.controller()})
-        return live_activities_list
+    def _build_live_activity_groups_list(self, live_activity_groups):
+        live_activity_groups_list = []
+        for lag in live_activity_groups:
+            live_activity_groups_list.append({"live_activity_group_name" : lag['name']})
+        return live_activity_groups_list
 
-    def update_live_activity_group_list(self):
-        if not self.options.live_activities or not self.options.name:
+    def update_live_activity_groups_list(self):
+        if not self.options.live_activity_groups or not self.options.name:
             self.parser.print_help()
-            exit(0)
-        supplied_live_activities = json.loads(self.options.live_activities)
-        supplied_live_activities_ids = self.master.translate_live_activities_names_to_ids(supplied_live_activities)
-        live_activity_group = self.master.get_live_activity_group(self.query)
-        if live_activity_group.set_live_activities(supplied_live_activities_ids):
+            exit(1)
+        supplied_live_activity_groups = json.loads(self.options.live_activity_groups)
+        supplied_live_activity_groups_ids = self.master._translate_live_activity_groups_names_to_ids(supplied_live_activity_groups)
+        space = self.master.get_space(self.query)
+        if space.set_live_activity_groups(supplied_live_activity_groups_ids):
             print 'True'
             exit(0)
         else:
@@ -192,10 +202,10 @@ class ManageLiveActivityGroup:
             self.update_metadata()
         elif self.options.action == 'metadata_up_to_date':
             self.metadata_up_to_date()
-        elif self.options.action == 'update_live_activities_list':
-            self.update_live_activities_list()
-        elif self.options.action == 'live_activities_up_to_date':
-            self.live_activities_up_to_date()
+        elif self.options.action == 'update_live_activity_groups_list':
+            self.update_live_activity_groups_list()
+        elif self.options.action == 'live_activity_groups_up_to_date':
+            self.live_activity_groups_up_to_date()
         else:
             self.parser.print_help()
 
@@ -210,5 +220,5 @@ class ManageLiveActivityGroup:
 if __name__ == "__main__":
     options = Options(sys.argv).get_options()
     parser = Options(sys.argv).get_parser()
-    mlag = ManageLiveActivityGroup(options, parser)
+    mlag = ManageSpace(options, parser)
     mlag.run()

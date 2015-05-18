@@ -61,14 +61,15 @@ class Path(object):
                             'view' : '/space/%s/view.json',
                             'status' : '/space/%s/status.json',
                             'delete' : '/space/%s/delete.html',
-                            'new' : '/space/%s/new.json',
+                            'new' : '/space/new',
                             'shutdown' : '/space/%s/shutdown.json',
                             'startup' : '/space/%s/startup.json',
                             'activate' : '/space/%s/activate.json',
                             'deactivate' : '/space/%s/deactivate.json',
                             'deploy' : '/space/%s/deploy.json',
                             'configure' : '/space/%s/configure.json',
-                            'metadata' : '/space/%s/metadata/edit'
+                            'metadata' : '/space/%s/metadata/edit',
+                            'edit' : '/space/%s/edit.json'
                             },
                        'SpaceController' :{
                             'new' : '/spacecontroller/new',
@@ -87,7 +88,7 @@ class Path(object):
         """
         Should receive caller class name and caller method in order
         to return a proper route in the master API
-            
+
         :rtype: string
         """
         try:

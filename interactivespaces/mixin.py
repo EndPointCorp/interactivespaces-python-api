@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 
-import urllib2
+import os
+import sys
 import json
-from abstract import Path
-from misc import Logger
-from exception import CommunicableException
+import urllib2
 import requests
 import urlparse
-import os
+from misc import Logger
+from abstract import Path
+from exception import CommunicableException
 
 """
     :todo: aggregate mixins common for LiveActivity, LiveActivityGroup and Space into one
 """
+
 
 class Communicable(object):
     def __init__(self):
