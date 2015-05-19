@@ -530,11 +530,11 @@ class Master(Communicable):
         """
         Should iterate over response from Master API and filter
         live activites with regards to their name
-        
+
         :param response: response['data'] from master API
-        
+
         :param search_pattern: dictionary where values may be regexps
-        
+
         :rtype: list of Activity objects
         """
         activities = []
