@@ -16,6 +16,7 @@ import eventlet
 import subprocess
 import ConfigParser
 from interactivespaces import Master
+from interactivespaces import LiveActivityGroup
 from termcolor import colored
 from subprocess import CalledProcessError
 from interactivespaces.exception import ControllerNotFoundException
@@ -465,8 +466,12 @@ class InteractiveSpacesRelaunch(object):
             sys.stdout.flush()
             live_activity_group = self.master.get_live_activity_group(
                 {'live_activity_group_name' : live_activity_group_name})
-            for live_activity in live_activity_group.live_activities():
-                statuses[live_activity.name()] = live_activity.status()
+            if type(live_activity_group) == LiveActivityGroup:
+                for live_activity in live_activity_group.live_activities():
+                    statuses[live_activity.name()] = live_activity.status()
+            else:
+                print "Live activity group not found %s" % live_activity_group_name
+                sys.exit(1)
         return statuses
 
     @debug
