@@ -353,6 +353,7 @@ class Master(Communicable):
             "space_controller_name" : "ISCtlDispAScreen00"}]\
             }
         """
+        self.log.info("Live activities that will comprise new live activity group: %s" % constructor_args['live_activities'])
         live_activity_ids = self._translate_live_activities_names_to_ids(constructor_args['live_activities'])
         unpacked_arguments = {}
         unpacked_arguments['liveActivityGroup.name'] = constructor_args['live_activity_group_name']
@@ -427,6 +428,7 @@ class Master(Communicable):
         """
         live_activity_ids = []
         for la_data in live_activities:
+            self.log.info("Getting Live Activity for data: %s" % la_data)
             live_activity = self.get_live_activity(la_data)
             live_activity_ids.append(live_activity.id())
         self.log.info("Translated %s live_activity_names to ids with a result of %s" % (len(live_activity_ids), live_activity_ids) )

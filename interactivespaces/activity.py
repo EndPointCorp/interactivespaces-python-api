@@ -75,6 +75,7 @@ class Activity(Fetchable, Deletable):
     def fetch(self):
         """ Should retrieve data from Master API"""
         self.data_hash = self._refresh_object(self.absolute_url)
+        return self
 
     def name(self):
         """ Should return live activity name"""

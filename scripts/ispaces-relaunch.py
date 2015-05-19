@@ -470,7 +470,7 @@ class InteractiveSpacesRelaunch(object):
                 for live_activity in live_activity_group.live_activities():
                     statuses[live_activity.name()] = live_activity.status()
             else:
-                print "Live activity group not found %s" % live_activity_group_name
+                print "Live activity group not found %s - please make sure that relaunch sequence contains existing group names" % live_activity_group_name
                 sys.exit(1)
         return statuses
 

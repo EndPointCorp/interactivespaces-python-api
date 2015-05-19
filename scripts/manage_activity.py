@@ -82,6 +82,7 @@ class ManageActivity:
             print 'IS master url not provided in options'
             exit(1)
         zipfile = self._fetch_from_url()
+
         if self.master.new_activity({'zip_file_handler': zipfile}):
             zipfile.close()
             print 'True'
@@ -89,6 +90,7 @@ class ManageActivity:
         else:
             zipfile.close()
             raise Exception("Could not upload activity")
+            exit(1)
 
     def run(self):
         if self.options.action == 'upload':
@@ -103,8 +105,13 @@ class ManageActivity:
     def _fetch_from_url(self):
         downloader = urllib.URLopener()
         activity_tmp_file = tempfile.NamedTemporaryFile(delete=False)
-        downloader.retrieve(self.options.url,
-                            activity_tmp_file.name)
+        try:
+            downloader.retrieve(self.options.url,
+                                activity_tmp_file.name)
+        except IOError, e:
+            print "Could not get activity archive from %s" % self.options.url
+            raise
+            exit(1)
         return activity_tmp_file
 
     def _init_config(self):
