@@ -256,6 +256,8 @@ class InteractiveSpacesRelaunch(object):
             return True
         else:
             return False
+            print colored('Could not restart Interactivespaces Master within specified timeout', 'red')
+            sys.exit(1)
 
     @debug
     def verify_controllers_tmux_sessions(self):
