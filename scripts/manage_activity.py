@@ -83,7 +83,10 @@ class ManageActivity:
             exit(1)
         zipfile = self._fetch_from_url()
 
-        if self.master.new_activity({'zip_file_handler': zipfile}):
+        if self.master.new_activity({'zip_file_handler': zipfile,
+                                     'activity_name': self.options.name,
+                                     'activity_version': self.options.version
+                                     }):
             zipfile.close()
             print 'True'
             exit(0)

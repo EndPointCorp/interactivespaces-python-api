@@ -312,7 +312,9 @@ class Master(Communicable):
         Creates a new activity and returns it
         :param constructor_args: dictionary containing all of below keys::
             {\
-            "zip_file_handler": "zipfile object (mandatory)"\
+            "zip_file_handler": "zipfile object (mandatory)",\
+            "activity_name" : "some name",\
+            "activity_version": "some version"\
             }
         :rtype: Activity or False
         """
