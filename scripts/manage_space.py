@@ -114,7 +114,7 @@ class ManageSpace:
             metadata = space.metadata()
         except interactivespaces.SpaceNotFoundException, e:
             print 'False'
-            exit(1)
+            exit(0)
         if supplied_metadata == metadata:
             print 'True'
             exit(0)
@@ -145,7 +145,7 @@ class ManageSpace:
             space_live_activity_groups = space.live_activity_groups()
         except interactivespaces.SpaceNotFoundException, e:
             print 'False'
-            exit(1)
+            exit(0)
 
         space_live_activity_groups = self._build_live_activity_groups_list(space_live_activity_groups)
 

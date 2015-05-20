@@ -114,7 +114,7 @@ class ManageLiveActivityGroup:
             metadata = live_activity_group.metadata()
         except interactivespaces.LiveActivityGroupNotFoundException, e:
             print 'False'
-            exit(1)
+            exit(0)
         if supplied_metadata == metadata:
             print 'True'
             exit(0)
@@ -145,7 +145,7 @@ class ManageLiveActivityGroup:
             live_activity_group_live_activities = live_activity_group.live_activities()
         except interactivespaces.LiveActivityGroupNotFoundException, e:
             print 'False'
-            exit(1)
+            exit(0)
         live_activity_group_live_activities = self._build_live_activities_list(live_activity_group_live_activities)
         if self._compare_activities_lists(supplied_live_activities, live_activity_group_live_activities):
             print 'True'
