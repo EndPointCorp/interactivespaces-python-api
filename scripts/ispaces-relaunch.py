@@ -247,10 +247,10 @@ class InteractiveSpacesRelaunch(object):
         """
         cmd_process = subprocess.Popen(self.master_stop_command, shell=True, stdout=subprocess.PIPE)
         cmd_process = subprocess.Popen(self.master_destroy_tmux_command, shell=True, stdout=subprocess.PIPE)
-        self.simple_wait('kill_master_process', 3)
+        self.simple_wait('kill_master_process', 5)
         cmd_process = subprocess.Popen(self.master_launch_command, shell=True, stdout=subprocess.PIPE)
         if self.api_wait('start_master',
-                          timeout=60,
+                          timeout=120,
                           url=self.create_uri_for(self.config.get('master', 'verify_url'))
                         ):
             return True
@@ -633,6 +633,7 @@ if __name__ == '__main__':
     parser.add_argument("--full-relaunch", help="Additionally relaunch controllers and master process", action="store_true")
     parser.add_argument("--master-only", help="Relaunch the master process only - remember to relaunch controllers after that", action="store_true")
     parser.add_argument("--controllers-only", help="Relaunch the controllers only", action="store_true")
+    parser.add_argument("--controllers", help="List of controllers to restart e.g. (valid only with --controllers-only) '42-a,42-b,42-c'")
     parser.add_argument("--no-live-activities", help="Don't relaunch live activities", action="store_true")
     parser.add_argument("--config", help="Provide path to config file - /home/galadmin/etc/ispaces-client.conf by default")
     parser.add_argument("--live-activity-groups", help="Provide quoted, comma-delimited names of live activity groups to manage e.g. --live-activity-groups='Touchscreen Browser','Media Services' ")
@@ -643,6 +644,7 @@ if __name__ == '__main__':
     relaunch_options = { 'full_relaunch': args.full_relaunch,
                          'master_only': args.master_only,
                          'controllers_only': args.controllers_only,
+                         'controllers': args.controllers,
                          'no_live_activities': args.no_live_activities,
                          'live_activity_groups': args.live_activity_groups,
                          'status': args.status
