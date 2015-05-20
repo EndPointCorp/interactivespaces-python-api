@@ -466,7 +466,7 @@ class Master(Communicable):
         if len(response) > 1:
             raise exception("API query returned more than one row")
         elif len(response) == 0:
-            raise exception
+            return None
         elif isinstance(response[0], expected_type):
             try:
                 api_object = response[0].fetch()
