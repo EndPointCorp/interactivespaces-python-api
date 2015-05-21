@@ -186,7 +186,7 @@ class ManageLiveActivityGroup:
             self.parser.print_help()
             exit(0)
         supplied_live_activities = json.loads(self.options.live_activities)
-        supplied_live_activities_ids = self.master.translate_live_activities_names_to_ids(supplied_live_activities)
+        supplied_live_activities_ids = self.master._translate_live_activities_names_to_ids(supplied_live_activities)
         live_activity_group = self.master.get_live_activity_group(self.query)
         if live_activity_group.set_live_activities(supplied_live_activities_ids):
             print 'True'
