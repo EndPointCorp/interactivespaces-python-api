@@ -111,7 +111,10 @@ class ManageSpace:
         supplied_metadata = json.loads(self.options.metadata)
         try:
             space = self.master.get_space(self.query)
-            metadata = space.metadata()
+            if space:
+                metadata = space.metadata()
+            else:
+                metadata = {}
         except interactivespaces.SpaceNotFoundException, e:
             print 'False'
             exit(0)

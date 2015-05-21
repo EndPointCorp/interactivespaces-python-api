@@ -111,7 +111,10 @@ class ManageLiveActivityGroup:
         supplied_metadata = json.loads(self.options.metadata)
         try:
             live_activity_group = self.master.get_live_activity_group(self.query)
-            metadata = live_activity_group.metadata()
+            if live_activity_group:
+                metadata = live_activity_group.metadata()
+            else:
+                metadata = {}
         except interactivespaces.LiveActivityGroupNotFoundException, e:
             print 'False'
             exit(0)

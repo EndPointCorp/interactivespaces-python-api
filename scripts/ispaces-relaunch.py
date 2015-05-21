@@ -69,7 +69,7 @@ class InteractiveSpacesRelaunch(object):
         else:
             self.relaunch_live_activities = True
 
-        if relaunch_options['full_relaunch']:
+        if relaunch_options['full_relaunch'] or relaunch_options['full']:
             print colored("Performing full relaunch.", 'white', attrs=['bold'])
             self.relaunch_controllers = True
             self.relaunch_master = True
@@ -85,6 +85,8 @@ class InteractiveSpacesRelaunch(object):
             self.relaunch_controllers = True
             self.relaunch_master = False
             self.relaunch_live_activities = False
+            if relaunch_options['controllers']:
+                self.controllers_to_relaunch=relaunch_options['controllers'].split(',')
 
         if relaunch_options['live_activity_groups']:
             self.relaunch_sequence = relaunch_options['live_activity_groups'].split(',')
@@ -133,7 +135,13 @@ class InteractiveSpacesRelaunch(object):
     @debug
     def init_controllers_config(self):
         config = {}
-        controllers_list = self.config.get('global', 'controllers_list').split(',')
+        if self.controllers_to_relaunch:
+            controllers_list = self.controllers_to_relaunch
+        else:
+            controllers_list = self.config.get('global', 'controllers_list').split(',')
+
+        print colored("Controller(s) to relaunch: %s" % (',').join(controllers_list), 'green')
+
         for controller_name in controllers_list:
             config[controller_name] = {}
             config[controller_name]['name'] = self.config.get(controller_name, 'name')
@@ -633,9 +641,10 @@ if __name__ == '__main__':
     os.unsetenv('TMUX')
     parser = argparse.ArgumentParser(description='Relaunch interactivespaces')
     parser.add_argument("--full-relaunch", help="Additionally relaunch controllers and master process", action="store_true")
+    parser.add_argument("--full", help="Alias for --full-relaunch", action="store_true")
     parser.add_argument("--master-only", help="Relaunch the master process only - remember to relaunch controllers after that", action="store_true")
     parser.add_argument("--controllers-only", help="Relaunch the controllers only", action="store_true")
-    parser.add_argument("--controllers", help="List of controllers to restart e.g. (valid only with --controllers-only) '42-a,42-b,42-c'")
+    parser.add_argument("--controllers", help="Comma separated of controllers to restart e.g. : --controllers=42-a,42-b,42-c (works with --controllers-only only)")
     parser.add_argument("--no-live-activities", help="Don't relaunch live activities", action="store_true")
     parser.add_argument("--config", help="Provide path to config file - /home/galadmin/etc/ispaces-client.conf by default")
     parser.add_argument("--live-activity-groups", help="Provide quoted, comma-delimited names of live activity groups to manage e.g. --live-activity-groups='Touchscreen Browser','Media Services' ")
@@ -644,6 +653,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     relaunch_options = { 'full_relaunch': args.full_relaunch,
+                         'full': args.full,
                          'master_only': args.master_only,
                          'controllers_only': args.controllers_only,
                          'controllers': args.controllers,
