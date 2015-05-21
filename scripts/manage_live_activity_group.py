@@ -145,7 +145,10 @@ class ManageLiveActivityGroup:
         supplied_live_activities = json.loads(self.options.live_activities)
         try:
             live_activity_group = self.master.get_live_activity_group(self.query)
-            live_activity_group_live_activities = live_activity_group.live_activities()
+            if live_activity_group:
+                live_activity_group_live_activities = live_activity_group.live_activities()
+            else:
+                live_activity_group_live_activities = []
         except interactivespaces.LiveActivityGroupNotFoundException, e:
             print 'False'
             exit(0)
