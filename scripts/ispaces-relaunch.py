@@ -50,7 +50,7 @@ class InteractiveSpacesRelaunch(object):
     @debug
     def __init__(self, config_path, relaunch_options):
         self.config_path = config_path
-        self.init_config()
+        self.init_config(relaunch_options)
         self.master = Master(host=self.host,
                              port=self.port,
                              logfile_path=self.log_path)
@@ -85,8 +85,6 @@ class InteractiveSpacesRelaunch(object):
             self.relaunch_controllers = True
             self.relaunch_master = False
             self.relaunch_live_activities = False
-            if relaunch_options['controllers']:
-                self.controllers_to_relaunch=relaunch_options['controllers'].split(',')
 
         if relaunch_options['live_activity_groups']:
             self.relaunch_sequence = relaunch_options['live_activity_groups'].split(',')
@@ -106,7 +104,7 @@ class InteractiveSpacesRelaunch(object):
                 print "Live activity groups: " + colored("%s" % (',').join(self.relaunch_sequence), 'magenta')
 
     @debug
-    def init_config(self):
+    def init_config(self, relaunch_options):
         self.config = ConfigParser.RawConfigParser()
         self.config.read(self.config_path)
         self.host = self.config.get('master', 'host')
@@ -125,7 +123,7 @@ class InteractiveSpacesRelaunch(object):
 
         self.pp = pprint.PrettyPrinter(indent=4)
 
-        self.controllers_data = self.init_controllers_config()
+        self.controllers_data = self.init_controllers_config(relaunch_options)
 
 
     @debug
@@ -133,10 +131,10 @@ class InteractiveSpacesRelaunch(object):
         return "http://" + self.host + ":" + self.port + location
 
     @debug
-    def init_controllers_config(self):
+    def init_controllers_config(self, relaunch_options):
         config = {}
-        if self.controllers_to_relaunch:
-            controllers_list = self.controllers_to_relaunch
+        if relaunch_options['controllers']:
+            controllers_list = relaunch_options['controllers'].split(',')
         else:
             controllers_list = self.config.get('global', 'controllers_list').split(',')
 
