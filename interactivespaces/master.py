@@ -151,7 +151,7 @@ class Master(Communicable):
         self.log.info("Trying to retrieve url=%s" % url)
         response = self._api_get_json(url)
         self.log.debug('Got response for "get_live_activity_groups" %s ' % str(response))
-        self.log.info('get_live_activity_groups returned %s objects - filtering with %s' % str(len(response), search_pattern))
+        self.log.info('get_live_activity_groups returned %s objects - filtering with %s' % (str(len(response)), search_pattern))
         live_activity_groups = self._filter_live_activity_groups(response, search_pattern)
         return live_activity_groups
 
