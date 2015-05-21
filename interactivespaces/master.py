@@ -387,8 +387,12 @@ class Master(Communicable):
         unpacked_arguments['space.description'] = constructor_args['space_description']
         unpacked_arguments['_eventId_save'] = 'Save'
         unpacked_arguments['liveActivityGroupIds'] = live_activity_group_ids
-        space = Space().new(self.uri, unpacked_arguments)
-        return space
+        if not self._api_object_exists(Space, constructor_args, self.get_space):
+            space = Space().new(self.uri, unpacked_arguments)
+            self.log.info("Master:new_space:%s" % space)
+            return space
+        else:
+            return []
 
     def new_named_script(self, name, description, language, content, scheduled=None):
         """Creates a new named script."""
