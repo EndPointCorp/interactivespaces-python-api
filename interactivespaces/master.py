@@ -318,6 +318,8 @@ class Master(Communicable):
             }
         :rtype: Activity or False
         """
+        self.log.info("Going to create new activity with arguments: %s" % constructor_args)
+
         if not self._api_object_exists(Activity, constructor_args, self.get_activity):
             activity = Activity().new(self.uri, constructor_args)
             self.log.info("Master:new_activity returned activity:%s" % activity)
