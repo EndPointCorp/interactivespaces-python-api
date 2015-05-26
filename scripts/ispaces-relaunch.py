@@ -493,7 +493,7 @@ class InteractiveSpacesRelaunch(object):
         for wait in xrange(0, timeout):
             time.sleep(1)
             statuses = self.get_statuses()
-            statuses = {k: v for k, v in statuses.iteritems() if v != 'READY' or v != 'DOESNT_EXIST' } #add DOESNT_EXIST here
+            statuses = {k: v for k, v in statuses.iteritems() if v != 'READY' } #add DOESNT_EXIST here
             if statuses:
                 print colored(".", 'red'),
                 sys.stdout.flush()
