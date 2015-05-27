@@ -157,15 +157,16 @@ class Communicable(object):
         url = url + "?" + query
         try:
             post_response = session.post(url=url, data=payload, files=files)
+            if post_response.status_code == 200:
+                self.log.info("_api_post_json returned 200 with post_response.url=%s" % post_response.url)
+                return post_response
+            else:
+                self.log.info("_api_post_json returned post_response.status_code %s" % post_response.status_code)
+                return False
         except requests.exceptions.ConnectionError, e:
             self.log.warn("_api_post_json_no_cookies with payload: %s and url %s returned 500 but I'm NOT failing" % (payload, url))
+            return True
 
-        if post_response.status_code == 200:
-            self.log.info("_api_post_json returned 200 with post_response.url=%s" % post_response.url)
-            return post_response
-        else:
-            self.log.info("_api_post_json returned post_response.status_code %s" % post_response.status_code)
-            return False
 
     def _api_post_html(self, command, query=None, data=None):
         """Sends data to the master."""
