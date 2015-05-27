@@ -567,7 +567,7 @@ class InteractiveSpacesRelaunch(object):
         """
         @summary: sets activated/running state all live activity groups by deploying, configuring and activating them
         """
-        print colored("Attempting (D)eploy/(C)onfigure/(A)ctivate of live activity groups:", 'green')
+        print colored("Attempting (D)eploy -> (C)onfigure -> (S)tartup -> (A)ctivate of live activity groups:", 'green')
         for live_activity_group in self.relaunch_container:
             print colored(" %s " % live_activity_group.name(), 'magenta'),
             sys.stdout.flush()
@@ -577,15 +577,17 @@ class InteractiveSpacesRelaunch(object):
             print colored("C", 'blue'),
             sys.stdout.flush()
             live_activity_group.send_configure()
-            print colored("A", 'blue')
-            sys.stdout.flush()
 
             desired_state = self.config.get('relaunch_states', live_activity_group.name())
 
             if desired_state == 'activate':
                 live_activity_group.send_activate()
+                print colored("A", 'blue')
+                sys.stdout.flush()
             elif desired_state == 'startup':
                 live_activity_group.send_startup()
+                print colored("S", 'blue')
+                sys.stdout.flush()
             else:
                 print colored("Not managing state of %s live activity group because the desired state is %s" % (live_activity_group.name(), desired_state), 'red')
 
