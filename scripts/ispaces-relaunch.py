@@ -444,7 +444,7 @@ class InteractiveSpacesRelaunch(object):
     @debug
     def activate_all_live_activity_groups(self):
         while self.startup_attempts >= 0:
-            self.activate()
+            self.set_state()
             self.status_refresh()
             self.relaunched = self.check_if_activated()
             if self.relaunched:
@@ -493,7 +493,9 @@ class InteractiveSpacesRelaunch(object):
         for wait in xrange(0, timeout):
             time.sleep(1)
             statuses = self.get_statuses()
-            statuses = {k: v for k, v in statuses.iteritems() if v != 'READY' } #add DOESNT_EXIST here
+            statuses = {k: v for k, v in statuses.iteritems() if v != 'READY' }
+            statuses = {k: v for k, v in statuses.iteritems() if v != 'DOESNT_EXIST' }
+
             if statuses:
                 print colored(".", 'red'),
                 sys.stdout.flush()
@@ -561,9 +563,9 @@ class InteractiveSpacesRelaunch(object):
             live_activity_group.send_status_refresh()
 
     @debug
-    def activate(self):
+    def set_state(self):
         """
-        @summary: activates all live activity groups by deploying, configuring and activating them
+        @summary: sets activated/running state all live activity groups by deploying, configuring and activating them
         """
         print colored("Attempting (D)eploy/(C)onfigure/(A)ctivate of live activity groups:", 'green')
         for live_activity_group in self.relaunch_container:
@@ -577,7 +579,17 @@ class InteractiveSpacesRelaunch(object):
             live_activity_group.send_configure()
             print colored("A", 'blue')
             sys.stdout.flush()
-            live_activity_group.send_activate()
+
+            desired_state = self.config.get('relaunch_states', live_activity_group.name())
+
+            if desired_state == 'activate':
+                live_activity_group.send_activate()
+            elif desired_state == 'startup':
+                live_activity_group.send_startup()
+            else:
+                print colored("Not managing state of %s live activity group because the desired state is %s" % (live_activity_group.name(), desired_state), 'red')
+
+
         print ""
 
     @debug
