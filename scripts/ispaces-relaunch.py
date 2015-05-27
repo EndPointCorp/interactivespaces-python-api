@@ -589,7 +589,9 @@ class InteractiveSpacesRelaunch(object):
                 print colored("S", 'blue')
                 sys.stdout.flush()
             else:
-                print colored("Not managing state of %s live activity group because the desired state is %s" % (live_activity_group.name(), desired_state), 'red')
+                live_activity_group.send_activate()
+                print colored("A", 'blue')
+                sys.stdout.flush()
 
 
         print ""
