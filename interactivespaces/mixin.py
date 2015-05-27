@@ -133,13 +133,13 @@ class Communicable(object):
     def _api_post_json_no_cookies(self, url, payload, file_handler=None):
         """
         Sends data to the master without looking for cookies
-        
+
         :rtype: string or False
-        
+
         :param payload: dictionary containing data to send
-        
+
         :param url: string containing url that we talk to
-        
+
         :param file_handler: path to local zipfile - if provided, a multi-part
         post will be sent to the URL
         """
@@ -155,7 +155,11 @@ class Communicable(object):
         get_response = session.get(url)
         query = urlparse.urlparse(get_response.url).query
         url = url + "?" + query
-        post_response = session.post(url=url, data=payload, files=files) 
+        try:
+            post_response = session.post(url=url, data=payload, files=files)
+        except requests.exceptions.ConnectionError, e:
+            self.log.warn("_api_post_json_no_cookies with payload: %s and url %s returned 500 but I'm NOT failing" % (payload, url))
+
         if post_response.status_code == 200:
             self.log.info("_api_post_json returned 200 with post_response.url=%s" % post_response.url)
             return post_response
