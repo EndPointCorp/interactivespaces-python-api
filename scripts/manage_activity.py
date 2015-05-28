@@ -56,7 +56,7 @@ class ManageActivity:
         self.options = options
         self.config_path = self.options.config
         self._init_config()
-        self.master = interactivespaces.Master(self.host, self.port)
+        self.master = interactivespaces.Master(self.host, self.port, logfile_path=self.log_path)
 
     def exists(self):
         if self.options.name:
@@ -82,13 +82,18 @@ class ManageActivity:
             print 'IS master url not provided in options'
             exit(1)
         zipfile = self._fetch_from_url()
-        if self.master.new_activity({'zip_file_handler': zipfile}):
+
+        if self.master.new_activity({'zip_file_handler': zipfile,
+                                     'activity_name': self.options.name,
+                                     'activity_version': self.options.version
+                                     }):
             zipfile.close()
             print 'True'
             exit(0)
         else:
             zipfile.close()
             raise Exception("Could not upload activity")
+            exit(1)
 
     def run(self):
         if self.options.action == 'upload':
@@ -103,8 +108,13 @@ class ManageActivity:
     def _fetch_from_url(self):
         downloader = urllib.URLopener()
         activity_tmp_file = tempfile.NamedTemporaryFile(delete=False)
-        downloader.retrieve(self.options.url,
-                            activity_tmp_file.name)
+        try:
+            downloader.retrieve(self.options.url,
+                                activity_tmp_file.name)
+        except IOError, e:
+            print "Could not get activity archive from %s" % self.options.url
+            raise
+            exit(1)
         return activity_tmp_file
 
     def _init_config(self):
@@ -112,6 +122,7 @@ class ManageActivity:
         self.config.read(self.config_path)
         self.host = self.config.get('master', 'host')
         self.port = self.config.get('master', 'port')
+        self.log_path = self.config.get('global', 'logfile_path')
 
 if __name__ == "__main__":
     options = Options(sys.argv).get_options()

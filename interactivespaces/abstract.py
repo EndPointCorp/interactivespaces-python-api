@@ -202,7 +202,8 @@ class Path(object):
                             'set_config' : WebSocketCall('/liveactivity/configuration/set'),
                             'clean_tmp' : '/liveactivity/%s/cleantmpdata.json',
                             'clean_permanent' : '/liveactivity/%s/cleanpermanentdata.json',
-                            'metadata' : '/liveactivity/%s/metadata/edit'
+                            'metadata' : '/liveactivity/%s/metadata/edit',
+                            'config' : '/liveactivity/%s/config/edit'
                             },
                        'LiveActivityGroup' : {
                             'view' : '/liveactivitygroup/%s/view.json',
@@ -223,13 +224,15 @@ class Path(object):
                             'view' : '/space/%s/view.json',
                             'status' : '/space/%s/status.json',
                             'delete' : '/space/%s/delete.html',
+                            'new' : '/space/new',
                             'shutdown' : '/space/%s/shutdown.json',
                             'startup' : '/space/%s/startup.json',
                             'activate' : '/space/%s/activate.json',
                             'deactivate' : '/space/%s/deactivate.json',
                             'deploy' : '/space/%s/deploy.json',
                             'configure' : '/space/%s/configure.json',
-                            'metadata' : '/space/%s/metadata/edit'
+                            'metadata' : '/space/%s/metadata/edit',
+                            'edit' : '/space/%s/edit.json'
                             },
                        'SpaceController' :{
                             'new' : '/spacecontroller/new',

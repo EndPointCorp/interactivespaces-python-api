@@ -43,6 +43,11 @@ class Options:
                                default=None,
                                help="Metadata of the live activity in format '{\"asd\" : \"value\"}' ",
                                metavar="METADATA")
+        self.parser.add_option("--configuration",
+                               dest="configuration",
+                               default=None,
+                               help="Configuration of the live activity in format '{\"asd\" : \"value\"}' ",
+                               metavar="CONFIGURATION")
         self.parser.add_option("--config",
                                dest="config",
                                default="etc/ispaces-client.cfg",
@@ -66,13 +71,15 @@ class ManageLiveActivity:
         self.options = options
         self.config_path = self.options.config
         self._init_config()
-        self.master = interactivespaces.Master(self.host, self.port)
-        self.query = {'activity_name': self.options.activity_name,
+        self.master = interactivespaces.Master(self.host, self.port, logfile_path=self.log_path)
+        self.query = {
+                      'activity_name': self.options.activity_name,
                       'live_activity_name': self.options.name,
-                      'metadata' : self.options.metadata,
-                      'space_controller_name' : self.options.controller_name,
-                      'live_activity_description' : self.options.description
-                     }
+                      'metadata': self.options.metadata,
+                      'config': self.options.configuration,
+                      'space_controller_name': self.options.controller_name,
+                      'live_activity_description': self.options.description
+                      }
 
     def exists(self):
         if self.options.name and self.options.controller_name:
@@ -82,7 +89,7 @@ class ManageLiveActivity:
             exit(1)
         try:
             live_activity = self.master.get_live_activity(self.query)
-        except interactivespaces.LiveActivityNotFoundException, e:
+        except interactivespaces.LiveActivityNotFoundException:
             print 'False'
             exit(0)
         if type(live_activity) == interactivespaces.LiveActivity:
@@ -111,7 +118,10 @@ class ManageLiveActivity:
         supplied_metadata = json.loads(self.options.metadata)
         try:
             live_activity = self.master.get_live_activity(self.query)
-            metadata = live_activity.metadata()
+            if live_activity:
+                metadata = live_activity.metadata()
+            else:
+                metadata = {}
         except interactivespaces.LiveActivityNotFoundException, e:
             print 'False'
             exit(0)
@@ -136,6 +146,39 @@ class ManageLiveActivity:
             print 'False'
             exit(1)
 
+    def config_up_to_date(self):
+        if self.options.configuration == None:
+            self.parser.print_help()
+            exit(0)
+        supplied_configuration = json.loads(self.options.configuration)
+        try:
+            live_activity = self.master.get_live_activity(self.query)
+            configuration = live_activity.config()
+        except interactivespaces.LiveActivityNotFoundException, e:
+            print 'False'
+            exit(0)
+
+        if supplied_configuration == configuration:
+            print 'True'
+            exit(0)
+        else:
+            print 'False'
+            exit(0)
+
+    def update_config(self):
+        if self.options.configuration == None:
+            self.parser.print_help()
+            exit(0)
+        supplied_configuration = json.loads(self.options.configuration)
+        live_activity = self.master.get_live_activity(self.query)
+        if live_activity.set_config(supplied_configuration):
+            print 'True'
+            exit(0)
+        else:
+            print 'False'
+            exit(1)
+
+
     def run(self):
         if self.options.action == 'create':
             self.create()
@@ -145,6 +188,10 @@ class ManageLiveActivity:
             self.update_metadata()
         elif self.options.action == 'metadata_up_to_date':
             self.metadata_up_to_date()
+        elif self.options.action == 'update_config':
+            self.update_config()
+        elif self.options.action == 'config_up_to_date':
+            self.config_up_to_date()
         else:
             self.parser.print_help()
 
@@ -155,6 +202,7 @@ class ManageLiveActivity:
         self.config.read(self.config_path)
         self.host = self.config.get('master', 'host')
         self.port = self.config.get('master', 'port')
+        self.log_path = self.config.get('global', 'logfile_path')
 
 if __name__ == "__main__":
     options = Options(sys.argv).get_options()

@@ -3,7 +3,7 @@
 
 from mixin import Fetchable, Statusable, Shutdownable, Startupable
 from mixin import Deletable, Activatable, Configurable, Cleanable
-from mixin import Metadatable, Deployable
+from mixin import Metadatable, Deployable, Configable
 from exception import LiveActivityException
 from serializer import LiveActivitySerializer
 from misc import Logger
@@ -11,7 +11,7 @@ from abstract import Path
 
 class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
                    Startupable, Activatable, Configurable, Cleanable,
-                   Metadatable, Deployable):
+                   Metadatable, Deployable, Configable):
     """
     Should be responsible for managing single LiveActivity
 
@@ -114,6 +114,12 @@ class LiveActivity(Fetchable, Statusable, Deletable, Shutdownable,
         Should return LiveActivity metadata
         """
         return self.data_hash['metadata']
+
+    def config(self):
+        """
+        Should return LiveActivity config
+        """
+        return self.get_config()
 
     def id(self):
         """

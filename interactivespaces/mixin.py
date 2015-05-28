@@ -1,19 +1,19 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+import sys
 import json
-from abstract import Path
-from misc import Logger
-from exception import CommunicableException
 import urllib2
 import requests
 import urlparse
-import os
-import re
+from misc import Logger
+from abstract import Path
+from exception import CommunicableException
 
 """
     :todo: aggregate mixins common for LiveActivity, LiveActivityGroup and Space into one
 """
+
 
 class Communicable(object):
     def __init__(self):
@@ -53,7 +53,7 @@ class Communicable(object):
             1. return if object that tries to retrieve the url
             has route that is already staticaly defined
             2. try to compose the custom route on the basis of URL data
-            
+
         :rtype: string
         """
         if class_name and method_name:
@@ -79,13 +79,18 @@ class Communicable(object):
 
     def _api_get_json(self, url):
         """
-        Sends a json request to the master. Returns only ['data'] part of the json response 
-        
+        Sends a json request to the master. Returns only ['data'] part of the json response
+
         :rtype: dict or bool
         """
-        response = url.call()
-        #response = urllib2.urlopen(url)
-        data = json.loads(response.read())
+
+        try:
+            response = url.call()
+            data = json.loads(response.read())
+        except urllib2.URLError, e:
+            self.log.error("Could not communicate with Master API becasue: %s" % e)
+            print "Could not communicate with Master API because %s" % e
+            sys.exit(1)
 
         try:
             out_data = data['data']
@@ -94,36 +99,41 @@ class Communicable(object):
 
         if data['result'] != 'success':
             self.log.info("Could not retrieve data for URL=%s" % url)
-            return False
+            return {}
 
         if out_data:
             return out_data
         else:
-            return True
+            return {}
 
-    def _api_get_html(self, url):
+    def _api_get_html(self, url, content=False):
         """
         Sends a request to the master, returns True if 200, False if anything else.
-        
-        :rtype: bool
+
+        :rtype: str
         """
         response = urllib2.urlopen(url)
         data = response.read()
         if response.getcode() == 200:
-            return True
+            if content == True:
+                return data
+            else:
+                self.log.info("No data returned for URL=%s" % url)
+                return ''
         else:
-            return False
+            self.log.info("Could not retrieve data for URL=%s - returned HTTP code %s" % (url,response.getcode()))
+            return ''
 
     def _api_post_json(self, url, payload, file_handler=None):
         """
         Sends data to the master.
-        
+
         :rtype: string or False
-        
+
         :param payload: dictionary containing data to send
-        
+
         :param url: string containing url that we talk to
-        
+
         :param file_handler: path to local zipfile - if provided, a multi-part post will be sent to the URL
         """
         return url.call(cookies=True, params=payload, file_handler=file_handler)
@@ -144,13 +154,13 @@ class Communicable(object):
     def _api_post_json_no_cookies(self, url, payload, file_handler=None):
         """
         Sends data to the master without looking for cookies
-        
+
         :rtype: string or False
-        
+
         :param payload: dictionary containing data to send
-        
+
         :param url: string containing url that we talk to
-        
+
         :param file_handler: path to local zipfile - if provided, a multi-part
         post will be sent to the URL
         """
@@ -166,13 +176,18 @@ class Communicable(object):
         get_response = session.get(url)
         query = urlparse.urlparse(get_response.url).query
         url = url + "?" + query
-        post_response = session.post(url=url, data=payload, files=files) 
-        if post_response.status_code == 200:
-            self.log.info("_api_post_json returned 200 with post_response.url=%s" % post_response.url)
-            return post_response
-        else:
-            self.log.info("_api_post_json returned post_response.status_code %s" % post_response.status_code)
-            return False
+        try:
+            post_response = session.post(url=url, data=payload, files=files)
+            if post_response.status_code == 200:
+                self.log.info("_api_post_json returned 200 with post_response.url=%s" % post_response.url)
+                return post_response
+            else:
+                self.log.info("_api_post_json returned post_response.status_code %s" % post_response.status_code)
+                return False
+        except requests.exceptions.ConnectionError, e:
+            self.log.warn("_api_post_json_no_cookies with payload: %s and url %s returned 500 but I'm NOT failing" % (payload, url))
+            return True
+
 
     def _api_post_html(self, command, query=None, data=None):
         """Sends data to the master."""
@@ -195,7 +210,7 @@ class Fetchable(Communicable):
     def _refresh_object(self):
         """
         Should retrieve fresh data from API
-        
+
         :param url: string defining from which url to fetch the data
         """
         route = self._get_absolute_url()
@@ -230,6 +245,7 @@ class Fetchable(Communicable):
              Should retrieve private data for an object from Master API
         """
         self.data_hash = self._refresh_object()
+        return self
 
 class Statusable(Communicable):
     """
@@ -357,6 +373,116 @@ class Connectable(Communicable):
     def send_disconnect(self):
         return self._call_route('disconnect')
 
+class Configable(Communicable):
+    """
+    Should be responsible for setting the 'Edit config' section.
+    Name of thix mixin is such because there's already "configure" action for live activities
+    """
+    def __init__(self):
+        self.log = Logger().get_logger()
+        super(Configable, self).__init__()
+
+    def get_config(self):
+        config_route = Path().get_route_for(self.class_name, 'config') % self.data_hash['id']
+        self.log.info("Getting config of %s" % (self.class_name))
+        response = self._send_configable_get_request(config_route)
+        if response:
+            self.log.info("Successfully got config from url=%s" % self.absolute_url)
+            return self._scrap_config(response)
+        else:
+            return False
+
+    def set_config(self, config_dictionary):
+        """
+        Accepts dictionary of keys that will be unpacked to "key=value" strings and
+        makes a request overwriting any previous config
+        :rtype: bool
+        :param config_dictionary: Dictionary with keys and values
+        """
+        config = {"values" : self._unpack_config(config_dictionary)}
+        self.log.info("Updating config of %s with %s" % (self.class_name, config))
+        config_route = Path().get_route_for(self.class_name, 'config') % self.data_hash['id']
+        if self._send_configable_set_request(config_route, config):
+            self.log.info("Successfully sent config for url=%s" % self.absolute_url)
+            return True
+        else:
+            return False
+
+    def _scrap_config(self, html):
+        import BeautifulSoup
+        soup = BeautifulSoup.BeautifulSoup(html)
+        self.log.info("Received config response: %s" % soup)
+        textarea = soup.findAll('textarea')[0].text.split('\n')
+        config_dict = self._pack_config(textarea)
+        self.log.info("Scrapped config: %s" % config_dict)
+        return config_dict
+
+    def _pack_config(self, config_list):
+        """
+        Accepts list of strings and converts it into dictionary
+        :rtype: dict
+        :param config_string: string containing scraped config
+        """
+        config_dict = {}
+        self.log.info("Textarea: %s" % config_list)
+        try:
+            for config_item in config_list:
+                key, value = config_item.split('=')
+                self.log.info("Assigning %s to %s" % (key,value))
+                config_dict[key] = value
+        except:
+            self.log.info("Could not do a _pack_config for scraped config on item: %s for config_list %s" % (config_item, config_list))
+            config_dict = {}
+        return config_dict
+
+    def _unpack_config(self, config_dictionary):
+        """
+        Accepts dictionary and converts it to string
+        :rtype: string
+        :param config_dictionary: dict containing config
+        """
+        config_text = ""
+        try:
+            for key, value in config_dictionary.iteritems():
+                config_text = config_text + ("\r\n") + key + "=" + value
+            return config_text
+        except Exception, e:
+            self.log.error("Could not unpack supplied config dictionary because %s" % e)
+            raise
+
+
+    def _send_configable_get_request(self, config_route):
+        """
+        Makes a configable get request
+        """
+        url = "%s%s" % (self.uri, config_route)
+        self.log.info("Sending configable GET request to url=%s" %url)
+        try:
+            response = self._api_get_html(url, content=True)
+        except urllib2.HTTPError, e:
+            response = None
+            self.log.error("Could not send configable GET request because %s" % e)
+        if response:
+            return response
+        else:
+            return False
+
+    def _send_configable_set_request(self, config_route, config):
+        """
+        Makes a configable set request
+        """
+        url = "%s%s" % (self.uri, config_route)
+        self.log.info("Sending configable POST request to url=%s" %url)
+        try:
+            response = self._api_post_json_no_cookies(url, config)
+        except urllib2.HTTPError, e:
+            response = None
+            self.log.error("Could not send configable GET request because %s" % e)
+        if response:
+            return True
+        else:
+            return False
+
 class Metadatable(Communicable):
     """
     Should be responsible for setting metadata
@@ -369,9 +495,7 @@ class Metadatable(Communicable):
         """
         Accepts dictionary of keys that will be unpacked to "key=value" strings and
         makes a request overwriting any previous metadata
-        
         :rtype: bool
-        
         :param metadata_args: Dictionary with keys and values
         """
         metadata = {"values" : self._unpack_metadata(metadata_dictionary)}
@@ -388,9 +512,7 @@ class Metadatable(Communicable):
     def _unpack_metadata(self, metadata_dictionary):
         """
         Accepts dictionary and converts it to string
-        
         :rtype: string
-        
         :param metadata_dictionary: dict containing metadata
         """
         metadata_text = ""

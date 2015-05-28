@@ -56,7 +56,7 @@ class ManageController:
         self.options = options
         self.config_path = self.options.config
         self._init_config()
-        self.master = interactivespaces.Master(self.host, self.port)
+        self.master = interactivespaces.Master(self.host, self.port, logfile_path=self.log_path)
         self.query = {'space_controller_name': self.options.name,
                      'space_controller_host_id': self.options.hostid,
                      'space_controller_description': self.options.description
@@ -90,12 +90,33 @@ class ManageController:
             exit(0)
         else:
             raise Exception("Could not create controller")
+            exit(1)
+
+    def get_uuid(self):
+        controller = ''
+        if self.options.name or self.options.hostid:
+            pass
+        else:
+            raise Exception("You must provide controller's name and hostid")
+        try:
+            controller = self.master.get_space_controller(self.query)
+        except interactivespaces.ControllerNotFoundException:
+            print 'False'
+            exit(1)
+        if type(controller) == interactivespaces.SpaceController:
+            print controller.uuid()
+            exit(0)
+        else:
+            print 'False'
+            exit(1)
 
     def run(self):
         if self.options.action == 'create':
             self.create()
         elif self.options.action == 'exists':
             self.exists()
+        elif self.options.action == 'get_uuid':
+            self.get_uuid()
         else:
             self.parser.print_help()
 
@@ -106,6 +127,7 @@ class ManageController:
         self.config.read(self.config_path)
         self.host = self.config.get('master', 'host')
         self.port = self.config.get('master', 'port')
+        self.log_path = self.config.get('global', 'logfile_path')
 
 if __name__ == "__main__":
     options = Options(sys.argv).get_options()
