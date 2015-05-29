@@ -117,7 +117,6 @@ class InteractiveSpacesRelaunch(object):
         self.relaunch_master = self.config.getint('relaunch', 'relaunch_master')
         self.master_stop_command = self.config.get('master', 'stop_command')
         self.master_launch_command = self.config.get('master', 'launch_command')
-        self.master_destroy_tmux_command = self.config.get('master', 'destroy_tmux_command')
         self.log_path = self.config.get('global', 'logfile_path')
         self.ssh_command = self.config.get('global', 'ssh_command')
 
@@ -147,7 +146,6 @@ class InteractiveSpacesRelaunch(object):
             config[controller_name]['stop_command'] = self.config.get(controller_name, 'stop_command')
             config[controller_name]['launch_command'] = self.config.get(controller_name, 'launch_command')
             config[controller_name]['pid_command'] = self.config.get(controller_name, 'pid_command')
-            config[controller_name]['destroy_tmux_command'] = self.config.get(controller_name, 'destroy_tmux_command')
         return config
 
     @debug
@@ -162,20 +160,9 @@ class InteractiveSpacesRelaunch(object):
         return output
 
     @debug
-    def destroy_tmux_session(self, controller_name):
-        """
-        @summary: destroys tmux session of a controller
-        @rtype: string with command output
-        """
-        command = "%s %s '%s'" % (self.ssh_command, controller_name, self.controllers_data[controller_name]['destroy_tmux_command'])
-        cmd_process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-        output = cmd_process.communicate()[0].replace('\n', '').split(' ')
-        return output
-
-    @debug
     def start_controller(self, controller_name):
         """
-        @summary: starts controller (most likely a tmux session)
+        @summary: starts controller
         @rtype: string containing start output
         """
         command = "%s %s '%s'" % (self.ssh_command, controller_name, self.controllers_data[controller_name]['launch_command'])
@@ -232,17 +219,17 @@ class InteractiveSpacesRelaunch(object):
         return False
 
     @debug
-    def controller_tmux_session_exists(self, controller_name):
+    def controller_process_exists(self, controller_name):
         """
-        @summary: returns True if tmux session of a controller exists - False otherwise
+        @summary: returns True if process of a controller exists - False otherwise
         @rtype: bool
         """
         try:
-            cmd = 'ssh %s -t "tmux ls | grep ISController"' % controller_name
+            cmd = 'ssh %s -t "sudo supervisorctl status | grep interactivespaces_controller | grep RUNNING"' % controller_name
             out = subprocess.check_call(cmd, shell=True, stdout=subprocess.PIPE)
             return True
         except CalledProcessError, e:
-            print "tmux session ISController does not exist on %s" % controller_name
+            print "interactivespaces_controller supervisor process does not exist on %s" % controller_name
             return False
 
     @debug
@@ -252,7 +239,6 @@ class InteractiveSpacesRelaunch(object):
         @rtype: bool
         """
         cmd_process = subprocess.Popen(self.master_stop_command, shell=True, stdout=subprocess.PIPE)
-        cmd_process = subprocess.Popen(self.master_destroy_tmux_command, shell=True, stdout=subprocess.PIPE)
         self.simple_wait('kill_master_process', 5)
         cmd_process = subprocess.Popen(self.master_launch_command, shell=True, stdout=subprocess.PIPE)
         if self.api_wait('start_master',
@@ -266,18 +252,18 @@ class InteractiveSpacesRelaunch(object):
             sys.exit(1)
 
     @debug
-    def verify_controllers_tmux_sessions(self):
+    def verify_controllers_sessions(self):
         """
-        @summary: checks all controllers tmux sessions and revives them if they dont exist
+        @summary: checks all controllers procesess and revives them if they dont exist
         """
         for controller_name, controller_data in self.controllers_data.iteritems():
-            if self.controller_tmux_session_exists(controller_name):
-                print colored("Tmux session ISController on %s exists" % controller_name, 'green')
+            if self.controller_process_exists(controller_name):
+                print colored("interactivespaces_controller supervisor process on %s exists" % controller_name, 'green')
             else:
-                print colored("Tmux session ISController on %s does not exist - reviving" % controller_name, 'red')
+                print colored("interactivespaces_controller supervisor process on %s does not exist - reviving" % controller_name, 'red')
                 self.start_controller(controller_name)
                 print "Connecting controller %s on %s" % (controller_data['name'], controller_name)
-                self.connect_controller(controller_data['name'])
+                self.connect_controler(controller_data['name'])
                 self.controllers_data[controller_name]['connected'] = self.controller_connected(controller_data['name'])
 
     @debug
@@ -325,7 +311,7 @@ class InteractiveSpacesRelaunch(object):
         After that controllers should be visible as "Connected" in Master API.
         @rtype: bool
         """
-        self.verify_controllers_tmux_sessions()
+        self.verify_controllers_sessions()
         return self.verify_controllers_connected()
 
     @debug
@@ -336,12 +322,12 @@ class InteractiveSpacesRelaunch(object):
         if self.connect_controllers():
             return True
         else:
-            help = self.produce_controllers_tmux_help()
+            help = self.produce_controllers_help()
             print "Could not connect all controllers - use '--help'. Start and stop commands are here: %s" % help
             return False
 
     @debug
-    def produce_controllers_tmux_help(self):
+    def produce_controllers_help(self):
         help = {}
         controllers_list = self.config.get('global', 'controllers_list').split(',')
         for controller_name in controllers_list:
@@ -407,7 +393,6 @@ class InteractiveSpacesRelaunch(object):
     def simple_wait(self, info, timeout):
         """
         @summary: wait function with an info used for short sync'like sleep for freeing file descriptors:
-        - destroying tmuxes
         - killing java process
         - ???
         """
@@ -599,13 +584,12 @@ class InteractiveSpacesRelaunch(object):
     @debug
     def relaunch_controllers_processes(self):
         """
-        @summary: stop controllers processes (most likely tmux sessions) and starts them afterwards.
+        @summary: stop controllers processes and starts them afterwards.
         No asserts are made in the API
         @rtype: bool
         """
         for controller_name, controller_data in self.controllers_data.iteritems():
                 self.stop_controller(controller_name)
-                self.destroy_tmux_session(controller_name)
                 print "Connecting controller %s on %s" % (controller_data['name'], controller_name)
 
         self.simple_wait("Waiting for controllers to free file descriptors", 3)
@@ -619,6 +603,72 @@ class InteractiveSpacesRelaunch(object):
                 self.connect_controller(controller_data['name'])
                 self.controllers_data[controller_name]['connected'] = self.controller_connected(controller_data['name'])
         return True
+
+    @debug
+    def check_config(self):
+        """
+        @summary: validates the config. Iterates over all controllers and prints live activities assigned to them.
+        Will print warning if live activity does not belong to any live activity group.
+        """
+        with open('/home/galadmin/etc/node.json', 'r') as node:
+            node_definition = json.loads(node.read())
+            interactivespaces = node_definition['interactivespaces']
+            liquid_galaxy = node_definition['liquid_galaxy']
+
+        relaunch_sequence = []
+
+        for item in interactivespaces['ispaces_client']['relaunch_sequence']:
+            if (type(item) == str) or (type(item) == unicode):
+                relaunch_sequence.append(item)
+            elif type(item) == dict:
+                relaunch_sequence.append(item['name'])
+
+        for live_activity_group_name in interactivespaces['live_activity_groups'].keys():
+            if live_activity_group_name in relaunch_sequence:
+                print colored("OK: %s is on relaunch list" % live_activity_group_name, "green")
+            else:
+                print colored("WARN: %s is not on relaunch list" % live_activity_group_name, "yellow")
+
+        for space_controller_name, space_controller_data in interactivespaces['controllers'].iteritems():
+            """
+            For every space controller create a list of live activities assigned to it
+            """
+            print
+            print colored("Controller name:", "white"),
+            print colored("%s" % space_controller_name, 'white', attrs=['bold'])
+            sc_live_activities = [ la for la in interactivespaces['live_activities'].iteritems() if la[1]['controller'] == space_controller_name ]
+
+            controller_assigned_live_activities = {}
+
+            for la in sc_live_activities:
+                controller_assigned_live_activities[la[0]] = la[1]['controller']
+
+            """
+            For every live activity group create a list of live activities assigned to this controller
+            """
+
+            live_activity_groups_assigned_live_activities = {}
+
+            for live_activity_group_name, live_activity_group_data in interactivespaces['live_activity_groups'].iteritems():
+                live_activities = [ la for la in live_activity_group_data['live_activities'] if la['space_controller_name'] == space_controller_name ]
+                for la in live_activities:
+                    live_activity_groups_assigned_live_activities[la['live_activity_name']] = la['space_controller_name']
+                    print colored("  Live activity:", "white"),
+                    print colored("%s" % la['live_activity_name'], "green"),
+                    print colored("(Group: %s)" % live_activity_group_name, "magenta")
+                    sys.stdout.flush()
+
+            identical = (controller_assigned_live_activities == live_activity_groups_assigned_live_activities)
+
+            if identical:
+                print
+                print colored("  Live Activities assigned to controller match Live Activities in Live Activity Groups", "green")
+            else:
+                diff = set(controller_assigned_live_activities.keys()) - set(live_activity_groups_assigned_live_activities.keys())
+                print colored("LA's from SC are different from LAG's LA's. Here's the difference: %s" % diff, "red")
+
+                print colored("Controller live activities: %s" % controller_assigned_live_activities, "white")
+                print colored("Live activity group live activities: %s" % live_activity_groups_assigned_live_activities, "white")
 
     @debug
     def get_status(self):
@@ -663,6 +713,7 @@ if __name__ == '__main__':
     parser.add_argument("--config", help="Provide path to config file - /home/galadmin/etc/ispaces-client.conf by default")
     parser.add_argument("--live-activity-groups", help="Provide quoted, comma-delimited names of live activity groups to manage e.g. --live-activity-groups='Touchscreen Browser','Media Services' ")
     parser.add_argument("--status", help="Print current status of managed live activities.", action="store_true")
+    parser.add_argument("--check-config", help="Check the configuration", action="store_true")
 
     args = parser.parse_args()
 
@@ -673,7 +724,8 @@ if __name__ == '__main__':
                          'controllers': args.controllers,
                          'no_live_activities': args.no_live_activities,
                          'live_activity_groups': args.live_activity_groups,
-                         'status': args.status
+                         'status': args.status,
+                         'check_config': args.check_config
                          }
 
     if args.config:
@@ -684,6 +736,8 @@ if __name__ == '__main__':
         ir = InteractiveSpacesRelaunch(config_path, relaunch_options)
         if relaunch_options['status']:
             ir.get_status()
+        elif relaunch_options['check_config']:
+            ir.check_config()
         else:
             ir.relaunch()
     else:
