@@ -122,7 +122,12 @@ class Communicable(object):
         query = urlparse.urlparse(get_response.url).query
         cookies = {"JSESSIONID" : session.cookies['JSESSIONID']}
         url = url + "?" + query
-        post_response = session.post(url=url, cookies=cookies, data=payload, files=files) 
+        try:
+            post_response = session.post(url=url, cookies=cookies, data=payload, files=files) 
+        except requests.exceptions.ConnectionError,e :
+            self.log.warn("_api_post_json received connection abort but it most likely didnt fail")
+            return True
+
         if post_response.status_code == 200:
             self.log.info("_api_post_json returned 200 with post_response.url=%s" % post_response.url)
             return post_response
