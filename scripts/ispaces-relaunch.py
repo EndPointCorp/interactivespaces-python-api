@@ -145,7 +145,6 @@ class InteractiveSpacesRelaunch(object):
             config[controller_name]['hostname'] = self.config.get(controller_name, 'hostname')
             config[controller_name]['stop_command'] = self.config.get(controller_name, 'stop_command')
             config[controller_name]['launch_command'] = self.config.get(controller_name, 'launch_command')
-            config[controller_name]['pid_command'] = self.config.get(controller_name, 'pid_command')
         return config
 
     @debug
@@ -263,7 +262,7 @@ class InteractiveSpacesRelaunch(object):
                 print colored("interactivespaces_controller supervisor process on %s does not exist - reviving" % controller_name, 'red')
                 self.start_controller(controller_name)
                 print "Connecting controller %s on %s" % (controller_data['name'], controller_name)
-                self.connect_controler(controller_data['name'])
+                self.connect_controller(controller_data['name'])
                 self.controllers_data[controller_name]['connected'] = self.controller_connected(controller_data['name'])
 
     @debug
