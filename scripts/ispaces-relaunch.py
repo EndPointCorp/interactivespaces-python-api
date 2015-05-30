@@ -699,10 +699,8 @@ class InteractiveSpacesRelaunch(object):
 
 if __name__ == '__main__':
     """
-    @summary: parse all arguments, unset TMUX variable to be able to use this tool from a tmux session and
-    also check whether user is asking for a status or a relaunch
+    @summary: parse all arguments and check whether user is asking for a status or a relaunch
     """
-    os.unsetenv('TMUX')
     parser = argparse.ArgumentParser(description='Relaunch interactivespaces')
     parser.add_argument("--full-relaunch", help="Additionally relaunch controllers and master process", action="store_true")
     parser.add_argument("--full", help="Alias for --full-relaunch", action="store_true")
