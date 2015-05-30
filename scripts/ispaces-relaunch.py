@@ -604,15 +604,11 @@ class InteractiveSpacesRelaunch(object):
         return True
 
     @debug
-    def check_config(self):
+    def _check_relaunch_sequence(self, interactivespaces):
         """
-        @summary: validates the config. Iterates over all controllers and prints live activities assigned to them.
-        Will print warning if live activity does not belong to any live activity group.
+        @summary: checks whether all live activity groups are on relaunch_sequence and whether all
+        relaunch sequence items are configured are referring to existing live activity groups
         """
-        with open('/home/galadmin/etc/node.json', 'r') as node:
-            node_definition = json.loads(node.read())
-            interactivespaces = node_definition['interactivespaces']
-            liquid_galaxy = node_definition['liquid_galaxy']
 
         relaunch_sequence = []
 
@@ -628,6 +624,20 @@ class InteractiveSpacesRelaunch(object):
             else:
                 print colored("WARN: %s is not on relaunch list" % live_activity_group_name, "yellow")
 
+        for live_activity_group_name in relaunch_sequence:
+            if live_activity_group_name in interactivespaces['live_activity_groups'].keys():
+                print colored("OK: %s in relaunch sequence exists in live activity groups list " % live_activity_group_name, "green")
+            else:
+                print colored("WARN: %s does not seem to be existing live activity group" % live_activity_group_name, "yellow")
+
+        print ""
+
+    def _check_live_activities(self, interactivespaces):
+        """
+        @summary: checks:
+        - whether all live activities that are members of live activity groups exist
+        - whether all live activities assigned to controllers exist in live activity groups
+        """
         for space_controller_name, space_controller_data in interactivespaces['controllers'].iteritems():
             """
             For every space controller create a list of live activities assigned to it
@@ -668,6 +678,46 @@ class InteractiveSpacesRelaunch(object):
 
                 print colored("Controller live activities: %s" % controller_assigned_live_activities, "white")
                 print colored("Live activity group live activities: %s" % live_activity_groups_assigned_live_activities, "white")
+
+    @debug
+    def _check_viewports(self, interactivespaces, liquid_galaxy):
+        """
+        @summary: checks whether all viewports mentioned in the configuration match viewports configured on a display node
+        """
+        print
+        print colored("Checking viewports", "white")
+        print
+
+        for live_activity_name, live_activity_data in interactivespaces['live_activities'].iteritems():
+            try:
+                live_activity_viewports = live_activity_data['config']['lg.window.viewport.target'].strip().split(',')
+                live_activity_viewports = [ v.strip() for v in live_activity_viewports]
+                dispnode_name = live_activity_data['controller']
+                dispnode = [ d for d in liquid_galaxy['display_nodes'] if d['hostname'] == dispnode_name ][0]
+                dispnode_viewports = [ screen['name'] for screen in dispnode['screens'] ]
+                for viewport in live_activity_viewports:
+                    if viewport not in dispnode_viewports:
+                        print colored("  Viewport name '%s' on live activity: %s is not configured on dispnode %s" % (viewport, live_activity_name, dispnode_name), "yellow")
+                    else:
+                        print colored("  OK: %s => %s" % (live_activity_name, viewport), "green")
+            except Exception, e:
+                pass
+
+
+    @debug
+    def check_config(self):
+        """
+        @summary: validates the config. Iterates over all controllers and prints live activities assigned to them.
+        Will print warning if live activity does not belong to any live activity group.
+        """
+        with open('/home/galadmin/etc/node.json', 'r') as node:
+            node_definition = json.loads(node.read())
+            interactivespaces = node_definition['interactivespaces']
+            liquid_galaxy = node_definition['liquid_galaxy']
+
+        self._check_relaunch_sequence(interactivespaces)
+        self._check_live_activities(interactivespaces)
+        self._check_viewports(interactivespaces, liquid_galaxy)
 
     @debug
     def get_status(self):
