@@ -588,11 +588,10 @@ class InteractiveSpacesRelaunch(object):
         @rtype: bool
         """
         for controller_name, controller_data in self.controllers_data.iteritems():
+                print "Stopping controller %s on %s" % (controller_data['name'], controller_name)
                 self.stop_controller(controller_name)
-                self.simple_wait("Waiting for java process to exit", 5)
-                print "Connecting controller %s on %s" % (controller_data['name'], controller_name)
 
-        self.simple_wait("Waiting for controllers to free file descriptors", 3)
+        self.simple_wait("Waiting for controllers to free file descriptors", 5)
 
         print colored("Launching controllers", 'green')
         for controller_name, controller_data in self.controllers_data.iteritems():
