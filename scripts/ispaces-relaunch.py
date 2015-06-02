@@ -597,7 +597,7 @@ class InteractiveSpacesRelaunch(object):
         for controller_name, controller_data in self.controllers_data.iteritems():
                 self.start_controller(controller_name)
 
-        self.simple_wait("Waiting for controllers to come up", 5)
+        self.simple_wait("Waiting for controllers to come up", 10)
 
         for controller_name, controller_data in self.controllers_data.iteritems():
                 self.connect_controller(controller_data['name'])
